@@ -1,0 +1,57 @@
+vitalmetrics
+│
+├─ app
+│   ├─ Http
+│   │   ├─ Controllers
+│   │   │   ├─ Auth
+│   │   │   ├─ API
+│   │   │   │   ├─ DashboardController.php
+│   │   │   │   ├─ MetricsController.php
+│   │   │   │   └─ UserController.php
+│
+├─ database
+│   ├─ migrations
+│   └─ seeders
+│
+├─ resources
+│   ├─ css
+│   │   └─ app.css
+│   │
+│   ├─ js
+│   │   ├─ app.js
+│   │   ├─ bootstrap.js
+│   │   │
+│   │   ├─ components
+│   │   │   ├─ layout
+│   │   │   │   ├─ Sidebar.jsx
+│   │   │   │   ├─ Navbar.jsx
+│   │   │   │   └─ DashboardLayout.jsx
+│   │   │   │
+│   │   │   ├─ ui
+│   │   │   │   ├─ Card.jsx
+│   │   │   │   ├─ Button.jsx
+│   │   │   │   └─ Modal.jsx
+│   │   │
+│   │   ├─ pages
+│   │   │   ├─ Dashboard.jsx
+│   │   │   ├─ Metrics.jsx
+│   │   │   ├─ Users.jsx
+│   │   │   └─ Settings.jsx
+│   │   │
+│   │   ├─ services
+│   │   │   ├─ api.js
+│   │   │   └─ metricsService.js
+│   │   │
+│   │   ├─ hooks
+│   │   │   └─ useAuth.js
+│   │   │
+│   │   └─ router
+│   │       └─ index.jsx
+│
+├─ routes
+│   ├─ web.php
+│   └─ api.php
+│
+├─ vite.config.js
+├─ tailwind.config.js
+└─ package.json

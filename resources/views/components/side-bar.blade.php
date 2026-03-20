@@ -9,7 +9,7 @@
         </div>
     </div>
     <nav class="flex justify-center flex-col text-white">
-        <a href="#" class="px-2 py-3 hover:bg-[#4c4c4c] transition duration-300 ease-in-out">
+        <a href="{{route('dashboard')}}" class="px-2 py-3 hover:bg-[#4c4c4c] transition duration-300 ease-in-out">
             <span class="flex gap-2 items-center">
                 <i class="fa-solid fa-chart-column"></i> Dashboard
             </span>

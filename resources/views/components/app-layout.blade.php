@@ -20,7 +20,7 @@
         </style> --}}
     {{-- @endif --}}
 </head>
-<body class="bg-[#ffecec] text-[#1b1b18] min-h-screen">
+<body class="bg-[#ffecec] text-[#1b1b18] min-h-screen overflow-hidden">
     <header class="header">
         <!-- Header -->
     </header>
@@ -31,10 +31,61 @@
         <main class="flex w-full flex-col">
             <div class="flex w-full bg-[#353030] h-[4rem] text-white justify-end items-center px-5">
                 <div class="flex flex-row items-center gap-4">
-                    Date / Time
-                    <i class="fa-regular fa-bell"></i>
-                    <i class="fa-solid fa-gear"></i>
-                    <i class="fa-solid fa-power-off"></i>
+                    <div x-data="{
+                        timestamp: Date.now(),
+                        updateTime() {
+                            this.timestamp = Date.now();
+                        },
+                        get formattedDate() {
+                            const date = new Date(this.timestamp);
+                            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                            return date.toLocaleDateString(undefined, options);
+                        },
+                        get formattedTime() {
+                            const date = new Date(this.timestamp);
+                            // Options to display hour and minute, but not seconds
+                            const options = { hour: '2-digit', minute: '2-digit' };
+                            return date.toLocaleTimeString(undefined, options);
+                        }
+                    }">
+                        <p class="text-right" x-text="formattedTime"></p>
+                        <p class="text-xs" x-text="formattedDate"></p>
+                    </div>
+                    <div class="relative inline-block text-left">
+                        <button 
+                            type="button" 
+                            class="inline-flex items-center justify-center text-white bg-brand hover:bg-brand-strong hover:cursor-pointer focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
+                            id="dropdownBtn"
+                            data-dropdown-toggle="dropdown"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="dropdown" class="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44 transform translate-[-135px, 44px]">
+                            <ul class="text-sm text-body font-medium">
+                                <li>
+                                    <a href="" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                        <i class="fa-regular fa-bell"></i> Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                        <i class="fa-regular fa-bell"></i> Notifications
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{route('settings')}}" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                        <i class="fa-solid fa-gear"></i> Settings
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="pt-2 text-sm text-body font-medium">
+                                <a href="" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100">
+                                    <i class="fa-solid fa-power-off"></i> Sign out
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Content -->
@@ -46,5 +97,6 @@
     <footer>
         <!-- Footer -->
     </footer>
+    {{-- <script defer src="https://cdn.jsdelivr.net"></script> --}}
 </body>
 </html>
