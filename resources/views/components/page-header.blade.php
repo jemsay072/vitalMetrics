@@ -1,4 +1,4 @@
-<div class="pb-6 border-b border-gray-200 mb-6">
+<div class="max-w-7xl w-full mx-auto py-6 px-4 sm:px-6 lg:px-8">
     <!-- Breadcrumbs -->
     <nav class="flex text-sm text-gray-500 mb-2" aria-label="Breadcrumb">
         @foreach ($breadcrumbs as $crumb)

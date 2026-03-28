@@ -1,4 +1,5 @@
 @props(['active'])
+@props(['icon' => null])
 
 @php
 $classes = ($active ?? false)
@@ -7,5 +8,8 @@ $classes = ($active ?? false)
 @endphp
 
 <a {{ $attributes->merge(['class' => $classes]) }}>
+    @if ($icon)
+        <i class="{{$icon}}"></i>    
+    @endif
     {{ $slot }}
 </a>
