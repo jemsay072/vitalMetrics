@@ -15,6 +15,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased text-[#1b1b18] min-h-screen">
+        <x-alert-text />
         <div class="min-h-screen bg-[#ffecec] flex w-full min-h-screen relative transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
             <aside class="sidebar flex flex-col justify-between w-[265px] bg-[#353030] py-2 fixed h-full z-20">
                 <x-side-bar />

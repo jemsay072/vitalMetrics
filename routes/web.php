@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WorkoutTrackerController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -15,6 +16,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware('auth')->group(function() {
+    Route::get('/workout-tracker', [WorkoutTrackerController::class, 'index'])->name('workout-tracker');
+    Route::post('/workout-tracker', [WorkoutTrackerController::class, 'store'])->name('workout-tracker.store');
+    Route::get('/workout-tracker/{id}', [WorkoutTrackerController::class, 'show'])->name('workout-tracker.show');
+    Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
+    Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
 });
 
 require __DIR__.'/auth.php';
