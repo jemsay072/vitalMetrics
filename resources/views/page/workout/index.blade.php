@@ -12,7 +12,7 @@
                     x-data
                     x-on:click="$dispatch('open-modal', 'workout-form')"
                     type="button"
-                    class="text-slate-500 bg-brand border border-blue-500 hover:bg-blue-500 hover:text-white focus:ring-4 focus:ring-brand-medium font-medium rounded text-sm px-4 py-2.5"
+                    class="text-slate-500 border border-blue-500 hover:bg-blue-500 hover:text-white focus:ring-4 focus:ring-brand-medium font-medium rounded text-sm px-4 py-2.5"
                 >
                     + Workout
                 </button>
@@ -21,31 +21,31 @@
     </div>
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <!--table-->
-        <div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
-            <table class="w-full text-sm text-left rtl:text-right text-body">
-                <thead class="bg-neutral-secondary-soft border-b border-default">
+        <div class="relative overflow-hidden bg-white rounded-xl border border-gray-200">
+            <table class="w-full text-sm text-left rtl:text-right text-body text-gray-600">
+                <thead class="bg-gray-100 border-b border-default">
                     <tr>
-                        <th scope="col" class="px-6 py-3 font-medium">
+                        <th scope="col" class="px-6 py-3 font-bold">
                             Activity Type
                         </th>
-                        <th scope="col" class="px-6 py-3 font-medium">
+                        <th scope="col" class="px-6 py-3 font-bold">
                             Duration (min)
                         </th>
-                        <th scope="col" class="px-6 py-3 font-medium">
+                        <th scope="col" class="px-6 py-3 font-bold">
                             Distance ( /km)
                         </th>
-                        <th scope="col" class="px-6 py-3 font-medium">
+                        <th scope="col" class="px-6 py-3 font-bold">
                             Calories Burned
                         </th>
-                        <th scope="col" class="px-6 py-3 font-medium">
+                        <th scope="col" class="px-6 py-3 font-bold">
                             Step
                         </th>
-                        <th scope="col" class="px-6 py-3 font-medium">
+                        <th scope="col" class="px-6 py-3 font-bold">
                             Action
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100 border-t border-default">
                      @forelse($workoutList as $workout)
                         <tr 
                             x-data
@@ -53,7 +53,7 @@
                                 $dispatch('set-workout-id', {{ $workout->id }});
                                 $dispatch('open-modal', 'workout-view');
                             "
-                            class="odd:bg-neutral-primary even:bg-neutral-secondary-soft border-b border-default hover:cursor-pointer hover:bg-neutral-secondary-medium"
+                            class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
                         >
                             <th scope="row" class="px-6 py-4 font-medium text-heading whitespace-nowrap">
                                 {{ $workout->activity_type }}
@@ -71,13 +71,14 @@
                                 {{ $workout->calories_burned }}
                             </td>
                             <td class="px-6 py-4">
-                                <div>
+                                <div class="flex items-center space-x-2 justify-end ">
                                     <span
                                         x-data
                                         x-on:click.stop="
                                             $dispatch('set-edit-id',  {{ $workout->id }});
                                             $dispatch('open-modal', 'workout-edit' );
                                         "
+                                        class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"
                                         type="button"
                                     ><i class="fa-solid fa-pen"></i></span>
                                     <span
@@ -86,6 +87,7 @@
                                             $dispatch('set-delete-id',  {{ $workout->id }});
                                             $dispatch('open-modal', 'workout-delete' );
                                         "
+                                        class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                                         type="button"
                                     ><i class="fa-regular fa-trash-can"></i> </span>
                                 </div>
@@ -165,21 +167,39 @@
         <x-modal name="workout-view" :show="false" maxWidth="lg">
             <div 
                 class="p-6"
-                x-data="{ workoutId: null, workout: {} }"
+                x-data="{ workoutId: null, workout: {}, loading: false }"
                 x-on:set-workout-id.window="
+                    if(workoutId === $event.detail) return;
+                    
                     workoutId = $event.detail;
+                    loading = true;
+                    workout = {};
+
                     fetch('/workout-tracker/' + workoutId)
                         .then(res => res.json())
-                        .then(data => workout = data);
+                        .then(data => {
+                            workout = data;
+                            loading = false;
+                        });
                 "
             >
                 <h2 class="text-lg font-semibold mb-4">View</h2>
 
-                <p>ID: <span x-text="workout.id"></span></p>
-                <p>Activity: <span x-text="workout.activity_type"></span></p>
-                <p>Duration: <span x-text="workout.duration_minutes"></span></p>
-                <p>Distance: <span x-text="workout.distance_km"></span></p>
-                <p>Calories: <span x-text="workout.calories_burned"></span></p>
+                <!--Loading State-->
+                <div x-show="loading" class="flex flex-col justify-center items-center py-10 gap-2">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-3"></div>
+                    <p class="text-sm text-gray-500">Loading workout data...</p>
+                </div>
+
+                <!--Form-->
+                <div x-show="!loading && workout.id" x-cloak class="space-y-2 mb-6">
+                    <span x-init="console.log(workout)"></span>
+                    <p>ID: <span x-text="workout.id"></span></p>
+                    <p>Activity: <span x-text="workout.activity_type"></span></p>
+                    <p>Duration: <span x-text="workout.duration_minutes"></span></p>
+                    <p>Distance: <span x-text="workout.distance_km"></span></p>
+                    <p>Calories: <span x-text="workout.calories_burned"></span></p>
+                </div>
                 <div class="flex justify-end space-x-2">
                     <button 
                         type="button"
@@ -196,16 +216,32 @@
         <x-modal name="workout-edit" :show="false" maxWidth="lg">
             <div 
                 class="p-6"
-                x-data="{workoutId: null, workout: {} }"
+                x-data="{workoutId: null, workout: {}, loading: false}"
                 x-on:set-edit-id.window="
+                    if(workoutId === $event.detail) return;
+
                     workoutId = $event.detail;
+                    loading = true;
+                    workout = {};
+
                     fetch('/workout-tracker/' + workoutId)
                         .then(res => res.json())
-                        .then(data => workout = data);
+                        .then(data => {
+                            workout = data;
+                            loading = false;
+                        });
                 "
             >
                 <h2 class="text-lg font-semibold mb-4">Edit Workout</h2>
-                <div class="form" id="workout-edit-form">
+
+                <!--Loading State-->
+                <div x-show="loading" class="flex flex-col justify-center items-center py-10 gap-2">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-3"></div>
+                    <p class="text-sm text-gray-500">Loading workout data...</p>
+                </div>
+
+
+                <div x-show="!loading && workout.id" x-cloak class="form" id="workout-edit-form">
                     <form :action="'/workout-tracker/' + workoutId" method="post">
                         @csrf
                         @method('PUT')
