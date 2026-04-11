@@ -6,10 +6,13 @@
                 <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
             </a>
         </div>
-        <div class="flex hover:cursor-pointer">
-            <i class="fa-solid fa-align-justify"></i>
-            <span class="hidden">Toggle Here</span>
-        </div>
+        <!-- Mobile close button -->
+        <button x-on:click="$dispatch('close-sidebar')"
+                class="lg:hidden text-white hover:text-gray-300 focus:outline-none focus:text-gray-300">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
     </div>
     <nav class="flex justify-center flex-col text-white">
         <x-nav-link :href="route('dashboard')" class="pb-1 px-3 !py-4 !text-md text-slate-300 border-b-0 hover:bg-[#4c4c4c] hover:text-slate-100 focus:text-slate-100 active:bg-[#4c4c4c] gap-3" icon="fa-solid fa-chart-column">

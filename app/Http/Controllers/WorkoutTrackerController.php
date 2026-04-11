@@ -61,6 +61,24 @@ class WorkoutTrackerController extends Controller
         return response()->json($workout);
     }
 
+    public function search(Request $request)
+    {
+        $query = WorkoutTracker::where('user_id', auth()->id());
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('activity_type', 'like', "%{$search}%")
+                  ->orWhere('duration_minutes', 'like', "%{$search}%")
+                  ->orWhere('distance_km', 'like', "%{$search}%")
+                  ->orWhere('calories_burned', 'like', "%{$search}%");
+            });
+        }
+
+        $workouts = $query->latest()->paginate(10); // 10 items per page
+        return response()->json($workouts);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function() {
     Route::get('/workout-tracker/{id}', [WorkoutTrackerController::class, 'show'])->name('workout-tracker.show');
     Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
     Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
+    Route::get('/api/workouts', [WorkoutTrackerController::class, 'search'])->name('api.workouts');
 });
 
 require __DIR__.'/auth.php';
