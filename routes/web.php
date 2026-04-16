@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WorkoutTrackerController;
+use App\Http\Controllers\BloodPressureController;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -25,6 +26,11 @@ Route::middleware('auth')->group(function() {
     Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
     Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
     Route::get('/api/workouts', [WorkoutTrackerController::class, 'search'])->name('api.workouts');
+});
+
+Route::middleware('auth')->group(function(){
+    Route::get('/bp', [BloodPressureController::class, 'index'])->name('bp.index');
+    Route::post('/bp', [BloodPressureController::class, 'store'])->name('bp.store');
 });
 
 require __DIR__.'/auth.php';

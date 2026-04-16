@@ -124,6 +124,68 @@ document.addEventListener('alpine:init', () => {
             });
         }
     }));
+
+    function bpComponent(){
+        return {
+            list: [],
+            form: {
+                systolic: '',
+                diastolic: '',
+                pulse: '',
+            },
+            init(){
+                this.fetchBp();
+            },
+            fetchBp(){
+                fetch('/bp')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.list = data;
+                    });
+            },
+            saveBp(){
+                fetch('/bp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(this.form)
+                })
+                .then(res => res.json())
+                .then(() => {
+                    this.fetchBp();
+                    this.resetForm();
+                })
+            },
+            resetForm(){
+                this.form = {
+                    systolic: '',
+                    diastolic: '',
+                    pulse: '',
+                }
+            },
+            getColor(term){
+                switch(term){
+                    case 'Hypertension': return 'bg-red-500';
+                    case 'Prehypertension': return 'bg-yellow-500';
+                    case 'Normal': return 'bg-green-500';
+                    default: return 'bg-gray-500';
+                }
+            },
+            liveTernm(){
+                let s = parseInt(this.form.systolic);
+                let d = parseInt(this.form.diastolic);
+
+                if (!s || !d) return '';
+
+                if (s >= 140 || d >= 90) return 'Hypertension';
+                if ((s >= 120 && s < 140) || (d >= 80 && d < 90)) return 'Prehypertension';
+                if (s < 120 && d < 80) return 'Normal';
+                return 'Unknown';
+            }
+        }
+    }
 });
 
 Alpine.start();
