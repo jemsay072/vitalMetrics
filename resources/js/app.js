@@ -125,67 +125,66 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 
-    function bpComponent(){
-        return {
-            list: [],
-            form: {
-                systolic: '',
-                diastolic: '',
-                pulse: '',
-            },
-            init(){
+    // BpComponent
+    Alpine.data('bpComponent', () => ({
+        list: [],
+        form: {
+            systolic: '',
+            diastolic: '',
+            pulse: '',
+        },
+        init() {
+            this.fetchBp();
+        },
+        fetchBp() {
+            fetch('/bp', {
+                headers: {'Accept': 'application/json',}
+            })
+            .then(response => response.json())
+            .then(data => {
+                this.list = data;
+            });
+        },
+        saveBp() {
+            fetch('/bp/store', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify(this.form)
+            })
+            .then(res => res.json())
+            .then(() => {
                 this.fetchBp();
-            },
-            fetchBp(){
-                fetch('/bp')
-                    .then(response => response.json())
-                    .then(data => {
-                        this.list = data;
-                    });
-            },
-            saveBp(){
-                fetch('/bp', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify(this.form)
-                })
-                .then(res => res.json())
-                .then(() => {
-                    this.fetchBp();
-                    this.resetForm();
-                })
-            },
-            resetForm(){
-                this.form = {
-                    systolic: '',
-                    diastolic: '',
-                    pulse: '',
-                }
-            },
-            getColor(term){
-                switch(term){
-                    case 'Hypertension': return 'bg-red-500';
-                    case 'Prehypertension': return 'bg-yellow-500';
-                    case 'Normal': return 'bg-green-500';
-                    default: return 'bg-gray-500';
-                }
-            },
-            liveTernm(){
-                let s = parseInt(this.form.systolic);
-                let d = parseInt(this.form.diastolic);
-
-                if (!s || !d) return '';
-
-                if (s >= 140 || d >= 90) return 'Hypertension';
-                if ((s >= 120 && s < 140) || (d >= 80 && d < 90)) return 'Prehypertension';
-                if (s < 120 && d < 80) return 'Normal';
-                return 'Unknown';
+                this.resetForm();
+            })
+        },
+        resetForm() {
+            this.form = { systolic: '', diastolic: '', pulse: '' };
+        },
+        getColor(term) {
+            switch(term) {
+                case 'Hypertension': return 'text-red-600 bg-red-50 p-2 rounded';
+                case 'Prehypertension': return 'text-yellow-600 bg-yellow-50 p-2 rounded';
+                case 'Normal': return 'text-green-600 bg-green-50 p-2 rounded';
+                default: return 'text-gray-500';
             }
+        },
+        liveTerm() {
+            // parseInt ensures we are comparing numbers, not strings
+            let s = parseInt(this.form.systolic);
+            let d = parseInt(this.form.diastolic);
+
+            if (!s || !d) return '';
+
+            if (s >= 140 || d >= 90) return 'Hypertension';
+            if ((s >= 120 && s < 140) || (d >= 80 && d < 90)) return 'Prehypertension';
+            if (s < 120 && d < 80) return 'Normal';
+            return 'Unknown';
         }
-    }
+    }));
 });
 
 Alpine.start();

@@ -1,11 +1,11 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <x-page-header 
-            title="Blood Pressure" 
-            description="Blood Pressure Description" 
+        <x-page-header
+            title="Blood Pressure"
+            description="Blood Pressure Description"
             :breadcrumbs="[
                 ['label' => 'Home', 'url' => '/'],
-            ]" 
+            ]"
         >
             <x-slot name="actions">
                 <button
@@ -23,23 +23,27 @@
 
         <!-- Modal toggle Create -->
         <x-modal name="bp-form" :show="false" maxWidth="lg">
-            <div class="p-6">
+            <div class="p-6" x-data="bpComponent">
                 <h2 class="text-lg font-semibold mb-4">Blood Pressure Form</h2>
                 <div id="bp-form-content">
                     <!-- Form content will be loaded here via AJAX -->
-                    <form action="{{route('workout-tracker.store')}}" method="post">
+                    <form action="{{route('bp.store')}}" method="post">
                         @csrf
                         <div class="mb-4">
                             <label for="systolic" class="block text-sm font-medium text-gray-700">Systolic</label>
-                            <input type="number" name="systolic" id="systolic" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <input type="number" name="systolic" id="systolic" x-model="form.systolic" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div class="mb-4">
                             <label for="diastolic" class="block text-sm font-medium text-gray-700">Diastolic</label>
-                            <input type="number" name="diastolic" id="diastolic" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <input type="number" name="diastolic" id="diastolic" x-model="form.diastolic" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div class="mb-4">
-                            <label for="heart_rate" class="block text-sm font-medium text-gray-700">Heart Rate</label>
-                            <input type="number" name="heart_rate" id="heart_rate" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <label for="pulse" class="block text-sm font-medium text-gray-700">Heart Rate</label>
+                            <input type="number" name="pulse" id="pulse" x-model="form.pulse" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label for="reading_time" class="block text-sm font-medium text-gray-700">Reading Time</label>
+                            <input type="time" name="reading_time" id="reading_time" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div class="mb-4">
                             <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
@@ -48,8 +52,10 @@
                         <div class="mb-4">
                             <p class="mt-2 font-bold"
                                 :class="getColor(liveTerm())"
+                                x-show="liveTerm()"
                                 x-text="liveTerm()">
                             </p>
+                            <input type="text" name="terms" :value="liveTerm()">
                         </div>
 
                         <!-- Buttons -->

@@ -18,6 +18,9 @@ return new class extends Migration
             $table->integer('diastolic');
             $table->integer('pulse')->nullable();
             $table->string('terms');
+            $table->string('risk_level')->default('Low');
+            $table->string('notes')->nullable();
+            $table->time('reading_time')->nullable();
             $table->timestamps();
         });
     }

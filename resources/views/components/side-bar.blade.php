@@ -21,7 +21,7 @@
         <x-nav-link :href="route('workout-tracker')" class="pb-1 px-3 !py-4 !text-md text-slate-300 border-b-0 hover:bg-[#4c4c4c] hover:text-slate-100 focus:text-slate-100 active:bg-[#4c4c4c] gap-3" icon="fa-solid fa-dumbbell">
             {{__('Workout')}}
         </x-nav-link>
-        <x-nav-link :href="route('dashboard')" class="pb-1 px-3 !py-4 !text-md text-slate-300 border-b-0 hover:bg-[#4c4c4c] hover:text-slate-100 focus:text-slate-100 active:bg-[#4c4c4c] gap-3" icon="fa-solid fa-fire">
+        <x-nav-link :href="route('bp.index')" class="pb-1 px-3 !py-4 !text-md text-slate-300 border-b-0 hover:bg-[#4c4c4c] hover:text-slate-100 focus:text-slate-100 active:bg-[#4c4c4c] gap-3" icon="fa-solid fa-fire">
             {{__('BP')}}
         </x-nav-link>
     </nav>

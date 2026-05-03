@@ -16,6 +16,9 @@ class BloodPressure extends Model
         'diastolic',
         'pulse',
         'terms',
+        'risk_level',
+        'notes',
+        'reading_time'
     ];
 
     public function user(){
