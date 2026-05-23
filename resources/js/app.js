@@ -128,6 +128,7 @@ document.addEventListener('alpine:init', () => {
     // BpComponent
     Alpine.data('bpComponent', () => ({
         list: [],
+        loading: false,
         form: {
             systolic: '',
             diastolic: '',
@@ -137,12 +138,17 @@ document.addEventListener('alpine:init', () => {
             this.fetchBp();
         },
         fetchBp() {
+            this.loading = true;
+
             fetch('/bp', {
                 headers: {'Accept': 'application/json',}
             })
             .then(response => response.json())
             .then(data => {
                 this.list = data;
+            })
+            .finally(() => {
+                this.loading = false;
             });
         },
         saveBp() {

@@ -66,6 +66,26 @@ class BloodPressureController extends Controller
         }
     }
 
+    /**
+     * Search Filter
+     */
+    public function search(Request $request){
+        $query = BloodPressure::where('user_id', auth()->id());
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('systolic', 'like', "%{$search}%")
+                  ->orWhere('diastolic', 'like', "%{$search}%")
+                  ->orWhere('terms', 'like', "%{$search}%")
+                  ->orWhere('risk_level', 'like', "%{$search}%");
+            });
+        }
+
+        $bp = $query->latest()->paginate(10); // 10 items per page
+        return response()->json($bp);
+    }
+
 
     /**
      * Display the specified resource
