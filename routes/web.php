@@ -32,8 +32,9 @@ Route::middleware('auth')->group(function(){
     Route::get('/bp', [BloodPressureController::class, 'index'])->name('bp.index');
     Route::post('/bp', [BloodPressureController::class, 'store'])->name('bp.store');
     Route::get('/bp/{id}', [BloodPressureController::class, 'show'])->name('bp.show');
+    Route::put('/bp/{id}', [BloodPressureController::class, 'update'])->name('bp.update');
+    Route::delete('/bp/{id}', [BloodPressureController::class, 'destroy'])->name('bp.destroy');
     Route::get('/api/bp', [BloodPressureController::class, 'search'])->name('api.bp');
-
 });
 
 require __DIR__.'/auth.php';

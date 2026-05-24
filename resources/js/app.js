@@ -129,6 +129,8 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('bpComponent', () => ({
         list: [],
         loading: false,
+        bp: {},
+        bpId: null,
         form: {
             systolic: '',
             diastolic: '',
@@ -136,6 +138,15 @@ document.addEventListener('alpine:init', () => {
         },
         init() {
             this.fetchBp();
+        },
+        async loadBp(id) {
+            this.loading = true;
+            try{
+                const response = await fetch(`/bp/${id}`);
+                this.bp = await response.json();
+            } finally{
+                this.loading = false;
+            }
         },
         fetchBp() {
             this.loading = true;
@@ -189,6 +200,19 @@ document.addEventListener('alpine:init', () => {
             if ((s >= 120 && s < 140) || (d >= 80 && d < 90)) return 'Prehypertension';
             if (s < 120 && d < 80) return 'Normal';
             return 'Unknown';
+        },
+        liveEditTerm() {
+            let s = parseInt(this.bp.systolic);
+            let d = parseInt(this.bp.diastolic);
+
+            if (!s || !d) return '';
+
+            if (s >= 140 || d >= 90) return 'Hypertension';
+
+            if ((s >= 120 && s < 140) || (d >= 80 && d < 90))
+                return 'Prehypertension';
+
+            return 'Normal';
         }
     }));
 });

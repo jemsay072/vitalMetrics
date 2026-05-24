@@ -94,4 +94,48 @@ class BloodPressureController extends Controller
         $bp = BloodPressure::findOrFail($id);
         return response()->json($bp);
     }
+
+    /**
+     * Update the specified resource in storage.
+     */
+
+    public function update(Request $request, $id){
+        $bp = BloodPressure::findOrFail($id);
+        $data = [
+            'systolic' => $request->systolic,
+            'diastolic' => $request->diastolic,
+            'pulse' => $request->pulse,
+            'notes' => $request->notes,
+            'reading_time' => $request->reading_time,
+        ];
+
+        $data['terms'] = $this->detectTerms(
+            $request->systolic,
+            $request->diastolic,
+        );
+
+        $data['risk_level'] = $this->detectRiskLevel(
+            $request->systolic,
+            $request->diastolic,
+        );
+
+        try{
+            $bp->update($data);
+            return back()->with('success', 'Blood Pressure updated successfully!');
+
+        } catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update Blood Pressure.');
+        }
+    }
+
+    /**
+     * Delete the specified resource from storage.
+     */
+
+    public function destroy($id){
+        $bp = BloodPressure::findOrFail($id);
+
+        $bp->delete();
+        return back()->with('Success', 'Blood Pressure Deleted Successfully!.');
+    }
 }

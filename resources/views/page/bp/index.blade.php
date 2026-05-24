@@ -58,8 +58,8 @@
                     <div
                         x-data="bpComponent"
                         x-on:click="
-                            $dispatch('set-workout-id', item.id);
-                            $dispatch('open-modal', 'workout-view');
+                            $dispatch('set-bp-id', item.id);
+                            $dispatch('open-modal', 'bp-view');
                         "
                         class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                     >
@@ -72,7 +72,7 @@
                                 <button
                                     x-on:click.stop="
                                         $dispatch('set-edit-id', item.id);
-                                        $dispatch('open-modal', 'workout-edit');
+                                        $dispatch('open-modal', 'bp-edit');
                                     "
                                     class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                                 >
@@ -81,7 +81,7 @@
                                 <button
                                     x-on:click.stop="
                                         $dispatch('set-delete-id', item.id);
-                                        $dispatch('open-modal', 'workout-delete');
+                                        $dispatch('open-modal', 'bp-delete');
                                     "
                                     class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                                 >
@@ -119,7 +119,7 @@
                     </div>
                 </template>
                 <div x-show="results.length === 0 && !loading" class="text-center py-8 text-gray-500">
-                    No workouts found.
+                    No bps found.
                 </div>
             </div>
 
@@ -199,7 +199,7 @@
                             <template x-if="results.length === 0 && !loading">
                                 <tr>
                                     <td colspan="6" class="text-center py-8 text-gray-500">
-                                        No workouts found.
+                                        No bps found.
                                     </td>
                                 </tr>
                             </template>
@@ -315,7 +315,7 @@
                                     x-show="liveTerm()"
                                     x-text="liveTerm()">
                                 </p>
-                                <input type="text" name="terms" :value="liveTerm()">
+                                <input type="hidden" name="terms" :value="liveTerm()">
                             </div>
 
                             <!-- Buttons -->
@@ -332,23 +332,7 @@
              <x-modal name="bp-view" :show="false" maxWidth="lg">
                 <div
                     class="p-6"
-                    x-data="{
-                        bpId: null,
-                        bp: {},
-                        loading: false,
-
-                        async loadBp(id){
-                            this.loading = true;
-
-                            try{
-                                const response = await fetch(`/bp/${id}`);
-                                this.bp = await response.json();
-                            }finally {
-                                this.loading = false;
-                            }
-                        }
-
-                    }"
+                    x-data="bpComponent()"
                     x-on:set-bp-id.window="
                         bpId = $event.detail;
                         loadBp(bpId)
@@ -364,13 +348,140 @@
 
                     <!--Content-->
                     <div x-show="!loading">
-                        <span x-init="console.log(bp)"></span>
-                        <p>ID: <span x-text="bp.id"></span></p>
-                        <p>Systolic: <span x-text="bp.systolic"></span></p>
-                        <p>Diastolic: <span x-text="bp.diastolic"></span></p>
-                        <p>Pulse: <span x-text="bp.pulse"></span></p>
-                        <p>Level: <span x-text="bp.risk_level"></span></p>
-                        <p>Notes: <span x-text="bp.notes"></span></p>
+                        {{-- <span x-init="console.log(bp)"></span> --}}
+                        <p class="mt-2 font-bold"
+                            :class="getColor(liveEditTerm())"
+                            x-show="liveEditTerm()"
+                            x-text="liveEditTerm()">
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 text-sm mt-2">
+                            <div>
+                                {{-- <p>ID: <span x-text="bp.id"></span></p> --}}
+                                <span>Systolic: </span>
+                                <span x-text="bp.systolic"></span>
+                            </div>
+                            <div>
+                                <span>Diastolic:</span>
+                                <span x-text="bp.diastolic"></span>
+                            </div>
+                            <div>
+                               <span>Pulse:</span>
+                               <span x-text="bp.pulse"></span>
+                            </div>
+                            <div>
+                               <span>Level:</span>
+                               <span x-text="bp.risk_level"></span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col mt-2">
+                            <p>Notes:</p>
+                            <p x-text="bp.notes"></p>
+                        </div>
+                        <div class="flex items-end justify-end">
+                            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded text-sm px-4 py-2.5" x-on:click="$dispatch('close')">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+             </x-modal>
+
+             <!-- Modal Edit-->
+             <x-modal name="bp-edit" :show="false" maxWidth="lg">
+                <div
+                    class="p-6"
+                    x-data="bpComponent()"
+                    x-on:set-edit-id.window="
+                        bpId = $event.detail;
+                        loadBp(bpId)
+                    "
+                >
+                    <h2 class="text-lg font-semibold mb-4">Blood Pressure Edit</h2>
+
+                    <!--Loading State-->
+                    <div x-show="loading" class="flex flex-col justify-center items-center py-10 gap-2">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-3"></div>
+                        <p class="text-sm text-gray-500">Loading Blood Pressure data...</p>
+                    </div>
+
+                    <!--Content-->
+                    <div x-show="!loading" id="bp-edit-form">
+                        <form :action="'/bp/' + bpId" method="post">
+                            @csrf
+                            @method('PUT')
+                            <!-- Activity Type -->
+                            <div class="mb-4">
+                                <label for="systolic" class="block text-sm font-medium text-gray-700">Systolic</label>
+                                <input type="number" name="systolic" id="systolic" x-model="bp.systolic" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div class="mb-4">
+                                <label for="diastolic" class="block text-sm font-medium text-gray-700">Diastolic</label>
+                                <input type="number" name="diastolic" id="diastolic" x-model="bp.diastolic" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div class="mb-4">
+                                <label for="pulse" class="block text-sm font-medium text-gray-700">Heart Rate</label>
+                                <input type="number" name="pulse" id="pulse" x-model="bp.pulse" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div class="mb-4">
+                                <label for="reading_time" class="block text-sm font-medium text-gray-700">Reading Time</label>
+                                <input type="time" name="reading_time" id="reading_time" x-model="bp.reading_time" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                            <div class="mb-4">
+                                <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                                <textarea name="notes" id="notes" rows="3" x-model="bp.notes" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <p class="mt-2 font-bold"
+                                    :class="getColor(liveEditTerm())"
+                                    x-show="liveEditTerm()"
+                                    x-text="liveEditTerm()">
+                                </p>
+                                <input type="hidden" name="terms" x-model="bp.terms"  :value="liveEditTerm()">
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex justify-end space-x-2">
+                                <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded text-sm px-4 py-2.5" x-on:click="$dispatch('close')">Cancel</button>
+                                <button type="submit" class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded text-sm px-4 py-2.5">Save</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+             </x-modal>
+
+             <!-- Modal Delete-->
+             <x-modal name="bp-delete" :show="false" maxWidth="lg">
+                <div
+                    class="p-6"
+                    x-data="bpComponent()"
+                    x-on:set-delete-id.window="
+                        bpId = $event.detail;
+                        loadBp(bpId)
+                    "
+                >
+                    <h2 class="text-lg font-semibold mb-4">Delete Blood Pressure</h2>
+                    <div class="form" id="delete-bp-form">
+                        <form :action="'/bp/' + bpId" method="post">
+                            @csrf
+                            @method('DELETE')
+                            <p>Are you sure you want to delete this Blood Pressure?</p>
+                            <!-- Buttons -->
+                            <div class="flex justify-end space-x-2 mt-4">
+                                <button
+                                    type="button"
+                                    x-on:click="$dispatch('close-modal', 'bp-delete')"
+                                    class="px-4 py-2 bg-gray-200 rounded-md"
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-md"
+                                >
+                                    Delete Blood Pressure
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
              </x-modal>
