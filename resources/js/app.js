@@ -215,6 +215,19 @@ document.addEventListener('alpine:init', () => {
             return 'Normal';
         }
     }));
+
+    //WeightTracker
+    Alpine.data('weightComponent', () => ({
+        list: '',
+        loading: false,
+        weight: {},
+        weightId: null,
+        form: {
+            weight: '',
+            measurement_date: '',
+            notes: ''
+        }
+    }));
 });
 
 Alpine.start();

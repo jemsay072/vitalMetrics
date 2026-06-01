@@ -59,7 +59,7 @@ class BloodPressureController extends Controller
 
             BloodPressure::create($validate);
 
-            return redirect()->route('bp.index')->with('success', 'Blood Pressure Added Successfully.');
+            return redirect()->route('bp')->with('success', 'Blood Pressure Added Successfully.');
 
         } catch (\Exception $e){
             return redirect()->back()->with('error', 'Failed to save Blood Pressure.');
