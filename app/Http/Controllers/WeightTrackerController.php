@@ -55,11 +55,31 @@ class WeightTrackerController extends Controller
     }
 
     /**
+     * Search Filter
+     */
+    public function search(Request $request){
+        $query = WeightTracker::where('user_id', auth()->id());
+
+        if($request->filled('search')){
+            $search = $query->search;
+            $query->where(function($q) use ($search){
+                $q->where('weight', 'like', "%{$search}%")
+                  ->orWhere('measurement_date', 'like', "%{$search}%");
+            });
+        }
+
+        $weight = $query->latest()->paginate(10);
+        return response()->json($weight);
+    }
+
+    /**
      * Display the specified resource.
      */
-    public function show(WeightTracker $weightTracker)
+    public function show(WeightTracker $weightTracker, $id)
     {
         //
+        $weight = WeightTracker::findOrFail($id);
+        return response()->json($weight);
     }
 
     /**
@@ -73,16 +93,32 @@ class WeightTrackerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, WeightTracker $weightTracker)
+    public function update(Request $request, WeightTracker $weightTracker, $id)
     {
         //
+        $weight = WeightTracker::findOrFail($id);
+        $data = [
+            'weight' => $request->weight,
+            'measurement_date' =>$request->measurement_date,
+            'notes' => $request->notes,
+        ];
+
+        try {
+            $weight->update($data);
+            return back()->with('success', 'Weight updated successfully!');
+        } catch(\Exception $e){
+            return redirect()->back()->with('error', 'Failed to update Weight.');
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(WeightTracker $weightTracker)
+    public function destroy(WeightTracker $weightTracker, $id)
     {
-        //
+        $weight = WeightTracker::findOrFail($id);
+
+        $weight->delete();
+        return back()->with('Success', 'Blood Pressure Deleted Successfully!.');
     }
 }

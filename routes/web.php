@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
     // Weight Tracker
     Route::get('/weight', [WeightTrackerController::class, 'index'])->name('weight');
     Route::post('/weight', [WeightTrackerController::class, 'store'])->name('weight.store');
+    Route::get('/weight/{id}', [WeightTrackerController::class, 'show'])->name('weight.show');
+    Route::put('/weight/{id}', [WeightTrackerController::class, 'update'])->name('weight.update');
+    Route::delete('/weight/{id}', [WeightTrackerController::class, 'destroy'])->name('weight.destroy');
+    Route::get('/api/weight', [WeightTrackerController::class, 'search'])->name('api.weight');
 });
 
 require __DIR__.'/auth.php';

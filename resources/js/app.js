@@ -226,6 +226,16 @@ document.addEventListener('alpine:init', () => {
             weight: '',
             measurement_date: '',
             notes: ''
+        },
+        async loadWeight(id) {
+            this.loading = true;
+
+            try{
+                const response = await fetch(`/weight/${id}`);
+                this.weight = await response.json();
+            } finally{
+                this.loading = false;
+            }
         }
     }));
 });
