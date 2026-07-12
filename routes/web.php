@@ -1,18 +1,17 @@
 <?php
 
+use App\Http\Controllers\DashboardControllerController;
 use App\Http\Controllers\BloodPressureController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeightTrackerController;
 use App\Http\Controllers\WorkoutTrackerController;
 use Illuminate\Support\Facades\Route;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardControllerController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
