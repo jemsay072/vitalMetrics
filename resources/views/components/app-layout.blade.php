@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'VitalMetrics') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -52,8 +52,8 @@
                         <p class="text-xs" x-text="formattedDate"></p>
                     </div>
                     <div class="relative inline-block text-left">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             class="inline-flex items-center justify-center text-white bg-brand hover:bg-brand-strong hover:cursor-pointer focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none"
                             id="dropdownBtn"
                             data-dropdown-toggle="dropdown"

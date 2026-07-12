@@ -15,10 +15,14 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         //
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@vitalmetrics.com',
-            'password' => Hash::make('password123'),
-        ]);
+        User::updateOrCreate(
+            [
+                'email' => 'admin@vitalmetrics.com',
+            ],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password123'),
+            ]
+        );
     }
 }
