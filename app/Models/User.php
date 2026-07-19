@@ -3,11 +3,13 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use App\Model\WorkoutTracker;
+use App\Models\WorkoutTracker;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -49,9 +51,30 @@ class User extends Authenticatable
     }
 
     /**
+     * Role
+     */
+    public function role(): BelongsTo {
+        return $this->belongsTo(Role::class);
+    }
+
+    /**
      * Workout Connect
      */
     public function workouts(){
         return $this->hasMany(WorkoutTracker::class);
+    }
+
+    /**
+     * Checking if user is an Admin
+     */
+    public function isAdmin(): bool{
+        return $this->role?->name === 'Admin';
+    }
+
+    /**
+     * Checking if user is a regular user
+     */
+    public function isUser(): bool{
+        return $this->role?->name === 'User';
     }
 }

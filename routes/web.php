@@ -1,5 +1,8 @@
 <?php
+// Admin
+use App\Http\Controllers\Admin\DashboardController;
 
+// User
 use App\Http\Controllers\DashboardControllerController;
 use App\Http\Controllers\BloodPressureController;
 use App\Http\Controllers\ProfileController;
@@ -12,6 +15,15 @@ use Illuminate\Support\Facades\Route;
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', [DashboardControllerController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function(){
+
+        Route::get('/dashboard', [DashboardController::class, 'ijndex'])->name('dashboard');
+
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
