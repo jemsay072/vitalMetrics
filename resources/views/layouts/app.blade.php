@@ -65,7 +65,6 @@
                         @endisset
                     </div>
                     {{ $slot }}
-                    sdfsdf
                 </div>
             </main>
         </div>

@@ -1,9 +1,11 @@
 <?php
 // Admin
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\UserController;
 
 // User
-use App\Http\Controllers\DashboardControllerController;
+// use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\BloodPressureController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeightTrackerController;
@@ -14,18 +16,26 @@ use Illuminate\Support\Facades\Route;
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', [DashboardControllerController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::redirect('/', '/login');
 
-Route::middleware('auth')
+Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function(){
 
-        Route::get('/dashboard', [DashboardController::class, 'ijndex'])->name('dashboard');
+        Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+
+        Route::get('/users', [UserController::class, 'index'])->name('users');
 
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Dashboard
+    Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
+
+
+    // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -45,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/bp/{id}', [BloodPressureController::class, 'update'])->name('bp.update');
     Route::delete('/bp/{id}', [BloodPressureController::class, 'destroy'])->name('bp.destroy');
     Route::get('/api/bp', [BloodPressureController::class, 'search'])->name('api.bp');
+    Route::get('api/bp/export', [BloodPressureController::class, 'exportAll'])->name('api.bp.exportAll');
 
     // Weight Tracker
     Route::get('/weight', [WeightTrackerController::class, 'index'])->name('weight');

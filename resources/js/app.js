@@ -9,6 +9,7 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('searchFilter', (config) => ({
         search: '',
         endpoint: config.endpoint,
+        exportEndpoint: config.exportEndpoint || config.endpoint,
         extractFilename: config.extractFilename || 'export.csv',
         extractFields: config.extractFields || [],
         exportLabel: config.exportLabel || 'Extract',
@@ -76,7 +77,7 @@ document.addEventListener('alpine:init', () => {
             URL.revokeObjectURL(url);
         },
 
-        extractData() {
+        extractCurrentData() {
             if (!this.results.length) {
                 return;
             }
@@ -92,6 +93,46 @@ document.addEventListener('alpine:init', () => {
             }
 
             this.downloadCsv(csv);
+        },
+
+        async exportAll(){
+            if(!this.results.length) return;
+
+            if(
+                !Array.isArray(this.extractFields) ||
+                this.extractFields.length === 0
+            ){
+                console.warn('No extractFields configured for searchFilter.');
+                return;
+            }
+
+            this.loading = true;
+
+            try{
+                const url = new URL(
+                    this.exportEndpoint,
+                    window.location.origin
+                );
+
+                url.searchParams.set('search', this.search);
+
+                const response = await fetch(url.toString());
+
+                if(!response.ok) throw new Error('Failed to export data.');
+
+                const rows = await response.json();
+
+                const csv = this.buildCsv(rows);
+
+                if(!csv) return;
+
+                this.downloadCsv(csv);
+
+            }catch(error){
+                console.error('Error exporting data:', error);
+            } finally {
+                this.loading = false;
+            }
         },
 
         goToPage(page) {

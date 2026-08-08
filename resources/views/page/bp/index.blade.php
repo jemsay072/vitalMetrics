@@ -1,11 +1,16 @@
 <x-app-layout>
-    <div x-data="searchFilter({ endpoint: '/api/bp', extractFilename: 'bp.csv', exportLabel: 'Extract', extractFields:[
-        { key: 'systolic', label: 'Systolic' },
-        { key: 'diastolic', label: 'Diastolic' },
-        { key: 'pulse', label: 'Pulse' },
-        { key: 'notes', label: 'Notes' },
-        { key: 'reading_time', label: 'Reading Time' },
-    ]})">
+    <div x-data="searchFilter({
+        endpoint: '/api/bp',
+        exportEndpoint: '/api/bp/export',
+        extractFilename: 'bp.csv',
+        exportLabel: 'Extract',
+        extractFields:[
+            { key: 'systolic', label: 'Systolic' },
+            { key: 'diastolic', label: 'Diastolic' },
+            { key: 'pulse', label: 'Pulse' },
+            { key: 'notes', label: 'Notes' },
+            { key: 'reading_time', label: 'Reading Time' },
+        ]})">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
                 title="Blood Pressure"
@@ -28,29 +33,21 @@
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!---Search Filter -->
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div class="flex-1 min-w-0">
-                    <input
-                        type="text"
-                        x-model="search"
-                        placeholder="Search Blood Pressure..."
-                        @input.debounce.500="fetchData()"
-                        class="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-blue-500 focus:border-blue-500 block w-full p-3 sm:p-2.5 rounded-xl text-base shadow-sm"
-                    >
-                </div>
-                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-3">
-                    <button
-                        type="button"
-                        x-on:click="extractData()"
-                        :disabled="loading || !results.length"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500 bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        <i class="fa-solid fa-file-export"></i>
-                        <span x-text="exportLabel"></span>
-                    </button>
-                    <!-- Result summary removed for now -->
-                </div>
-            </div>
+            <x-table.toolbar>
+                <x-table.search
+                    x-model="search"
+                    placeholder="Search Blood Pressure..."
+                    @input.debounce.500="fetchData()"
+                />
+                <x-table.button
+                    type="button"
+                    x-on:click="extractCurrentData()"
+                    x-bind:disabled="loading || !results.length"
+                    icon="fa-solid fa-file-export"
+                >
+                    <span x-text="exportLabel"></span>
+                </x-table.button>
+            </x-table.toolbar>
 
             <!-- Mobile Card View (hidden on md+) -->
             <div class="md:hidden space-y-4">
@@ -130,35 +127,21 @@
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-body text-gray-600 min-w-[600px]">
+                    <x-table.container>
                         <thead class="bg-gray-100 border-b border-default">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Systolic
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Diastolic
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Heart Rate
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Reading Time
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Level
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Notes
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Action
-                                </th>
-                            </tr>
+                            <x-table.row>
+                                <x-table.header-cell> Systolic </x-table.header-cell>
+                                <x-table.header-cell> Diastolic </x-table.header-cell>
+                                <x-table.header-cell> Heart Rate </x-table.header-cell>
+                                <x-table.header-cell> Reading Time </x-table.header-cell>
+                                <x-table.header-cell> Level </x-table.header-cell>
+                                <x-table.header-cell> Notes </x-table.header-cell>
+                                <x-table.header-cell> Action </x-table.header-cell>
+                            </x-table.row>
                         </thead>
                         <tbody class="divide-y divide-gray-100 border-t border-default">
                             <template x-for="item in results" :key="item.id">
-                                <tr
+                                <x-table.row
                                     x-data
                                     x-on:click="
                                         $dispatch('set-bp-id', item.id);
@@ -166,13 +149,13 @@
                                     "
                                     class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
                                 >
-                                    <td class="px-6 py-4 font-medium" x-text="item.systolic"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.diastolic"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.pulse"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.reading_time"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.risk_level"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.notes"></td>
-                                    <td class="px-6 py-4 font-medium" >
+                                    <x-table.cell x-text="item.systolic"></x-table.cell>
+                                    <x-table.cell x-text="item.diastolic"></x-table.cell>
+                                    <x-table.cell x-text="item.pulse"></x-table.cell>
+                                    <x-table.cell x-text="item.reading_time"></x-table.cell>
+                                    <x-table.cell x-text="item.risk_level"></x-table.cell>
+                                    <x-table.cell x-text="item.notes"></x-table.cell>
+                                    <x-table.cell >
                                         <div class="flex items-center space-x-2 justify-end">
                                             <button
                                                 x-on:click.stop="
@@ -193,18 +176,18 @@
                                                 <i class="fa-regular fa-trash-can"></i>
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </x-table.cell>
+                                </x-table.row>
                             </template>
                             <template x-if="results.length === 0 && !loading">
-                                <tr>
+                                <x-table.row>
                                     <td colspan="6" class="text-center py-8 text-gray-500">
                                         No bps found.
                                     </td>
-                                </tr>
+                                </x-table.row>
                             </template>
                         </tbody>
-                    </table>
+                    </x-table.container>
                 </div>
             </div>
 

@@ -6,12 +6,12 @@
             { key: 'calories_burned', label: 'Calories Burned' }
         ] })">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <x-page-header 
-                title="Workout" 
-                description="Workout Description" 
+            <x-page-header
+                title="Workout"
+                description="Workout Description"
                 :breadcrumbs="[
                     ['label' => 'Home', 'url' => '/'],
-                ]" 
+                ]"
             >
                 <x-slot name="actions">
                     <button
@@ -40,7 +40,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-3">
                     <button
                         type="button"
-                        x-on:click="extractData()"
+                        x-on:click="extractCurrentData()"
                         :disabled="loading || !results.length"
                         class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500 bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
                     >
@@ -306,7 +306,7 @@
 
                             <!-- Buttons -->
                             <div class="flex justify-end space-x-2">
-                                <button 
+                                <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'workout-form')"
                                     class="px-4 py-2 bg-gray-200 rounded-md"
@@ -314,7 +314,7 @@
                                     Cancel
                                 </button>
 
-                                <button 
+                                <button
                                     type="submit"
                                     class="px-4 py-2 bg-blue-600 text-white rounded-md"
                                 >
@@ -328,12 +328,12 @@
 
             <!-- Modal View-->
             <x-modal name="workout-view" :show="false" maxWidth="lg">
-                <div 
+                <div
                     class="p-6"
                     x-data="{ workoutId: null, workout: {}, loading: false }"
                     x-on:set-workout-id.window="
                         if(workoutId === $event.detail) return;
-                        
+
                         workoutId = $event.detail;
                         loading = true;
                         workout = {};
@@ -364,7 +364,7 @@
                         <p>Calories: <span x-text="workout.calories_burned"></span></p>
                     </div>
                     <div class="flex justify-end space-x-2">
-                        <button 
+                        <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'workout-view')"
                             class="px-4 py-2 bg-gray-200 rounded-md"
@@ -374,10 +374,10 @@
                     </div>
                 </div>
             </x-modal>
-            
+
             <!-- Modal Edit-->
             <x-modal name="workout-edit" :show="false" maxWidth="lg">
-                <div 
+                <div
                     class="p-6"
                     x-data="{workoutId: null, workout: {}, loading: false}"
                     x-on:set-edit-id.window="
@@ -439,7 +439,7 @@
 
                             <!-- Buttons -->
                             <div class="flex justify-end space-x-2">
-                                <button 
+                                <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'workout-edit')"
                                     class="px-4 py-2 bg-gray-200 rounded-md"
@@ -447,7 +447,7 @@
                                     Cancel
                                 </button>
 
-                                <button 
+                                <button
                                     type="submit"
                                     class="px-4 py-2 bg-blue-600 text-white rounded-md"
                                 >
@@ -461,7 +461,7 @@
 
             <!-- Modal Delete-->
             <x-modal name="workout-delete" :show="false" maxWidth="lg">
-                <div 
+                <div
                     class="p-6"
                     x-data="{workoutId: null}"
                     x-on:set-delete-id.window="
@@ -479,7 +479,7 @@
                             <p>Are you sure you want to delete this workout?</p>
                             <!-- Buttons -->
                             <div class="flex justify-end space-x-2 mt-4">
-                                <button 
+                                <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'workout-delete')"
                                     class="px-4 py-2 bg-gray-200 rounded-md"
@@ -487,7 +487,7 @@
                                     Cancel
                                 </button>
 
-                                <button 
+                                <button
                                     type="submit"
                                     class="px-4 py-2 bg-red-600 text-white rounded-md"
                                 >
