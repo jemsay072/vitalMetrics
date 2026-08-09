@@ -82,7 +82,13 @@ class BloodPressureController extends Controller
             });
         }
 
-        $bp = $query->latest()->paginate(10); // 10 items per page
+        $perPage = (int) $request->input('per_page', 10);
+
+        if(!in_array($perPage, [10, 25, 50], true)){
+            $perPage = 10;
+        }
+
+        $bp = $query->latest()->paginate($perPage); // it now depends to the selection of the user
         return response()->json($bp);
     }
 

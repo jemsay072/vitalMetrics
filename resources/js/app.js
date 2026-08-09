@@ -19,6 +19,8 @@ document.addEventListener('alpine:init', () => {
         lastPage: 1,
         total: 0,
         perPage: 10,
+        perPageOptions : [10, 25, 50],
+        perPageOpen: false,
 
         init(){
             this.fetchData();
@@ -32,6 +34,7 @@ document.addEventListener('alpine:init', () => {
                 const url = new URL(this.endpoint, window.location.origin);
                 url.searchParams.set('search', this.search);
                 url.searchParams.set('page', this.currentPage);
+                url.searchParams.set('per_page', this.perPage);
 
                 const response = await fetch(url.toString());
                 const data = await response.json();
@@ -46,6 +49,12 @@ document.addEventListener('alpine:init', () => {
             } finally {
                 this.loading = false;
             }
+        },
+
+        changePerPage (value){
+            this.perPage = Number(value);
+            this.perPageOpen = false;
+            this.fetchData(1);
         },
 
         buildCsv(rows) {

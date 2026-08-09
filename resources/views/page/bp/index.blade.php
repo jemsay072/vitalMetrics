@@ -1,16 +1,21 @@
 <x-app-layout>
-    <div x-data="searchFilter({
-        endpoint: '/api/bp',
-        exportEndpoint: '/api/bp/export',
-        extractFilename: 'bp.csv',
-        exportLabel: 'Extract',
-        extractFields:[
-            { key: 'systolic', label: 'Systolic' },
-            { key: 'diastolic', label: 'Diastolic' },
-            { key: 'pulse', label: 'Pulse' },
-            { key: 'notes', label: 'Notes' },
-            { key: 'reading_time', label: 'Reading Time' },
-        ]})">
+    <div
+        x-data="searchFilter({
+            endpoint: '/api/bp',
+            exportEndpoint: '/api/bp/export',
+            extractFilename: 'bp.csv',
+            exportLabel: 'Extract',
+            extractFields:[
+                { key: 'systolic', label: 'Systolic' },
+                { key: 'diastolic', label: 'Diastolic' },
+                { key: 'pulse', label: 'Pulse' },
+                { key: 'notes', label: 'Notes' },
+                { key: 'formatted_reading', label: 'Reading Time' },
+            ]
+        })"
+        x-on:page-changed="goToPage($event.detail)"
+        x-on:per-page-changed="changePerPage($event.detail)"
+    >
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
                 title="Blood Pressure"
@@ -34,19 +39,44 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!---Search Filter -->
             <x-table.toolbar>
+
                 <x-table.search
                     x-model="search"
                     placeholder="Search Blood Pressure..."
                     @input.debounce.500="fetchData()"
                 />
-                <x-table.button
-                    type="button"
-                    x-on:click="extractCurrentData()"
-                    x-bind:disabled="loading || !results.length"
-                    icon="fa-solid fa-file-export"
-                >
-                    <span x-text="exportLabel"></span>
-                </x-table.button>
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-3">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <x-table.button
+                                type="button"
+                                icon="fa-solid fa-file-export"
+                            >
+                                <span x-text="exportLabel"></span>
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </x-table.button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link
+                                href="#"
+                                x-on:click.prevent="extractCurrentData()"
+                                icon="fa-solid fa-file-lines"
+                            >
+                                Current Page
+                            </x-dropdown-link>
+
+                            <x-dropdown-link
+                                href="#"
+                                x-on:click.prevent="exportAll()"
+                                icon="fa-solid fa-file-export"
+                            >
+                                Export All
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+                </div>
+
             </x-table.toolbar>
 
             <!-- Mobile Card View (hidden on md+) -->
@@ -102,7 +132,7 @@
                             </div>
                             <div>
                                 <span class="text-gray-500">Time:</span>
-                                <span class="font-medium ml-1" x-text="item.reading_time"></span>
+                                <span class="font-medium ml-1" x-text="item.formatted_time"></span>
                             </div>
                             <div>
                                 <span class="text-gray-500">Risk Level:</span>
@@ -152,7 +182,12 @@
                                     <x-table.cell x-text="item.systolic"></x-table.cell>
                                     <x-table.cell x-text="item.diastolic"></x-table.cell>
                                     <x-table.cell x-text="item.pulse"></x-table.cell>
-                                    <x-table.cell x-text="item.reading_time"></x-table.cell>
+                                    <x-table.cell>
+                                        <div class="flex flex-col">
+                                            <span class="text-gray-800" x-text="item.formatted_time"></span>
+                                            <span class="text-xs text-gray-500 italic" x-text="item.formatted_date"></span>
+                                        </div>
+                                    </x-table.cell>
                                     <x-table.cell x-text="item.risk_level"></x-table.cell>
                                     <x-table.cell x-text="item.notes"></x-table.cell>
                                     <x-table.cell >
@@ -192,7 +227,7 @@
             </div>
 
             <!-- Pagination -->
-            <div x-show="lastPage > 1" class="bg-white px-4 py-3 sm:px-6 rounded-xl border border-gray-200">
+            {{-- <div x-show="lastPage > 1" class="bg-white px-4 py-3 sm:px-6 rounded-xl border border-gray-200">
                 <div class="flex items-center justify-between">
                     <!-- Mobile pagination -->
                     <div class="flex flex-1 justify-between sm:hidden">
@@ -217,12 +252,69 @@
 
                     <!-- Desktop pagination -->
                     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                        <div>
+                        <div class="flex items-center gap-3">
                             <p class="text-sm text-gray-700">
                                 Showing <span class="font-medium" x-text="(currentPage - 1) * perPage + 1"></span> to
                                 <span class="font-medium" x-text="Math.min(currentPage * perPage, total)"></span> of
                                 <span class="font-medium" x-text="total"></span> results
                             </p>
+                            <div class="relative" @click.outside="perPageOpen = false">
+
+                                <!-- Current per-page value -->
+                                <button
+                                    type="button"
+                                    x-on:click="perPageOpen = !perPageOpen"
+                                    class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                                >
+                                    <span x-text="perPage"></span>
+                                    <svg
+                                        class="h-4 w-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="m19 9-7 7-7-7"
+                                        />
+                                    </svg>
+                                </button>
+
+                                <!-- Dropdown -->
+                                <div
+                                    x-show="perPageOpen"
+                                    x-cloak
+                                    class="absolute left-0 bottom-11 z-50 mt-2 w-20 rounded-md border border-gray-200 bg-white shadow-lg"
+                                >
+                                    <template x-for="option in perPageOptions" :key="option">
+
+                                        <button
+                                            type="button"
+                                            x-on:click="changePerPage(option)"
+                                            :class="perPage === option
+                                            ? 'bg-gray-50 font-medium text-gray-900'
+                                            : 'text-gray-700 hover:bg-gray-50'"
+                                            class="flex w-full items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                        >
+                                            <span
+                                                x-show="perPage === option"
+                                                class="flex h-4 w-4 shrink-0 items-center justify-center"
+                                            >
+                                                ✓
+                                            </span>
+
+                                            <span class="w-4 shrink-0" x-show="perPage !== option"></span>
+
+                                            <span x-text="option"></span>
+                                        </button>
+
+                                    </template>
+                                </div>
+
+                            </div>
                         </div>
                         <div>
                             <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
@@ -262,7 +354,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
+            <x-pagination/>
 
             <!-- Modal toggle Create -->
             <x-modal name="bp-form" :show="false" maxWidth="lg">
