@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
     Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
     Route::get('/api/workouts', [WorkoutTrackerController::class, 'search'])->name('api.workouts');
+    Route::get('/api/workouts/export', [WorkoutTrackerController::class, 'exportAll'])->name('api.workouts.exportAll');
 
     // Blood Pressure
     Route::get('/bp', [BloodPressureController::class, 'index'])->name('bp');
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/weight/{id}', [WeightTrackerController::class, 'update'])->name('weight.update');
     Route::delete('/weight/{id}', [WeightTrackerController::class, 'destroy'])->name('weight.destroy');
     Route::get('/api/weight', [WeightTrackerController::class, 'search'])->name('api.weight');
+    Route::get('/api/weight/export', [WeightTrackerController::class, 'exportAll'])->name('api.weight.exportAll');
 });
 
 require __DIR__.'/auth.php';

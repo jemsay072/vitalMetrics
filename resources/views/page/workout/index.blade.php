@@ -1,10 +1,20 @@
 <x-app-layout>
-    <div x-data="searchFilter({ endpoint: '/api/workouts', extractFilename: 'workouts.csv', exportLabel: 'Extract', extractFields: [
-            { key: 'activity_type', label: 'Activity Type' },
-            { key: 'duration_minutes', label: 'Duration' },
-            { key: 'distance_km', label: 'Distance' },
-            { key: 'calories_burned', label: 'Calories Burned' }
-        ] })">
+    <div
+        x-data="searchFilter({
+            endpoint: '/api/workouts',
+            exportEndpoint: '/api/workouts/export',
+            extractFilename: 'workouts.csv',
+            exportLabel: 'Extract',
+            extractFields: [
+                { key: 'activity_type', label: 'Activity Type' },
+                { key: 'duration_minutes', label: 'Duration' },
+                { key: 'distance_km', label: 'Distance' },
+                { key: 'calories_burned', label: 'Calories Burned' }
+            ]
+        })"
+        x-on:page-changed="goToPage($event.detail)"
+        x-on:per-page-changed="changePerPage($event.detail)"
+    >
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
                 title="Workout"
@@ -27,29 +37,42 @@
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!---Search Filter -->
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div class="flex-1 min-w-0">
-                    <input
-                        type="text"
-                        x-model="search"
-                        placeholder="Search workouts..."
-                        @input.debounce.500="fetchData()"
-                        class="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-blue-500 focus:border-blue-500 block w-full p-3 sm:p-2.5 rounded-xl text-base shadow-sm"
-                    >
-                </div>
+            <x-table.toolbar>
+                <x-table.search
+                    x-model="search"
+                    placeholder="Search workouts..."
+                    @input.debounce.500="fetchData()"
+                />
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-3">
-                    <button
-                        type="button"
-                        x-on:click="extractCurrentData()"
-                        :disabled="loading || !results.length"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500 bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        <i class="fa-solid fa-file-export"></i>
-                        <span x-text="exportLabel"></span>
-                    </button>
-                    <!-- Result summary removed for now -->
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <x-table.button
+                                type="button"
+                                icon="fa-solid fa-file-export"
+                            >
+                                <span x-text="exportLabel"></span>
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </x-table.button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link
+                                href="#"
+                                x-on:click="extractCurrentData()"
+                                icon="fa-solid fa-file-lines"
+                            >
+                                Current Page
+                            </x-dropdown-link>
+                            <x-dropdown-link
+                                href="#"
+                                x-on:click.prevent="exportAll()"
+                                icon="fa-solid fa-file-export"
+                            >
+                                Export All
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
                 </div>
-            </div>
+            </x-table.toolbar>
 
             <!-- Mobile Card View (hidden on md+) -->
             <div class="md:hidden space-y-4">
@@ -118,32 +141,20 @@
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-body text-gray-600 min-w-[600px]">
+                    <x-table.container>
                         <thead class="bg-gray-100 border-b border-default">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Activity Type
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Duration (min)
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Distance (km)
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Calories Burned
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Steps
-                                </th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">
-                                    Action
-                                </th>
-                            </tr>
+                            <x-table.row>
+                                <x-table.header-cell> Activity Type </x-table.header-cell>
+                                <x-table.header-cell> Duration (min) </x-table.header-cell>
+                                <x-table.header-cell> Distance (km) </x-table.header-cell>
+                                <x-table.header-cell> Calories Burned </x-table.header-cell>
+                                <x-table.header-cell> Steps </x-table.header-cell>
+                                <x-table.header-cell> Action </x-table.header-cell>
+                            </x-table.row>
                         </thead>
                         <tbody class="divide-y divide-gray-100 border-t border-default">
                             <template x-for="item in results" :key="item.id">
-                                <tr
+                                <x-table.row
                                     x-data
                                     x-on:click="
                                         $dispatch('set-workout-id', item.id);
@@ -151,13 +162,12 @@
                                     "
                                     class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
                                 >
-                                    <td class="px-6 py-4 font-medium" x-text="item.activity_type"></td>
-                                    <td class="px-6 py-4" x-text="item.duration_minutes"></td>
-                                    <td class="px-6 py-4" x-text="item.distance_km || 'N/A'"></td>
-                                    <td class="px-6 py-4" x-text="item.calories_burned || 'N/A'"></td>
-                                    <td class="px-6 py-4">N/A</td>
-
-                                    <td class="px-6 py-4">
+                                    <x-table.cell x-text="item.activity_type"></x-table.cell>
+                                    <x-table.cell x-text="item.duration_minutes"></x-table.cell>
+                                    <x-table.cell x-text="item.distance_km || 'N/A'"></x-table.cell>
+                                    <x-table.cell x-text="item.calories_burned || 'N/A'"></x-table.cell>
+                                    <x-table.cell x-text="item.steps || 'N/A'"></x-table.cell>
+                                    <x-table.cell>
                                         <div class="flex items-center space-x-2 justify-end">
                                             <button
                                                 x-on:click.stop="
@@ -179,8 +189,8 @@
                                                 <i class="fa-regular fa-trash-can"></i>
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </x-table.cell>
+                                </x-table.row>
                             </template>
                             <template x-if="results.length === 0 && !loading">
                                 <tr>
@@ -190,83 +200,12 @@
                                 </tr>
                             </template>
                         </tbody>
-                    </table>
+                    </x-table.container>
                 </div>
             </div>
 
             <!-- Pagination -->
-            <div x-show="lastPage > 1" class="bg-white px-4 py-3 sm:px-6 rounded-xl border border-gray-200">
-                <div class="flex items-center justify-between">
-                    <!-- Mobile pagination -->
-                    <div class="flex flex-1 justify-between sm:hidden">
-                        <button
-                            x-on:click="prevPage()"
-                            :disabled="currentPage === 1"
-                            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Previous
-                        </button>
-                        <span class="text-sm text-gray-700 self-center">
-                            <span x-text="currentPage"></span> of <span x-text="lastPage"></span>
-                        </span>
-                        <button
-                            x-on:click="nextPage()"
-                            :disabled="currentPage === lastPage"
-                            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Next
-                        </button>
-                    </div>
-
-                    <!-- Desktop pagination -->
-                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm text-gray-700">
-                                Showing <span class="font-medium" x-text="(currentPage - 1) * perPage + 1"></span> to
-                                <span class="font-medium" x-text="Math.min(currentPage * perPage, total)"></span> of
-                                <span class="font-medium" x-text="total"></span> results
-                            </p>
-                        </div>
-                        <div>
-                            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                                <button
-                                    x-on:click="prevPage()"
-                                    :disabled="currentPage === 1"
-                                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <span class="sr-only">Previous</span>
-                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-
-                                <template x-for="page in Array.from({length: Math.min(5, lastPage)}, (_, i) => {
-                                    const startPage = Math.max(1, currentPage - 2);
-                                    return startPage + i;
-                                }).filter(p => p <= lastPage)" :key="page">
-                                    <button
-                                        x-on:click="goToPage(page)"
-                                        :class="page === currentPage ? 'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'"
-                                        x-text="page"
-                                    ></button>
-                                </template>
-
-                                <button
-                                    x-on:click="nextPage()"
-                                    :disabled="currentPage === lastPage"
-                                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <span class="sr-only">Next</span>
-                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            <x-pagination/>
 
             <!-- Modal toggle Create -->
             <x-modal name="workout-form" :show="false" maxWidth="lg">

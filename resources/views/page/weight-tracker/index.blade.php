@@ -1,8 +1,19 @@
 <x-app-layout>
-    <div x-data="searchFilter({ endpoint: '/api/weight', extractFilename: 'weight.csv', exportLabel: 'Extract', extractFields: [
-        { key: 'weight', label: 'Weight' },
-        { key: 'measurement_date', label: 'Measurement Date' },
-    ]})">
+    <div
+        x-data="
+        searchFilter({
+            endpoint: '/api/weight',
+            exportEndpoint: '/api/weight/export',
+            extractFilename: 'weight.csv',
+            exportLabel: 'Extract',
+            extractFields: [
+                { key: 'weight', label: 'Weight' },
+                { key: 'formatted_date', label: 'Measurement Date' },
+            ]
+        })"
+        x-on:page-changed="goToPage($event.detail)"
+        x-on:per-page-changed="changePerPage($event.detail)"
+    >
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
                     title="Weight Tracker"
@@ -10,44 +21,62 @@
                     :breadcrumbs="[
                         ['label' => 'Home', 'url' => '/'],
                     ]"
-                >
-                    <x-slot name="actions">
-                        <button
-                            x-data
-                            x-on:click="$dispatch('open-modal', 'wt-form')"
-                            type="button"
-                            class="text-slate-500 border border-blue-500 hover:bg-blue-500 hover:text-white focus:ring-4 focus:ring-brand-medium font-medium rounded text-sm px-4 py-2.5"
-                        >
-                            + Weight Tracker
-                        </button>
-                    </x-slot>
-                </x-page-header>
+            >
+                <x-slot name="actions">
+                    <button
+                        x-data
+                        x-on:click="$dispatch('open-modal', 'wt-form')"
+                        type="button"
+                        class="text-slate-500 border border-blue-500 hover:bg-blue-500 hover:text-white focus:ring-4 focus:ring-brand-medium font-medium rounded text-sm px-4 py-2.5"
+                    >
+                        + Weight Tracker
+                    </button>
+                </x-slot>
+            </x-page-header>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!---Search Filter -->
-            <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div class="flex-1 min-w-0">
-                    <input
-                        type="text"
-                        x-model="search"
-                        placeholder="Search Weight..."
-                        @input.debounce.500="fetchData()"
-                        class="bg-white border border-gray-300 text-gray-900 placeholder:text-gray-500 focus:ring-blue-500 focus:border-blue-500 block w-full p-3 sm:p-2.5 rounded-xl text-base shadow-sm"
-                    >
-                </div>
+            <x-table.toolbar>
+
+                <x-table.search
+                    x-model="search"
+                    placeholder="Search Weight..."
+                    @input.debounce.500="fetchData()"
+                />
+
                 <div class="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-3">
-                    <button
-                        type="button"
-                        x-on:click="extractCurrentData()"
-                        :disabled="loading || !results.length"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-500 bg-blue-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        <i class="fa-solid fa-file-export"></i>
-                        <span x-text="exportLabel"></span>
-                    </button>
-                    <!-- Result summary removed for now -->
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <x-table.button
+                                type="button"
+                                icon="fa-solid fa-file-export"
+                            >
+                                <span x-text="exportLabel"></span>
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </x-table.button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link
+                                href="#"
+                                x-on:click.prevent="extractCurrentData()"
+                                icon="fa-solid fa-file-lines"
+                            >
+                                Current Page
+                            </x-dropdown-link>
+
+                            <x-dropdown-link
+                                href="#"
+                                x-on:click.prevent="exportAll()"
+                                icon="fa-solid fa-file-export"
+                            >
+                                Export All
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
                 </div>
-            </div>
+
+            </x-table.toolbar>
+
 
             <!-- Mobile Card View (hidden on md+) -->
             <div class="md:hidden space-y-4">
@@ -93,7 +122,7 @@
                         </div>
                         <div>
                             <span class="text-gray-500">Measurement Date:</span>
-                            <span class="font-medium ml-1" x-text="item.measurement_date || 'N/A'"></span>
+                            <span class="font-medium ml-1" x-text="item.formatted_date || 'N/A'"></span>
                         </div>
                         <div>
                             <span class="text-gray-500">Notes:</span>
@@ -112,18 +141,18 @@
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-body text-gray-600 min-w-[600px]">
+                    <x-table.container>
                         <thead class="bg-gray-100 border-b border-default">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">Weight</th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">Notes</th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">Date</th>
-                                <th scope="col" class="px-6 py-3 font-bold whitespace-nowrap">Action</th>
-                            </tr>
+                            <x-table.row>
+                                <x-table.header-cell> Weight </x-table.header-cell>
+                                <x-table.header-cell> Notes </x-table.header-cell>
+                                <x-table.header-cell> Date </x-table.header-cell>
+                                <x-table.header-cell> Action </x-table.header-cell>
+                            </x-table.row>
                         </thead>
                         <tbody class="divide-y divide-gray-100 border-t border-default">
                             <template x-for="item in results" :key="item.id">
-                                <tr
+                                <x-table.row
                                     x-data
                                     x-on:click="
                                         $dispatch('set-weight-id', item.id);
@@ -131,10 +160,10 @@
                                     "
                                     class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
                                 >
-                                    <td class="px-6 py-4 font-medium" x-text="item.weight"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.notes"></td>
-                                    <td class="px-6 py-4 font-medium" x-text="item.created_at"></td>
-                                    <td class="px-6 py-4 font-medium">
+                                    <x-table.cell x-text="item.weight"></x-table.cell>
+                                    <x-table.cell x-text="item.notes"></x-table.cell>
+                                    <x-table.cell x-text="item.formatted_date"></x-table.cell>
+                                    <x-table.cell>
                                         <div class="flex items-center space-x-2 justify-end">
                                             <button
                                                 x-on:click.stop="
@@ -155,8 +184,8 @@
                                                 <i class="fa-regular fa-trash-can"></i>
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </x-table.cell>
+                                </x-table.row>
                             </template>
                             <template x-if="results.length === 0 && !loading">
                                 <tr>
@@ -166,82 +195,12 @@
                                 </tr>
                             </template>
                         </tbody>
-                    </table>
+                    </x-table.container>
                 </div>
             </div>
 
             <!-- Pagination -->
-            <div x-show="lastPage > 1" class="bg-white px-4 py-3 sm:px-6 rounded-xl border border-gray-200">
-                <div class="flex items-center justify-between">
-                    <!-- Mobile pagination -->
-                    <div class="flex flex-1 justify-between sm:hidden">
-                        <button
-                            x-on:click="prevPage()"
-                            :disabled="currentPage === 1"
-                            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Previous
-                        </button>
-                        <span class="text-sm text-gray-700 self-center">
-                            <span x-text="currentPage"></span> of <span x-text="lastPage"></span>
-                        </span>
-                        <button
-                            x-on:click="nextPage()"
-                            :disabled="currentPage === lastPage"
-                            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Next
-                        </button>
-                    </div>
-
-                    <!-- Desktop pagination -->
-                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm text-gray-700">
-                                Showing <span class="font-medium" x-text="(currentPage - 1) * perPage + 1"></span> to
-                                <span class="font-medium" x-text="Math.min(currentPage * perPage, total)"></span> of
-                                <span class="font-medium" x-text="total"></span> results
-                            </p>
-                        </div>
-                        <div>
-                            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                                <button
-                                    x-on:click="prevPage()"
-                                    :disabled="currentPage === 1"
-                                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <span class="sr-only">Previous</span>
-                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-
-                                <template x-for="page in Array.from({length: Math.min(5, lastPage)}, (_, i) => {
-                                    const startPage = Math.max(1, currentPage - 2);
-                                    return startPage + i;
-                                }).filter(p => p <= lastPage)" :key="page">
-                                    <button
-                                        x-on:click="goToPage(page)"
-                                        :class="page === currentPage ? 'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'"
-                                        x-text="page"
-                                    ></button>
-                                </template>
-
-                                <button
-                                    x-on:click="nextPage()"
-                                    :disabled="currentPage === lastPage"
-                                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <span class="sr-only">Next</span>
-                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <x-pagination/>
 
             <!-- Modal toggle Create -->
             <x-modal name="wt-form" :show="false" maxWidth="lg">
@@ -369,7 +328,7 @@
                     "
                 >
                     <h2 class="text-lg font-semibold mb-4">Delete Weight</h2>
-                    <div class="form" id="delete-bp-form">
+                    <div class="form" id="delete-weight-form">
                         <form :action="'/weight/' + weightId" method="post">
                             @csrf
                             @method('DELETE')

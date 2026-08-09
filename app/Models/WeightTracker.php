@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use App\Model\User;
 
@@ -19,5 +20,21 @@ class WeightTracker extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    protected $appends = [
+        'formatted_date',
+    ];
+
+    /**
+     * Extract date created_at
+     */
+    protected function formattedDate(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->created_at
+                ? $this->created_at->format('M d, Y')
+                : ''
+        );
     }
 }

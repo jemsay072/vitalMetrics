@@ -61,14 +61,37 @@ class WeightTrackerController extends Controller
         $query = WeightTracker::where('user_id', auth()->id());
 
         if($request->filled('search')){
-            $search = $query->search;
+            $search = $request->search;
             $query->where(function($q) use ($search){
                 $q->where('weight', 'like', "%{$search}%")
                   ->orWhere('measurement_date', 'like', "%{$search}%");
             });
         }
 
-        $weight = $query->latest()->paginate(10);
+        $perPage = (int) $request->input('per_page', 10);
+
+        if(!in_array($perPage, [10, 25, 50], true)) $perPage = 10;
+
+        $weight = $query->latest()->paginate($perPage);
+        return response()->json($weight);
+    }
+
+    /**
+     * Export All
+     */
+    public function exportAll(Request $request){
+        $query = WeightTracker::where('user_id', auth()->id());
+
+        if($request->filled('search')){
+            $search = $request->search;
+
+            $query->where(function($q) use ($search){
+                $q->where('weight', 'like', "%{$search}%")
+                  ->orWhere('measurement_date', 'like', "%{$search}%");
+            });
+        }
+
+        $weight = $query->latest()->get();
         return response()->json($weight);
     }
 
