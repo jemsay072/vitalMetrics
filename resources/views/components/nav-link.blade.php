@@ -14,8 +14,8 @@ $classes = $active
 $variants = [
 
     'default' => $active
-        ? 'inline-flex items-center px-1 pt-1 border-b-2 border-indigo-400 text-sm font-medium leading-5 text-gray-900'
-        : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700',
+        ? 'border-indigo-400 text-gray-900'
+        : 'border-transparent text-gray-500 hover:text-gray-700',
 
     'sidebar' => $active
         ? 'flex items-center gap-3 px-3 py-4 text-slate-100 bg-[#4c4c4c]'
@@ -26,10 +26,7 @@ $variants = [
 $classes = $variants[$variant];
 @endphp
 
-<a {{ $attributes->merge(['class' => $classes . ' inline-flex items-center px-1 pt-1 border-b-2
-inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium leading-5
-text-sm font-medium leading-5 focus:outline-none
-focus:outline-none transition duration-150 ease-in-out
+<a {{ $attributes->merge(['class' => $classes . ' inline-flex items-center px-1 border-b-2 border-[#3b3535] text-sm font-medium leading-5 focus:outline-none focus:outline-none
 transition duration-150 ease-in-out']) }}>
     @if ($icon)
         <i class="{{$icon}} mr-2"></i>

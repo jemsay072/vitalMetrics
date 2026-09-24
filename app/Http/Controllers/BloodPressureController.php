@@ -10,7 +10,41 @@ class BloodPressureController extends Controller
     //index
     public function index(){
         $bpview = BloodPressure::where('user_id', auth()->id())->latest()->get();
-        return view('page.bp.index', compact('bpview'));
+
+         $columns = [
+            [
+                'key' => 'systolic',
+                'label' => 'Systolic',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'diastolic',
+                'label' => 'Diastolic',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'pulse',
+                'label' => 'Heart Rate',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'formatted_reading',
+                'label' => 'Reading Time',
+                'type' => 'reading',
+            ],
+            [
+                'key' => 'risk_level',
+                'label' => 'Level',
+                'type' => 'level',
+            ],
+            [
+                'key' => 'notes',
+                'label' => 'Notes',
+                'type' => 'text',
+            ],
+        ];
+
+        return view('page.bp.index', compact('bpview', 'columns'));
     }
 
     /**

@@ -1,59 +1,158 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# VitalMetrics
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A personal health tracking application built with Laravel.
 
-## About Laravel
+VitalMetrics helps users monitor and manage their daily health metrics
+such as blood pressure, weight, and workouts in one place.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Features
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- 🔐 User authentication
+- 👤 User and Admin roles
+- ❤️ Blood Pressure Tracker
+- ⚖️ Weight Tracker
+- 🏃 Workout Tracker
+- 🔎 Search and filtering
+- 📄 Pagination
+- 📊 Table and Grid/List views
+- 📥 Data export
+- 🧩 Reusable Blade components
+- 📱 Responsive UI
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠️ Tech Stack
 
-## Learning Laravel
+- **Laravel**
+- **PHP**
+- **MySQL**
+- **Blade**
+- **Alpine.js**
+- **Tailwind CSS**
+- **Vite**
+- **Flowbite**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 📂 Trackers
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Blood Pressure
 
-## Laravel Sponsors
+Record and monitor:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- Systolic
+- Diastolic
+- Pulse
+- Reading time
+- Blood pressure classification
+- Notes
 
-### Premium Partners
+### Weight
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Record:
 
-## Contributing
+- Weight
+- Measurement time
+- Notes
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Workout
 
-## Code of Conduct
+Record:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Activity type
+- Duration
+- Distance
+- Calories burned
+- Speed
+- Steps
 
-## Security Vulnerabilities
+## 🧩 Reusable Components
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+VitalMetrics uses reusable Blade components to keep the UI consistent and easier to maintain.
+
+Examples:
+
+- Alert
+- Navigation
+- Page Header
+- Search & Filter
+- Pagination
+- Table
+- Export
+- Form components
+
+## 🔑 Roles
+
+### User
+
+Users can:
+
+- Manage their own health records
+- View their trackers
+- Search and filter records
+- Export their data
+
+### Admin
+
+Administrators can:
+
+- Access the admin dashboard
+- Manage users
+- Assign roles
+- Manage system settings
+
+## 🚀 Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/jemsay072/vitalMetrics.git
+cd vitalmetrics
+
+```
+## Install dependencies:
+```bash
+composer install
+npm install
+
+```
+
+## Create the environment file:
+```bash
+cp .env.example .env
+```
+
+## Configure your database in .env, then run:
+```bash
+php artisan migrate --seed
+```
+
+## Start the development server:
+```bash
+php artisan serve
+```
+
+## In other Terminal:
+```bash
+npm run dev
+```
+
+## 🎯 Project Purpose
+
+VitalMetrics is a personal learning project focused on building a
+structured Laravel application while practicing:
+
+- Laravel architecture
+- Authentication and authorization
+- Database relationships
+- CRUD operations
+- Reusable Blade components
+- Alpine.js interactions
+- Tailwind CSS
+- Search and filtering
+- Pagination
+- Data export
+- Scalable and maintainable code organization
+
+## 📌 Project Status
+🚧 Currently in development
+
+More features and improvements will be added as development continues.
 
 ## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

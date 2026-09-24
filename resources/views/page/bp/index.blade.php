@@ -36,6 +36,7 @@
                 </x-slot>
             </x-page-header>
         </div>
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <!---Search Filter -->
             <x-table.toolbar>
@@ -160,13 +161,18 @@
                     <x-table.container>
                         <thead class="bg-gray-100 border-b border-default">
                             <x-table.row>
-                                <x-table.header-cell> Systolic </x-table.header-cell>
+
+                                @foreach ($columns as $column )
+                                    <x-table.header-cell> {{ $column['label'] }} </x-table.header-cell>
+                                @endforeach
+                                <x-table.header-cell> Action </x-table.header-cell>
+                                {{-- <x-table.header-cell> Systolic </x-table.header-cell>
                                 <x-table.header-cell> Diastolic </x-table.header-cell>
                                 <x-table.header-cell> Heart Rate </x-table.header-cell>
                                 <x-table.header-cell> Reading Time </x-table.header-cell>
                                 <x-table.header-cell> Level </x-table.header-cell>
                                 <x-table.header-cell> Notes </x-table.header-cell>
-                                <x-table.header-cell> Action </x-table.header-cell>
+                                 --}}
                             </x-table.row>
                         </thead>
                         <tbody class="divide-y divide-gray-100 border-t border-default">
@@ -179,7 +185,25 @@
                                     "
                                     class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
                                 >
-                                    <x-table.cell x-text="item.systolic"></x-table.cell>
+                                    @foreach ( $columns as $column )
+
+                                        @if ($column['type'] === 'text' )
+                                            <x-table.cell x-text="item['{{ $column['key'] }}']"></x-table.cell>
+                                        @elseif ($column['type'] === 'reading' )
+                                            <x-table.cell>
+                                                <div class="flex flex-col">
+                                                    <span class="text-gray-800" x-text="item.formatted_time"></span>
+                                                    <span class="text-xs text-gray-500 italic" x-text="item.formatted_date"></span>
+                                                </div>
+                                            </x-table.cell>
+
+                                        @elseif ($column['type'] === 'level' )
+                                            <x-table.cell x-text="item.risk_level"></x-table.cell>
+                                        @endif
+
+                                    @endforeach
+
+                                    {{-- <x-table.cell x-text="item.systolic"></x-table.cell>
                                     <x-table.cell x-text="item.diastolic"></x-table.cell>
                                     <x-table.cell x-text="item.pulse"></x-table.cell>
                                     <x-table.cell>
@@ -189,7 +213,7 @@
                                         </div>
                                     </x-table.cell>
                                     <x-table.cell x-text="item.risk_level"></x-table.cell>
-                                    <x-table.cell x-text="item.notes"></x-table.cell>
+                                    <x-table.cell x-text="item.notes"></x-table.cell>--}}
                                     <x-table.cell >
                                         <div class="flex items-center space-x-2 justify-end">
                                             <button
