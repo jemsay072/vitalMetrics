@@ -13,8 +13,37 @@ class WorkoutTrackerController extends Controller
     public function index()
     {
         $workoutList = WorkoutTracker::where('user_id', auth()->id())->latest()->get();
+
+        $columns = [
+            [
+                'key' => 'activity_type',
+                'label' => 'Activity Type',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'duration_minutes',
+                'label' => 'Duration (min)',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'distance_km',
+                'label' => 'Distance (km)',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'calories_burned',
+                'label' => 'Calories Burned',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'steps',
+                'label' => 'Steps',
+                'type' => 'text',
+            ],
+        ];
+
         //view
-        return view('page.workout.index', compact('workoutList'));
+        return view('page.workout.index', compact('workoutList', 'columns'));
     }
 
     /**

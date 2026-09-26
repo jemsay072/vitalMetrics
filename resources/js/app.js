@@ -8,6 +8,7 @@ window.Alpine = Alpine;
 document.addEventListener('alpine:init', () => {
     Alpine.data('searchFilter', (config) => ({
         search: '',
+        view: 'list',
         endpoint: config.endpoint,
         exportEndpoint: config.exportEndpoint || config.endpoint,
         extractFilename: config.extractFilename || 'export.csv',

@@ -31,6 +31,11 @@
                     >
                         + Weight Tracker
                     </button>
+
+                    {{-- View/Grid Toggle --}}
+                    <div class="hidden md:inline-flex">
+                        <x-view-toggle />
+                    </div>
                 </x-slot>
             </x-page-header>
         </div>
@@ -79,7 +84,10 @@
 
 
             <!-- Mobile Card View (hidden on md+) -->
-            <div class="md:hidden space-y-4">
+            <div
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                :class="view === 'list' ? 'md:hidden' : ''"
+            >
                 <template x-for="item in results" :key="item.id">
                     <div
                         x-data="weightComponent"
@@ -135,7 +143,7 @@
                 </div>
             </div>
             <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden md:block relative overflow-hidden bg-white rounded-xl border border-gray-200">
+            <div class="hidden md:block relative overflow-hidden bg-white rounded-xl border border-gray-200" x-show="view === 'list'">
                 <!---Loading Overlay -->
                 <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -144,9 +152,9 @@
                     <x-table.container>
                         <thead class="bg-gray-100 border-b border-default">
                             <x-table.row>
-                                <x-table.header-cell> Weight </x-table.header-cell>
-                                <x-table.header-cell> Notes </x-table.header-cell>
-                                <x-table.header-cell> Date </x-table.header-cell>
+                                @foreach ($columns as $column)
+                                    <x-table.header-cell> {{ $column['label'] }} </x-table.header-cell>
+                                @endforeach
                                 <x-table.header-cell> Action </x-table.header-cell>
                             </x-table.row>
                         </thead>
@@ -160,31 +168,22 @@
                                     "
                                     class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
                                 >
-                                    <x-table.cell x-text="item.weight"></x-table.cell>
-                                    <x-table.cell x-text="item.notes"></x-table.cell>
-                                    <x-table.cell x-text="item.formatted_date"></x-table.cell>
-                                    <x-table.cell>
-                                        <div class="flex items-center space-x-2 justify-end">
-                                            <button
-                                                x-on:click.stop="
-                                                    $dispatch('set-edit-id', item.id)
-                                                    $dispatch('open-modal', 'weight-edit');
-                                                "
-                                                class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
-                                            >
-                                                <i class="fa-solid fa-pen"></i>
-                                            </button>
-                                            <button
-                                                x-on:click.stop="
-                                                    $dispatch('set-delete-id', item.id)
-                                                    $dispatch('open-modal', 'weight-delete');
-                                                "
-                                                class="p-2 text-red-600 hover:bg-red-100 rounded-lg"
-                                            >
-                                                <i class="fa-regular fa-trash-can"></i>
-                                            </button>
-                                        </div>
-                                    </x-table.cell>
+                                    @foreach ( $columns as $column )
+
+                                        @if ($column['type'] === 'text')
+                                            <x-table.cell x-text="item['{{ $column['key'] }}']"></x-table.cell>
+                                        @else
+                                            <x-table.cell x-text="item.formatted_date"></x-table.cell>
+                                        @endif
+                                    @endforeach
+
+                                    <x-table.actions
+                                        edit-event="set-edit-id"
+                                        edit-modal="weight-edit"
+                                        delete-event="set-delete-id"
+                                        delete-modal="weight-delete"
+                                    />
+
                                 </x-table.row>
                             </template>
                             <template x-if="results.length === 0 && !loading">

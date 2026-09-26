@@ -15,7 +15,25 @@ class WeightTrackerController extends Controller
         //View the Weight Tracker Page
         $wtView = WeightTracker::where('user_id', auth()->id())->latest()->get();
 
-        return view('page.weight-tracker.index', compact('wtView'));
+        $columns = [
+            [
+                'key' => 'weight',
+                'label' => 'Weight',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'notes',
+                'label' => 'Notes',
+                'type' => 'text',
+            ],
+            [
+                'key' => 'formatted_date',
+                'label' => 'Date',
+                'type' => 'reading',
+            ],
+        ];
+
+        return view('page.weight-tracker.index', compact('wtView', 'columns'));
     }
 
     /**
