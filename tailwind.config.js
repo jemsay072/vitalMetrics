@@ -31,6 +31,18 @@ export default {
             },
         },
     },
+    safelist: [
+        'bg-red-500', 'border-red-600',
+        'bg-orange-500', 'border-orange-600',
+        'bg-amber-500', 'border-amber-600',
+        'bg-emerald-500', 'border-emerald-600',
+        'bg-teal-500', 'border-teal-600',
+        'bg-blue-500', 'border-blue-600',
+        'bg-indigo-500', 'border-indigo-600',
+        'bg-purple-500', 'border-purple-600',
+        'bg-pink-500', 'border-pink-600',
+        'bg-rose-500', 'border-rose-600',
 
+    ],
     plugins: [forms],
 };

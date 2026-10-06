@@ -2,7 +2,7 @@
     <div class="flex p-4 text-white bg-red-400 items-center justify-between">
         <!-- Logo -->
         <div class="shrink-0 flex items-center">
-            <a href="{{ route('dashboard') }}">
+            <a href="{{ route('admin.dashboard') }}">
                 <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
             </a>
         </div>
@@ -15,17 +15,29 @@
         </button>
     </div>
     <nav class="flex justify-center flex-col text-white">
-        <x-nav-link :href="route('dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
+        <x-nav-link :href="route('admin.dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
             {{__('Dashboard')}}
+        </x-nav-link>
+        <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-user">
+            {{__('Users')}}
         </x-nav-link>
     </nav>
 </div>
 <a href="{{route('profile.edit')}}" class="profile flex items-center gap-2.5 px-2">
-    <div class="flex items-center gap-2.5 rounded-full bg-amber-500 px-1">
-        <img src="{{ asset('assets/img/avatar.png') }}" alt="avatar" class="w-10">
+    <div class="flex items-center justify-center shrink-0">
+        @if (auth()->check() && auth()->user()->profile?->avatar)
+            <div class="rounded-full bg-amber-500 p-0.5">
+                <img src="{{ asset('storage/' . auth()->user()->profile->avatar) }}" alt="avatar" class="w-10 h-10 rounded-full object-cover">
+            </div>
+        @else
+            <div class="w-10 h-10 rounded-full text-white font-bold flex items-center justify-center tracking-wider text-sm shadow-sm select-none border {{ auth()->check() ? auth()->user()->avatar_color : 'bg-gray-500 border-gray-600' }}">
+                {{ auth()->check() ? auth()->user()->initials : '??' }}
+            </div>
+
+        @endif
     </div>
     <div class="prof-info flex flex-col font-medium text-heading">
-        <p class="text-white">Admin here</p>
+        <p class="text-white">{{ auth()->check() ? auth()->user()->name : '??' }}</p>
         <span class="text-xs font-bold text-body text-emerald-600">Online</span>
     </div>
 </a>

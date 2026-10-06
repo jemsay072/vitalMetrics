@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\UserController;
 // use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\BloodPressureController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeightTrackerController;
 use App\Http\Controllers\WorkoutTrackerController;
@@ -26,7 +27,10 @@ Route::middleware(['auth', 'admin'])
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
         Route::get('/users', [UserController::class, 'index'])->name('users');
-
+        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar'])->name('users.avatar.update');
+        Route::get('/api/users', [UserController::class, 'search'])->name('api.users');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
