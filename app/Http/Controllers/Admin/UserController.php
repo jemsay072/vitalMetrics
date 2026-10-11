@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 
 // use App\Models\cr;
 use App\Models\User;
@@ -82,7 +84,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $roles = Role::orderBy('name')->get();
+
+        return view('admin.user.create', compact('roles'));
     }
 
     /**
@@ -90,7 +94,53 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email'),
+            ],
+
+            'password' => 'required|string|min:8|confirmed',
+            'role_id' => 'required|exists:roles,id',
+            'status' => 'required|in:active,inactive',
+
+            'phone' => 'nullable|string|max:30',
+            'birth_date' => 'nullable|date',
+            'sex' => 'nullable|in:male,female',
+            'marital_status' => 'nullable|in:single,married,widowed,divorced,separated',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:30',
+            'province' => 'nullable|string|max:255',
+            'zip_code' => 'nullable|string|max:10',
+        ]);
+
+        // Create User
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => $validated['role_id'],
+            'status' => $validated['status'],
+        ]);
+
+        // Create User Profile
+        $user->profile()->create([
+            'phone' => $validated['phone'] ?? null,
+            'birth_date' => $validated['birth_date'] ?? null,
+            'sex' => $validated['sex'] ?? null,
+            'marital_status' => $validated['marital_status'] ?? null,
+            'address' => $validated['address'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'province' => $validated['province'] ?? null,
+            'zip_code' => $validated['zip_code'] ?? null,
+        ]);
+
+        return redirect()
+         ->route('admin.users.show', $user)
+         ->with('success', 'User created successfully.');
     }
 
     /**
@@ -99,8 +149,9 @@ class UserController extends Controller
     public function show(User $user)
     {
         $user->load('role', 'profile');
+        $roles = Role::orderBy('name')->get();
 
-        return view('admin.user.show', compact('user'));
+        return view('admin.user.show', compact('user', 'roles'));
     }
 
     /**
@@ -127,6 +178,7 @@ class UserController extends Controller
                 Rule::unique('users', 'email')->ignore($user->id),
             ],
             'status' => 'nullable|string|max:50',
+            'role_id' => 'required|exists:roles,id',
             'phone' => 'nullable|string|max:30',
             'birth_date' => 'nullable|date',
             'sex' => 'nullable|in:male,female',
@@ -142,6 +194,7 @@ class UserController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'status' => $validated['status'],
+            'role_id' => $validated['role_id'],
         ]);
 
         $user->profile()->updateOrCreate(

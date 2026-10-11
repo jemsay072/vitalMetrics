@@ -12,16 +12,14 @@
                         ['label' => 'Home', 'url' => '/admin/dashboard'],
                     ]"
                 >
-                {{-- <x-slot name="actions">
+                <x-slot name="actions">
                     <button
-                        x-data
-                        x-on:click="$dispatch('open-modal', 'bp-form')"
-                        type="button"
                         class="text-slate-500 border border-blue-500 hover:bg-blue-500 hover:text-white focus:ring-4 focus:ring-brand-medium font-medium rounded text-sm px-4 py-2.5"
+                        x-on:click="window.location.href='{{ route('admin.users.create') }}'"
                     >
-                        + Blood Pressure
+                        + User
                     </button>
-                </x-slot> --}}
+                </x-slot>
             </x-page-header>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">

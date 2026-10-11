@@ -27,6 +27,8 @@ Route::middleware(['auth', 'admin'])
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
         Route::get('/users', [UserController::class, 'index'])->name('users');
+        Route::get('/user/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/user/create', [UserController::class, 'store'])->name('users.store');
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar'])->name('users.avatar.update');

@@ -108,8 +108,13 @@
                                 </div>
                                 <div>
                                     <x-input-label for="user_role" :value="__('Role')" />
-                                    <x-text-input id="user_role" type="text" class="mt-1 block w-full bg-gray-50 text-gray-500 cursor-not-allowed" :value="$user->role?->name" disabled />
-                                    <x-input-error class="mt-2" :messages="$errors->get('role')" />
+                                    <select id="user_role" name="role_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                                        <option value="" {{ old('role_id', $user->role_id) == '' ? 'selected' : '' }}>Select Role</option>
+                                        @foreach ($roles as $role)
+                                            <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <x-input-error class="mt-2" :messages="$errors->get('role_id')" />
                                 </div>
                                 <div>
                                     <x-input-label for="user_status" :value="__('Status')" />
