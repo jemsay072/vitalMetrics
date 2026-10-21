@@ -18,8 +18,11 @@
         <x-nav-link :href="route('admin.dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
             {{__('Dashboard')}}
         </x-nav-link>
-        <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-user">
-            {{__('Users')}}
+        <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-users">
+            {{__('Users Management')}}
+        </x-nav-link>
+        <x-nav-link :href="route('admin.settings')" variant="sidebar" icon="fa-solid fa-user-gear">
+            {{__('Admin Settings')}}
         </x-nav-link>
     </nav>
 </div>

@@ -22,7 +22,7 @@ class UserController extends Controller
     {
         // List user
 
-        $users = User::with('role')
+        $users = User::with(['role', 'profile'])
             ->orderBy('name')
             ->get();
 
@@ -269,6 +269,17 @@ class UserController extends Controller
         return redirect()
          -> route('admin.users.show', $user)
          -> with('warning', 'No action performed.');
+    }
+
+     /**
+     * Deactivate the specified resource from storage.
+     */
+    public function deactivate($user){
+        $user = User::findOrFail($user);
+
+        $user->update(['status' => 'inactive']);
+
+        return back()->with('Success', 'User successfully Deactivated');
     }
 
     /**

@@ -2,7 +2,7 @@
 // Admin
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController;
-
+use App\Http\Controllers\Admin\AdminSettingsController;
 // User
 // use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
@@ -32,7 +32,12 @@ Route::middleware(['auth', 'admin'])
         Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar'])->name('users.avatar.update');
+        Route::put('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
         Route::get('/api/users', [UserController::class, 'search'])->name('api.users');
+
+        // Settings
+        Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
+        Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
