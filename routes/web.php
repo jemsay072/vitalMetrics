@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AdminSettingsController;
+use App\Http\Controllers\Admin\RoleController;
+
 // User
 // use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
@@ -11,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeightTrackerController;
 use App\Http\Controllers\WorkoutTrackerController;
+use App\Models\Role;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/dashboard', function () {
@@ -26,6 +29,7 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
+        // User Management
         Route::get('/users', [UserController::class, 'index'])->name('users');
         Route::get('/user/create', [UserController::class, 'create'])->name('users.create');
         Route::post('/user/create', [UserController::class, 'store'])->name('users.store');
@@ -38,6 +42,12 @@ Route::middleware(['auth', 'admin'])
         // Settings
         Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
         Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+
+        // Role
+        Route::get('/role', [RoleController::class, 'index'])->name('role');
+        Route::post('/role/store', [RoleController::class, 'store'])->name('role.store');
+        Route::get('/api/roles', [RoleController::class, 'search'])->name('api.roles');
+
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

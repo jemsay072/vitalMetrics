@@ -24,6 +24,9 @@
         <x-nav-link :href="route('admin.settings')" variant="sidebar" icon="fa-solid fa-user-gear">
             {{__('Admin Settings')}}
         </x-nav-link>
+        <x-nav-link :href="route('admin.role')" variant="sidebar" icon="fa-solid fa-shield">
+            {{__('Role Management')}}
+        </x-nav-link>
     </nav>
 </div>
 <a href="{{route('profile.edit')}}" class="profile flex items-center gap-2.5 px-2">

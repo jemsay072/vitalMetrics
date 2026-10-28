@@ -16,16 +16,14 @@ class RoleSeeder extends Seeder
         Role::updateOrCreate(
             [
                 'name' => 'Admin',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+            ],
+            []
         );
         Role::updateOrCreate(
             [
                 'name' => 'User',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
+            ],
+            []
         );
     }
 }

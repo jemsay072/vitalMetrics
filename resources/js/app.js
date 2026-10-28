@@ -289,6 +289,64 @@ document.addEventListener('alpine:init', () => {
             }
         }
     }));
+
+    // Role Component
+    Alpine.data('roleComponent', () => ({
+        loading: false,
+        role: {},
+        roleId: null,
+        form: {
+            name: '',
+            description: '',
+            // permissions: {
+            //     dashboard: false,
+            //     trackers: false,
+            //     users: false,
+            //     profile: false,
+            //     settings: false,
+            //     export: false,
+            //     reports: false,
+            //     view_only: false,
+            // },
+            permissions: {},
+        },
+        init(){
+            this.loadRole();
+        },
+        // Dynamic select all
+        get selectAll (){
+            const keys = Object.keys(this.form.permissions);
+            if(keys.length === 0) return false;
+            return keys.every(key => this.form.permissions[key] === true);
+            // return Object.values(this.form.permissions).every(p => p);
+        },
+        set selectAll (value){
+            // Object.keys(this.form.permissions).forEach(k => this.permissions[k] = value);
+            Object.keys(this.form.permissions).forEach( key => {
+                this.form.permissions[key] = value;
+            });
+        },
+
+        async loadRole(id) {
+            this.loading = true;
+            try{
+                const res = await fetch(`/admin/roles/${id}`);
+
+                if(!res.ok) throw new Error('Failed to load role.');
+
+                this.results = await res.json();
+
+                // Populating edit structures comfortably
+                // if (this.role){
+                    this.role.name = this.role.name || '';
+                    this.role.description = this.role.description || '';
+                // }
+            } finally {
+                this.loading = false;
+            }
+        },
+        // fetchRole() {}
+    }));
 });
 
 Alpine.start();
