@@ -46,8 +46,14 @@ Route::middleware(['auth', 'admin'])
         // Role
         Route::get('/role', [RoleController::class, 'index'])->name('role');
         Route::post('/role/store', [RoleController::class, 'store'])->name('role.store');
+        Route::get('/roles/{role}', [RoleController::class, 'show'])->name('role.show');
+        Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+        Route::put('/roles/{role}/trash', [RoleController::class, 'trash'])->name('roles.moveToTrash');
+        Route::get('/roles/trash', [RoleController::class, 'trashList'])->name('roles.trash');
+        Route::get('/api/roles/trash', [RoleController::class, 'trashList'])->name('api.roles.trash');
+        Route::put('/roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
+        Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::get('/api/roles', [RoleController::class, 'search'])->name('api.roles');
-
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -298,54 +298,150 @@ document.addEventListener('alpine:init', () => {
         form: {
             name: '',
             description: '',
-            // permissions: {
-            //     dashboard: false,
-            //     trackers: false,
-            //     users: false,
-            //     profile: false,
-            //     settings: false,
-            //     export: false,
-            //     reports: false,
-            //     view_only: false,
-            // },
-            permissions: {},
+            permissions: {
+                dashboard: false,
+                trackers: false,
+                users: false,
+                profile: false,
+                roles: false,
+                patients: false,
+                settings: false,
+                export: false,
+                reports: false,
+                view_only: false,
+            },
         },
-        init(){
-            this.loadRole();
-        },
+        errors: {},
+
         // Dynamic select all
         get selectAll (){
             const keys = Object.keys(this.form.permissions);
             if(keys.length === 0) return false;
             return keys.every(key => this.form.permissions[key] === true);
-            // return Object.values(this.form.permissions).every(p => p);
         },
         set selectAll (value){
-            // Object.keys(this.form.permissions).forEach(k => this.permissions[k] = value);
             Object.keys(this.form.permissions).forEach( key => {
                 this.form.permissions[key] = value;
             });
         },
+        resetPermissions() {
+            Object.keys(this.form.permissions).forEach(key => {
+                this.form.permissions[key] = false;
+            });
+        },
 
         async loadRole(id) {
+            if (!id) {
+                console.error('Role ID is required.');
+                return;
+            }
+
             this.loading = true;
-            try{
-                const res = await fetch(`/admin/roles/${id}`);
 
-                if(!res.ok) throw new Error('Failed to load role.');
+            try {
+                const response = await fetch(`/admin/roles/${id}`,{
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
 
-                this.results = await res.json();
+                if (!response.ok) {
+                    throw new Error('Failed to load role.');
+                }
 
-                // Populating edit structures comfortably
-                // if (this.role){
-                    this.role.name = this.role.name || '';
-                    this.role.description = this.role.description || '';
-                // }
+                const data = await response.json();
+
+                this.role = data;
+
+                // Populate role details
+                this.form.name = data.name || '';
+                this.form.description = data.description || '';
+
+                this.resetPermissions();
+
+                if (Array.isArray(data.permissions)) {
+                    const backendPermissions = data.permissions.map(permission =>
+                        String(
+                            typeof permission === 'string'
+                                ? permission
+                                : permission.name
+                        ).toLowerCase()
+                    );
+
+                    Object.keys(this.form.permissions).forEach(key => {
+                        this.form.permissions[key] =
+                            backendPermissions.includes(key.toLowerCase());
+                    });
+                }
+
+            } catch (error) {
+                console.error('Error loading role:', error);
             } finally {
                 this.loading = false;
             }
         },
-        // fetchRole() {}
+
+        async updateRole(event) {
+            const formData = new FormData(event.target);
+
+            // Convert checked permission state into an array of keys
+            const selectedPermissions = Object.keys(this.form.permissions)
+                .filter(key => this.form.permissions[key] === true);
+
+            formData.delete('permissions[]');
+
+            selectedPermissions.forEach(permission => {
+                formData.append('permissions[]', permission);
+            });
+
+            this.loading = true;
+
+            try {
+
+                const response = await fetch(`/admin/roles/${this.roleId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content'),
+
+                    },
+                    body: JSON.stringify({
+                        _method: 'PUT',
+                        name: this.form.name,
+                        description: this.form.description,
+                        permissions: Object.keys(this.form.permissions)
+                            .filter(key => this.form.permissions[key]),
+                    }),
+
+
+                });
+
+                const data = await response.json();
+
+                if (response.status === 422) {
+                    this.errors = data.errors ?? {};
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || 'Failed to update role.'
+                    );
+                }
+
+                this.$dispatch('close-modal', 'roles-edit');
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Error updating role:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
     }));
 });
 
