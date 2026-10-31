@@ -40,8 +40,8 @@
 
             {{-- Mobile / Card View --}}
             <div
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                :class="view === 'list' ? 'md:hidden' : ''"
+                class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+                :class="view === 'list' ? 'xl:hidden' : ''"
             >
                 <template x-for="item in results" :key="item.id">
                     <div
@@ -190,7 +190,7 @@
             </div>
 
             <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden md:block relative overflow-hidden bg-white rounded-xl border border-gray-200" x-show="view === 'list'">
+            <div class="hidden xl:block relative bg-white rounded-xl border border-gray-200" x-show="view === 'list'">
                 <!---Loading Overlay -->
                 <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
