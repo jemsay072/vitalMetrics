@@ -15,13 +15,21 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+
         if(! auth()->check()){
             return redirect()->route('login');
         }
 
-        if (! auth()->user()->isAdmin()) {
+        $user = auth()->user();
+
+        if (! $user->isAdmin()) {
             abort(403, 'Unauthorized.');
         }
+
+        // Check if assigned Admin role is active
+        // if($user->role?->status !== 'active' ){
+        //     abort(403, 'Your assigned role is inactive');
+        // }
 
         return $next($request);
     }

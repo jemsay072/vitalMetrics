@@ -15,18 +15,22 @@
         </button>
     </div>
     <nav class="flex justify-center flex-col text-white">
-        <x-nav-link :href="route('dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
-            {{__('Dashboard')}}
-        </x-nav-link>
-        <x-nav-link :href="route('workout-tracker')" variant="sidebar" icon="fa-solid fa-dumbbell">
-            {{__('Workout')}}
-        </x-nav-link>
-        <x-nav-link :href="route('bp')" variant="sidebar" icon="fa-solid fa-fire">
-            {{__('BP')}}
-        </x-nav-link>
-        <x-nav-link :href="route('weight')" variant="sidebar" icon="fa-solid fa-fire">
-            {{__('Weight Tracker')}}
-        </x-nav-link>
+        @if (auth()->user()->hasPermission('dashboard'))
+            <x-nav-link :href="route('dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
+                {{__('Dashboard')}}
+            </x-nav-link>
+        @endif
+        @if (auth()->user()->hasPermission('trackers'))
+            <x-nav-link :href="route('workout-tracker')" variant="sidebar" icon="fa-solid fa-dumbbell">
+                {{__('Workout')}}
+            </x-nav-link>
+            <x-nav-link :href="route('bp')" variant="sidebar" icon="fa-solid fa-fire">
+                {{__('BP')}}
+            </x-nav-link>
+            <x-nav-link :href="route('weight')" variant="sidebar" icon="fa-solid fa-fire">
+                {{__('Weight Tracker')}}
+            </x-nav-link>
+        @endif
     </nav>
 </div>
 <a href="{{route('profile.edit')}}" class="profile flex items-center gap-2.5 px-2">

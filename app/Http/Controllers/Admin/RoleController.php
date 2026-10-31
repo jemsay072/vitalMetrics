@@ -329,7 +329,7 @@ class RoleController extends Controller
                     ->pluck('label')
                     ->values(),
                 'status' => $role->status,
-                'deleted_at' => $role->deleted_at?->toISOString(),
+                'deleted_at' => $role->deleted_at?->format('M d, Y'),
             ];
         });
 
@@ -376,6 +376,39 @@ class RoleController extends Controller
 
         return response()->json([
             'message' => 'Role permanently deleted.'
+        ]);
+    }
+
+    /**
+     * Update status
+     */
+    public function updateStatus(Request $request, Role $role){
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['active', 'inactive'])],
+        ]);
+
+        // Prevent deactivation of the built-in Admin role
+        if($role->name === 'Admin' && $validated['status'] === 'inactive'){
+           return response()->json([
+            'message' => 'The Admin role cannot be deactivated.'
+           ], 403);
+        }
+
+        // Prevent unnecessary update
+        if($role->status === $validated['status']){
+            return response()->json([
+                'message' => 'Role is already' . $role->status . '.'
+            ]);
+        }
+
+        $role->update([
+            // 'status' => 'active'
+            'status' => $validated['status']
+        ]);
+
+        return response()->json([
+            'message' => 'Role status updated successfully.',
+            'status' => $role->status
         ]);
     }
 }

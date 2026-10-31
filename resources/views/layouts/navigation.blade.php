@@ -29,9 +29,11 @@
                             <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                         </div>
                         <div class="py-1">
-                            <x-dropdown-link :href="route('profile.edit')" icon="fa-regular fa-user">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
+                            @if (auth()->user()->hasPermission('profile'))
+                                <x-dropdown-link :href="route('profile.edit')" icon="fa-regular fa-user">
+                                    {{ __('Profile') }}
+                                </x-dropdown-link>
+                            @endif
                             <x-dropdown-link :href="route('profile.edit')" icon="fa-solid fa-gear">
                                 {{ __('Settings') }}
                             </x-dropdown-link>

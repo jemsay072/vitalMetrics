@@ -62,18 +62,23 @@
             <div class="border-b border-gray-200">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                     <button
-                        type="button"
+                        button
                         @click="switchTabs('roles')"
-                        :click="activeTab === 'roles' ? 'border-amber-500 text-slate-900 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                        class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out focus:outline-none"
+                        :class="activeTab === 'roles'
+                            ? 'border-b-2 border-blue-600 text-blue-600 font-semibold'
+                            : 'border-transparent text-gray-500 hover:text-gray-700'"
+                        class="px-4 py-3 text-sm border-b-2 transition-colors"
                     >
-                        Role List
+                        Roles
                     </button>
+
                     <button
                         type="button"
                         @click="switchTabs('trash')"
-                        :click="activeTab === 'trash' ? 'border-amber-500 text-slate-900 font-bold' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                        class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition duration-150 ease-in-out focus:outline-none"
+                        :class="activeTab === 'trash'
+                            ? 'border-b-2 border-blue-600 text-blue-600 font-semibold'
+                            : 'border-transparent text-gray-500 hover:text-gray-700'"
+                        class="px-4 py-3 text-sm border-b-2 transition-colors"
                     >
                         Trash History
                     </button>
@@ -89,75 +94,119 @@
             </x-table.toolbar>
 
             <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden md:block relative overflow-hidden bg-white rounded-xl border border-gray-200">
+            <div class="hidden xl:block relative overflow-hidden bg-white rounded-xl border border-gray-200">
                 <!---Loading Overlay -->
                 <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
-                <div class="overflow-x-auto">
-                    <x-table.container>
-                        <div
-                            x-show="activeTab === 'trash'"
-                            x-cloak
-                            class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4"
-                        >
-                            <div class="flex items-start gap-3">
-                                <span class="text-amber-600 text-lg">⚠</span>
 
-                                <div>
-                                    <h3 class="font-semibold text-amber-800">
-                                        Trash History
-                                    </h3>
-                                    <p class="text-sm text-amber-700">
-                                        These roles have been moved to trash.
-                                        You can restore them or permanently delete them.
-                                    </p>
-                                </div>
+                <x-table.container>
+                    <div
+                        x-show="activeTab === 'trash'"
+                        x-cloak
+                        class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4"
+                    >
+                        <div class="flex items-start gap-3">
+                            <span class="text-amber-600 text-lg">⚠</span>
+
+                            <div>
+                                <h3 class="font-semibold text-amber-800">
+                                    Trash History
+                                </h3>
+                                <p class="text-sm text-amber-700">
+                                    These roles have been moved to trash.
+                                    You can restore them or permanently delete them.
+                                </p>
                             </div>
                         </div>
-                        {{-- Table Header --}}
-                        <thead class="bg-gray-50 border-b border-gray-200">
-                            <x-table.row>
-                                <template x-for="column in activeColumns" :key="column.key">
-                                    <x-table.header-cell>
-                                        <span
-                                            class="text-xs font-semibold uppercase tracking-wider text-gray-500"
-                                            x-text="column.label"
-                                        ></span>
-                                    </x-table.header-cell>
-                                </template>
-
+                    </div>
+                    {{-- Table Header --}}
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <x-table.row>
+                            <template x-for="column in activeColumns" :key="column.key">
                                 <x-table.header-cell>
-                                    Action
+                                    <span
+                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500"
+                                        x-text="column.label"
+                                    ></span>
                                 </x-table.header-cell>
-                            </x-table.row>
-                        </thead>
-                        <tbody class="divide-y divide-gray-100 border-t border-default">
+                            </template>
 
-                            <template x-for="item in results" :key="item.id">
-                                <tr class="odd:bg-white even:bg-gray-50 border-b border-default hover:bg-blue-50">
+                            <x-table.header-cell>
+                                Action
+                            </x-table.header-cell>
+                        </x-table.row>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 border-t border-default">
 
-                                    <template x-for="column in activeColumns" :key="column.key">
-                                        <td class="px-6 py-4 font-medium">
+                        <template x-for="item in results" :key="item.id">
+                            <tr class="odd:bg-white even:bg-gray-50 border-b border-default hover:bg-blue-50">
 
-                                            {{-- Text and Number --}}
-                                            <span
-                                                x-show="column.type !== 'list'"
-                                                x-text="item[column.key] ?? (column.type === 'number' ? 0 : '-')"
-                                                class="text-sm"
-                                                :class="column.key === 'status'
-                                                    ? (item.status === 'active'
-                                                        ? 'inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold uppercase bg-green-100 text-green-700'
-                                                        : 'inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold uppercase bg-red-100 text-red-700')
-                                                    : ''"
+                                <template x-for="column in activeColumns" :key="column.key">
+                                    <td class="px-6 py-4 font-medium">
 
-                                            ></span>
+                                        {{-- Status --}}
+                                        <template x-if="column.key === 'status'">
+                                            <div x-on:click.stop class="inline-block">
 
-                                            {{-- List / Permissions --}}
-                                            <div
-                                                x-show="column.type === 'list'"
-                                                class="flex flex-wrap gap-1"
-                                            >
+                                                {{-- Trash History: Static Badge --}}
+                                                <template x-if="activeTab === 'trash'">
+                                                    <span
+                                                        x-text="item.status"
+                                                        class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold uppercase tracking-wider"
+                                                        :class="item.status === 'active'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-red-100 text-red-700'"
+                                                    ></span>
+                                                </template>
+
+                                                {{-- Role List: Interactive Dropdown --}}
+                                                <template x-if="activeTab === 'roles'">
+                                                    <select
+                                                        x-model="item.status"
+                                                        @change="
+                                                            let previousStatus = item.status === 'active'
+                                                                ? 'inactive'
+                                                                : 'active';
+
+                                                            let selectedStatus = $event.target.value;
+
+                                                            fetch(`/admin/api/roles/${item.id}/status`, {
+                                                                method: 'PUT',
+                                                                headers: {
+                                                                    'Content-Type': 'application/json',
+                                                                    'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                                                },
+                                                                body: JSON.stringify({ status: selectedStatus })
+                                                            })
+                                                            .then(async res => {
+                                                                const data = await res.json();
+
+                                                                if (!res.ok) {
+                                                                    item.status = previousStatus;
+                                                                    alert(data.message || 'Error updating role status.');
+                                                                }
+                                                            })
+                                                            .catch(err => {
+                                                                console.error('Error updating status:', err);
+                                                                item.status = previousStatus;
+                                                            });
+                                                        "
+                                                        class="block w-28 rounded-md py-1 pl-2.5 pr-8 text-xs font-bold uppercase tracking-wider border border-gray-200 focus:ring-2 focus:ring-offset-1 transition duration-150 cursor-pointer shadow-sm focus:outline-none"
+                                                        :class="item.status === 'active'
+                                                            ? 'bg-green-100 text-green-700 focus:ring-green-500 border-green-200'
+                                                            : 'bg-red-100 text-red-700 focus:ring-red-500 border-red-200'"
+                                                    >
+                                                        <option value="active">Active</option>
+                                                        <option value="inactive">Inactive</option>
+                                                    </select>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        {{-- List / Permissions --}}
+                                        <template x-if="column.type === 'list'">
+                                            <div class="flex flex-wrap gap-1">
                                                 <template
                                                     x-for="(value, index) in (item[column.key] ?? [])"
                                                     :key="index"
@@ -175,58 +224,72 @@
                                                     No permissions
                                                 </span>
                                             </div>
+                                        </template>
 
-                                        </td>
-                                    </template>
+                                        {{-- Text and Number --}}
+                                        <template x-if="column.key !== 'status' && column.type !== 'list'">
+                                            <span
+                                                x-text="item[column.key] ?? (column.type === 'number' ? 0 : '-')"
+                                                class="text-sm text-gray-700"
+                                            ></span>
+                                        </template>
 
-                                    {{-- Actions --}}
-                                    <td class="px-6 py-4 text-center">
-                                        <x-table.actions
-                                            edit-event="set-edit-id"
-                                            edit-modal="roles-edit"
-                                            edit-show-when="activeTab === 'roles'"
-
-                                            delete-event="set-trash-id"
-                                            delete-modal="roles-trash"
-                                            delete-show-when="activeTab === 'roles'"
-
-                                            restore-event="set-restore-id"
-                                            restore-modal="roles-restore"
-                                            restore-show-when="activeTab === 'trash'"
-
-                                            force-delete-event="set-force-delete-id"
-                                            force-delete-modal="roles-force-delete"
-                                            force-delete-show-when="activeTab === 'trash'"
-                                        />
                                     </td>
+                                </template>
+                                {{-- <template x-if="column.key !== 'status' && column.type !== 'list'">
+                                    <span
+                                        x-text="item[column.key] ?? (column.type === 'number' ? 0 : '-')"
+                                        class="text-sm text-gray-700"
+                                    ></span>
+                                </template> --}}
 
-                                </tr>
-                            </template>
+                                {{-- Actions --}}
+                                <td class="px-6 py-4 text-center">
+                                    <x-table.actions
+                                        edit-event="set-edit-id"
+                                        edit-modal="roles-edit"
+                                        edit-show-when="activeTab === 'roles'"
 
-                            {{-- Empty State --}}
-                            <template x-if="results.length === 0 && !loading">
-                                <tr>
-                                    <td
-                                        :colspan="activeColumns.length + 1"
-                                        class="text-center py-8 text-gray-500"
-                                    >
-                                        <span
-                                            x-text="activeTab === 'roles'
-                                                ? 'No roles found.'
-                                                : 'No trash history found.'"
-                                        ></span>
-                                    </td>
-                                </tr>
-                            </template>
+                                        delete-event="set-trash-id"
+                                        delete-modal="roles-trash"
+                                        delete-show-when="activeTab === 'roles'"
 
-                        </tbody>
+                                        restore-event="set-restore-id"
+                                        restore-modal="roles-restore"
+                                        restore-show-when="activeTab === 'trash'"
 
-                    </x-table.container>
-                </div>
+                                        force-delete-event="set-force-delete-id"
+                                        force-delete-modal="roles-force-delete"
+                                        force-delete-show-when="activeTab === 'trash'"
+                                    />
+                                </td>
+
+                            </tr>
+                        </template>
+
+                        {{-- Empty State --}}
+                        <template x-if="results.length === 0 && !loading">
+                            <tr>
+                                <td
+                                    :colspan="activeColumns.length + 1"
+                                    class="text-center py-8 text-gray-500"
+                                >
+                                    <span
+                                        x-text="activeTab === 'roles'
+                                            ? 'No roles found.'
+                                            : 'No trash history found.'"
+                                    ></span>
+                                </td>
+                            </tr>
+                        </template>
+
+                    </tbody>
+
+                </x-table.container>
             </div>
 
             {{-- Mobile Card View --}}
-            <div class="md:hidden space-y-4">
+            <div class="xl:hidden space-y-4">
 
                 {{-- Loading --}}
                 <div
@@ -279,13 +342,43 @@
                                 ></p>
                             </div>
 
-                            <span
-                                class="shrink-0 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase"
+                            <select
+                                x-model="item.status"
+                                @change="
+                                    let selectedStatus = $event.target.value;
+                                    let previousStatus = selectedStatus === 'active'
+                                        ? 'inactive'
+                                        : 'active';
+
+                                    fetch(`/admin/api/roles/${item.id}/status`, {
+                                        method: 'PUT',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                        },
+                                        body: JSON.stringify({ status: selectedStatus })
+                                    })
+                                    .then(async res => {
+                                        const data = await res.json();
+
+                                        if (!res.ok) {
+                                            item.status = previousStatus;
+                                            alert(data.message || 'Error updating role status.');
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.error('Error updating status:', err);
+                                        item.status = previousStatus;
+                                    });
+                                "
+                                class="w-28 rounded-md px-2 py-1 text-xs font-bold uppercase border"
                                 :class="item.status === 'active'
-                                    ? 'bg-green-100 text-green-700'
-                                    : 'bg-red-100 text-red-700'"
-                                x-text="item.status"
-                            ></span>
+                                    ? 'bg-green-100 text-green-700 border-green-200'
+                                    : 'bg-red-100 text-red-700 border-red-200'"
+                            >
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
 
                         </div>
 

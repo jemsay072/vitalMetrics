@@ -15,18 +15,27 @@
         </button>
     </div>
     <nav class="flex justify-center flex-col text-white">
-        <x-nav-link :href="route('admin.dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
-            {{__('Dashboard')}}
-        </x-nav-link>
-        <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-users">
-            {{__('Users Management')}}
-        </x-nav-link>
-        <x-nav-link :href="route('admin.settings')" variant="sidebar" icon="fa-solid fa-user-gear">
-            {{__('Admin Settings')}}
-        </x-nav-link>
-        <x-nav-link :href="route('admin.role')" variant="sidebar" icon="fa-solid fa-shield">
-            {{__('Role Management')}}
-        </x-nav-link>
+        @if (auth()->user()->hasPermission('dashboard'))
+            <x-nav-link :href="route('admin.dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
+                {{__('Dashboard')}}
+            </x-nav-link>
+        @endif
+        @if (auth()->user()->hasPermission('users'))
+            <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-users">
+                {{__('Users Management')}}
+            </x-nav-link>
+        @endif
+        @if (auth()->user()->hasPermission('settings'))
+            <x-nav-link :href="route('admin.settings')" variant="sidebar" icon="fa-solid fa-user-gear">
+                {{__('Admin Settings')}}
+            </x-nav-link>
+        @endif
+        @if (auth()->user()->hasPermission('roles'))
+           <x-nav-link :href="route('admin.role')" variant="sidebar" icon="fa-solid fa-shield">
+                {{__('Role Management')}}
+            </x-nav-link>
+        @endif
+
     </nav>
 </div>
 <a href="{{route('profile.edit')}}" class="profile flex items-center gap-2.5 px-2">

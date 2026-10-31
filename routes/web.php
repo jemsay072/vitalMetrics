@@ -22,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
 
+Route::view('/no-access', 'components.errors.no-access')
+    ->name('no-access');
+
 Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
@@ -52,6 +55,7 @@ Route::middleware(['auth', 'admin'])
         Route::get('/roles/trash', [RoleController::class, 'trashList'])->name('roles.trash');
         Route::get('/api/roles/trash', [RoleController::class, 'trashList'])->name('api.roles.trash');
         Route::put('/roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
+        Route::put('/api/roles/{role}/status', [RoleController::class, 'updateStatus'])->name('api.roles.updateStatus');
         Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
         Route::get('/api/roles', [RoleController::class, 'search'])->name('api.roles');
 });
@@ -59,40 +63,49 @@ Route::middleware(['auth', 'admin'])
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [UserDashboard::class, 'index'])
+        ->middleware('hasPermission:dashboard')
+        ->name('dashboard');
 
 
     // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::middleware('hasPermission:profile')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
 
-    // Workout Tracker
-    Route::get('/workout-tracker', [WorkoutTrackerController::class, 'index'])->name('workout-tracker');
-    Route::post('/workout-tracker', [WorkoutTrackerController::class, 'store'])->name('workout-tracker.store');
-    Route::get('/workout-tracker/{id}', [WorkoutTrackerController::class, 'show'])->name('workout-tracker.show');
-    Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
-    Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
-    Route::get('/api/workouts', [WorkoutTrackerController::class, 'search'])->name('api.workouts');
-    Route::get('/api/workouts/export', [WorkoutTrackerController::class, 'exportAll'])->name('api.workouts.exportAll');
+    //Trackers
+    Route::middleware('hasPermission:trackers')->group(function (){
 
-    // Blood Pressure
-    Route::get('/bp', [BloodPressureController::class, 'index'])->name('bp');
-    Route::post('/bp', [BloodPressureController::class, 'store'])->name('bp.store');
-    Route::get('/bp/{id}', [BloodPressureController::class, 'show'])->name('bp.show');
-    Route::put('/bp/{id}', [BloodPressureController::class, 'update'])->name('bp.update');
-    Route::delete('/bp/{id}', [BloodPressureController::class, 'destroy'])->name('bp.destroy');
-    Route::get('/api/bp', [BloodPressureController::class, 'search'])->name('api.bp');
-    Route::get('api/bp/export', [BloodPressureController::class, 'exportAll'])->name('api.bp.exportAll');
+        // Workout Tracker
+        Route::get('/workout-tracker', [WorkoutTrackerController::class, 'index'])->name('workout-tracker');
+        Route::post('/workout-tracker', [WorkoutTrackerController::class, 'store'])->name('workout-tracker.store');
+        Route::get('/workout-tracker/{id}', [WorkoutTrackerController::class, 'show'])->name('workout-tracker.show');
+        Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
+        Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
+        Route::get('/api/workouts', [WorkoutTrackerController::class, 'search'])->name('api.workouts');
+        Route::get('/api/workouts/export', [WorkoutTrackerController::class, 'exportAll'])->name('api.workouts.exportAll');
 
-    // Weight Tracker
-    Route::get('/weight', [WeightTrackerController::class, 'index'])->name('weight');
-    Route::post('/weight', [WeightTrackerController::class, 'store'])->name('weight.store');
-    Route::get('/weight/{id}', [WeightTrackerController::class, 'show'])->name('weight.show');
-    Route::put('/weight/{id}', [WeightTrackerController::class, 'update'])->name('weight.update');
-    Route::delete('/weight/{id}', [WeightTrackerController::class, 'destroy'])->name('weight.destroy');
-    Route::get('/api/weight', [WeightTrackerController::class, 'search'])->name('api.weight');
-    Route::get('/api/weight/export', [WeightTrackerController::class, 'exportAll'])->name('api.weight.exportAll');
+        // Blood Pressure
+        Route::get('/bp', [BloodPressureController::class, 'index'])->name('bp');
+        Route::post('/bp', [BloodPressureController::class, 'store'])->name('bp.store');
+        Route::get('/bp/{id}', [BloodPressureController::class, 'show'])->name('bp.show');
+        Route::put('/bp/{id}', [BloodPressureController::class, 'update'])->name('bp.update');
+        Route::delete('/bp/{id}', [BloodPressureController::class, 'destroy'])->name('bp.destroy');
+        Route::get('/api/bp', [BloodPressureController::class, 'search'])->name('api.bp');
+        Route::get('api/bp/export', [BloodPressureController::class, 'exportAll'])->name('api.bp.exportAll');
+
+        // Weight Tracker
+        Route::get('/weight', [WeightTrackerController::class, 'index'])->name('weight');
+        Route::post('/weight', [WeightTrackerController::class, 'store'])->name('weight.store');
+        Route::get('/weight/{id}', [WeightTrackerController::class, 'show'])->name('weight.show');
+        Route::put('/weight/{id}', [WeightTrackerController::class, 'update'])->name('weight.update');
+        Route::delete('/weight/{id}', [WeightTrackerController::class, 'destroy'])->name('weight.destroy');
+        Route::get('/api/weight', [WeightTrackerController::class, 'search'])->name('api.weight');
+        Route::get('/api/weight/export', [WeightTrackerController::class, 'exportAll'])->name('api.weight.exportAll');
+    });
+
 });
 
 require __DIR__.'/auth.php';

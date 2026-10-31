@@ -20,6 +20,20 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Redirect the page if dashboard is not exist
+     */
+    public function getRedirectRoute($user): string{
+
+        if($user->hasPermission('dashboard')) return 'dashboard';
+
+        if($user->hasPermission('trackers')) return 'bp';
+
+        if($user->hasPermission('profile')) return 'profile.edit';
+
+        return 'no-access';
+    }
+
+    /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
@@ -28,12 +42,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if($request->user()->isAdmin()){
+        $user = $request->user();
+
+        if($user->isAdmin()){
             return redirect()->intended(route('admin.dashboard'));
         }
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->route(
+            $this->getRedirectRoute($user)
+        );
 
+        // return redirect()->intended(route('dashboard'));
         // return redirect()->intended(route('dashboard', absolute: false));
     }
 

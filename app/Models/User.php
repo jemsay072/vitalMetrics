@@ -55,6 +55,24 @@ class User extends Authenticatable
     }
 
     /**
+     * Check Permission
+     */
+    public function hasPermission(string $permission) : bool{
+        // check active role
+        if( !$this->role || $this->role->status !== 'active' ) return false;
+
+        // check full access
+        if( $this->isAdmin() ) return true;
+
+
+        // Check assigned permission
+        return $this->role
+            ->permissions()
+            ->where('name', $permission)
+            ->exists();
+    }
+
+    /**
      * Role
      */
     public function role(): BelongsTo {
@@ -72,14 +90,16 @@ class User extends Authenticatable
      * Checking if user is an Admin
      */
     public function isAdmin(): bool{
-        return $this->role?->name === 'Admin';
+        return $this->role?->name === 'Admin'
+                && $this->role?->status === 'active';
     }
 
     /**
      * Checking if user is a regular user
      */
     public function isUser(): bool{
-        return $this->role?->name === 'User';
+        return $this->role?->name === 'User'
+                && $this->role?->status === 'active';
     }
 
     /**
