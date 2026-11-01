@@ -67,6 +67,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('hasPermission:dashboard')
         ->name('dashboard');
 
+    Route::get('/dashboard/activities', [UserDashboard::class, 'activities'])
+        ->middleware('hasPermission:dashboard')
+        ->name('dashboard.activities');
+
 
     // Profile
     Route::middleware('hasPermission:profile')->group(function () {

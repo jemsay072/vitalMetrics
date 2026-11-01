@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\WeightTracker;
 use Illuminate\Http\Request;
+use App\Models\ActivityLog;
 
 class WeightTrackerController extends Controller
 {
@@ -39,9 +40,7 @@ class WeightTrackerController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(Request $request){
-        //
-    }
+    public function create(Request $request){}
 
     /**
      * Store a newly created resource in storage.
@@ -63,6 +62,12 @@ class WeightTrackerController extends Controller
             $validate['user_id'] = auth()->id();
 
             WeightTracker::create($validate);
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'type' => 'Weight',
+                'description' => "Weight {$request->weight} kg",
+                'status' => 'normal'
+            ]);
 
             return redirect()->route('weight')->with('success', 'Your Weight is Added Successfully.');
 
@@ -137,7 +142,7 @@ class WeightTrackerController extends Controller
     public function update(Request $request, WeightTracker $weightTracker, $id)
     {
         //
-        $weight = WeightTracker::findOrFail($id);
+        $weight = $weightTracker::findOrFail($id);
         $data = [
             'weight' => $request->weight,
             'measurement_date' =>$request->measurement_date,
@@ -146,6 +151,12 @@ class WeightTrackerController extends Controller
 
         try {
             $weight->update($data);
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'type' => 'Weight',
+                'description' => "Updated a previous reading of {$request->weight} to {$request->weight}",
+                'status' => 'updated'
+            ]);
             return back()->with('success', 'Weight updated successfully!');
         } catch(\Exception $e){
             return redirect()->back()->with('error', 'Failed to update Weight.');
@@ -157,9 +168,17 @@ class WeightTrackerController extends Controller
      */
     public function destroy(WeightTracker $weightTracker, $id)
     {
-        $weight = WeightTracker::findOrFail($id);
+        $weight = $weightTracker::findOrFail($id);
+
+        $weightDetails = "{$weight->weight} recorded on " . $weight->created_at->format('M d, Y');
 
         $weight->delete();
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'type' => 'Weight',
+            'description' => "Deleted a weight entry of {$weightDetails}",
+            'status' => 'deleted'
+        ]);
         return back()->with('Success', 'Blood Pressure Deleted Successfully!.');
     }
 }

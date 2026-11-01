@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\WorkoutTracker;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class WorkoutTrackerController extends Controller
@@ -72,6 +73,12 @@ class WorkoutTrackerController extends Controller
             $validate['user_id'] = auth()->id();
 
             WorkoutTracker::create($validate);
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'type' => 'Workout',
+                'description' => "Performed a {$request->activity_type} session lasting {$request->duration_minutes} mins, covering {$request->distance_km} km and burning {$request->calories_burned} kcal.",
+                'status' => 'completed'
+            ]);
 
             return redirect()->route('workout-tracker')->with('success', 'Workout Added Successfully');
         } catch(\Exception $e){
@@ -93,8 +100,7 @@ class WorkoutTrackerController extends Controller
     /**
      * Search Filter
      */
-    public function search(Request $request)
-    {
+    public function search(Request $request){
         $query = WorkoutTracker::where('user_id', auth()->id());
 
         if ($request->filled('search')) {
@@ -159,6 +165,13 @@ class WorkoutTrackerController extends Controller
 
         try{
             $workout->update($data);
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'type' => 'Workout',
+                'description' => "Updated a previous {$request->activity_type} workout record to {$request->duration_minutes} mins.",
+                'status' => 'updated'
+            ]);
+
             return back()->with('success', 'Workout updated successfully!');
         }catch(\Exception $e){
             return redirect()->back()->with('error', 'Failed to update workout.');
@@ -171,7 +184,16 @@ class WorkoutTrackerController extends Controller
     public function destroy($id)
     {
         $workout = WorkoutTracker::findOrFail($id);
+
+        $workDetails = "{$workout->activity_type} session recorded on " .$workout->created_at->format('M d, Y');
+
         $workout->delete();
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'type' => 'Workout',
+            'description' => "Deleted a workout entry of {$workDetails}",
+            'status' => 'deleted'
+        ]);
         return back()->with('success', 'Workout deleted successfully!');
     }
 }

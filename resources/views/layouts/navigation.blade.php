@@ -34,8 +34,13 @@
                                     {{ __('Profile') }}
                                 </x-dropdown-link>
                             @endif
+
                             <x-dropdown-link :href="route('profile.edit')" icon="fa-solid fa-gear">
                                 {{ __('Settings') }}
+                            </x-dropdown-link>
+
+                            <x-dropdown-link :href="route('dashboard.activities')" icon="fa-solid fa-clock-rotate-left">
+                                {{ __('Activity Logs') }}
                             </x-dropdown-link>
                         </div>
                         <div class="py-1 border-t border-gray-100">
@@ -71,16 +76,24 @@
             <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
         </div>
         <div class="space-y-1 px-2 py-3">
-            <x-responsive-nav-link :href="route('profile.edit')" @click="open = false">
-                <span class="inline-flex items-center gap-2">
-                    <i class="fa-regular fa-user text-gray-500"></i>
-                    <span>{{ __('Profile') }}</span>
-                </span>
-            </x-responsive-nav-link>
+            @if (auth()->user()->hasPermission('profile'))
+                <x-responsive-nav-link :href="route('profile.edit')" @click="open = false">
+                    <span class="inline-flex items-center gap-2">
+                        <i class="fa-regular fa-user text-gray-500"></i>
+                        <span>{{ __('Profile') }}</span>
+                    </span>
+                </x-responsive-nav-link>
+            @endif)
             <x-responsive-nav-link :href="route('profile.edit')" @click="open = false">
                 <span class="inline-flex items-center gap-2">
                     <i class="fa-solid fa-gear text-gray-500"></i>
                     <span>{{ __('Settings') }}</span>
+                </span>
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('dashboard.activities')" @click="open = false">
+                <span class="inline-flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-gray-500"></i>
+                    <span>{{ __('Activity Logs') }}</span>
                 </span>
             </x-responsive-nav-link>
         </div>

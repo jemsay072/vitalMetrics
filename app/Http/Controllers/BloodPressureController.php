@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BloodPressure;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 class BloodPressureController extends Controller
@@ -92,6 +93,15 @@ class BloodPressureController extends Controller
             $validate['user_id'] = auth()->id();
 
             BloodPressure::create($validate);
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'type' => 'Blood Pressure',
+                'description' => "Logged a new reading of {$request->systolic} / {$request->diastolic} mmHg and pulse rate is {$request->pulse}." ,
+                'status' => $this->detectRiskLevel(
+                    $request->systolic,
+                    $request->diastolic,
+                )
+            ]);
 
             return redirect()->route('bp')->with('success', 'Blood Pressure Added Successfully.');
 
@@ -182,6 +192,15 @@ class BloodPressureController extends Controller
 
         try{
             $bp->update($data);
+            ActivityLog::create([
+                'user_id' => auth()->id(),
+                'type' => 'Blood Pressure',
+                'description' => "Updated a previous reading of {$request->systolic} / {$request->diastolic} mmHg to {$request->systolic} / {$request->diastolic} mmHg and pulse rate is {$request->pulse}",
+                'status' => $this->detectRiskLevel(
+                        $request->systolic,
+                        $request->diastolic,
+                    )
+            ]);
             return back()->with('success', 'Blood Pressure updated successfully!');
 
         } catch(\Exception $e){
@@ -196,7 +215,15 @@ class BloodPressureController extends Controller
     public function destroy($id){
         $bp = BloodPressure::findOrFail($id);
 
+        $bpDetails = "{$bp->systolic}/{$bp->diastolic} mmHg (Pulse: {$bp->pulse}) recorded on " . $bp->created_at->format('M d, Y');
+
         $bp->delete();
+        ActivityLog::create([
+            'user_id' => auth()->id(),
+            'type' => 'Blood Pressure',
+            'description' => "Deleted a blood pressure entry of {$bpDetails}",
+            'status' => 'deleted'
+        ]);
         return back()->with('Success', 'Blood Pressure Deleted Successfully!.');
     }
 }
