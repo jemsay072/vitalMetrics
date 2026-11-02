@@ -6,18 +6,19 @@
     >
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
-                    title="User"
-                    description="User Description"
-                    :breadcrumbs="[
-                        ['label' => 'Home', 'url' => '/admin/dashboard'],
-                    ]"
-                >
+                title="User"
+                description="Manage system access, assign application roles, and monitor user activation controls."
+                :breadcrumbs="[
+                    ['label' => 'Home', 'url' => '/admin/dashboard'],
+                ]"
+            >
                 <x-slot name="actions">
                     <button
-                        class="text-slate-500 border border-blue-500 hover:bg-blue-500 hover:text-white focus:ring-4 focus:ring-brand-medium font-medium rounded text-sm px-4 py-2.5"
+                        class="inline-flex items-center justify-center gap-2 px-4 h-[45px] bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl text-sm transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                         x-on:click="window.location.href='{{ route('admin.users.create') }}'"
                     >
-                        + User
+                        <i class="fa-solid fa-plus text-[11px]"></i>
+                        <span>Add Record</span>
                     </button>
 
                     {{-- View/Grid Toggle --}}

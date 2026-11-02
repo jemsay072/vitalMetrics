@@ -14,20 +14,20 @@
             </svg>
         </button>
     </div>
-    <nav class="flex justify-center flex-col text-white">
+    <nav class="flex justify-center flex-col text-white mt-4 space-y-1.5 px-1.5">
         @if (auth()->user()->hasPermission('dashboard'))
-            <x-nav-link :href="route('dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
+            <x-nav-link :href="route('dashboard')" variant="sidebar" icon="fa-solid fa-chart-column" :active="request()->routeIs('dashboard')">
                 {{__('Dashboard')}}
             </x-nav-link>
         @endif
         @if (auth()->user()->hasPermission('trackers'))
-            <x-nav-link :href="route('workout-tracker')" variant="sidebar" icon="fa-solid fa-dumbbell">
+            <x-nav-link :href="route('workout-tracker')" variant="sidebar" icon="fa-solid fa-dumbbell" :active="request()->routeIs('workout-tracker')">
                 {{__('Workout')}}
             </x-nav-link>
-            <x-nav-link :href="route('bp')" variant="sidebar" icon="fa-solid fa-fire">
+            <x-nav-link :href="route('bp')" variant="sidebar" icon="fa-solid fa-fire" :active="request()->routeIs('bp')">
                 {{__('BP')}}
             </x-nav-link>
-            <x-nav-link :href="route('weight')" variant="sidebar" icon="fa-solid fa-fire">
+            <x-nav-link :href="route('weight')" variant="sidebar" icon="fa-solid fa-fire" :active="request()->routeIs('weight')">
                 {{__('Weight Tracker')}}
             </x-nav-link>
         @endif

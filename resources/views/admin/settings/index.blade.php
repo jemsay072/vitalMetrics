@@ -3,7 +3,7 @@
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
                     title="System Settings"
-                    description="Configure system-wide settings"
+                    description="Configure core application frameworks, security controls, and global system parameters."
                     :breadcrumbs="[
                         ['label' => 'Home', 'url' => '/admin/dashboard'],
                     ]"

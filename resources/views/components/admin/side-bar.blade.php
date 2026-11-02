@@ -14,24 +14,24 @@
             </svg>
         </button>
     </div>
-    <nav class="flex justify-center flex-col text-white">
+    <nav class="flex justify-center flex-col text-white mt-4 space-y-1.5 px-1.5">
         @if (auth()->user()->hasPermission('dashboard'))
-            <x-nav-link :href="route('admin.dashboard')" variant="sidebar" icon="fa-solid fa-chart-column">
+            <x-nav-link :href="route('admin.dashboard')" variant="sidebar" icon="fa-solid fa-chart-column" :active="request()->routeIs('admin.dashboard')">
                 {{__('Dashboard')}}
             </x-nav-link>
         @endif
         @if (auth()->user()->hasPermission('users'))
-            <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-users">
+            <x-nav-link :href="route('admin.users')" variant="sidebar" icon="fa-solid fa-users" :active="request()->routeIs('admin.users')">
                 {{__('Users Management')}}
             </x-nav-link>
         @endif
         @if (auth()->user()->hasPermission('settings'))
-            <x-nav-link :href="route('admin.settings')" variant="sidebar" icon="fa-solid fa-user-gear">
+            <x-nav-link :href="route('admin.settings')" variant="sidebar" icon="fa-solid fa-user-gear" :active="request()->routeIs('admin.settings')">
                 {{__('Admin Settings')}}
             </x-nav-link>
         @endif
         @if (auth()->user()->hasPermission('roles'))
-           <x-nav-link :href="route('admin.role')" variant="sidebar" icon="fa-solid fa-shield">
+           <x-nav-link :href="route('admin.role')" variant="sidebar" icon="fa-solid fa-shield" :active="request()->routeIs('admin.role')">
                 {{__('Role Management')}}
             </x-nav-link>
         @endif
