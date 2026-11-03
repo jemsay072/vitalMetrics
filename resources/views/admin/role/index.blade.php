@@ -101,7 +101,7 @@
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
 
-                <x-table.container class="w-full table-auto">
+                <x-table.container>
                     <div
                         x-show="activeTab === 'trash'"
                         x-cloak
@@ -109,15 +109,18 @@
                     >
                         <div class="flex items-start gap-3">
                             <span class="text-amber-600 text-lg">⚠</span>
+
                             <div>
-                                <h3 class="font-semibold text-amber-800">Trash History</h3>
+                                <h3 class="font-semibold text-amber-800">
+                                    Trash History
+                                </h3>
                                 <p class="text-sm text-amber-700">
-                                    These roles have been moved to trash. You can restore them or permanently delete them.
+                                    These roles have been moved to trash.
+                                    You can restore them or permanently delete them.
                                 </p>
                             </div>
                         </div>
                     </div>
-
                     {{-- Table Header --}}
                     <thead class="bg-gray-50 border-b border-gray-200">
                         <x-table.row>
@@ -129,29 +132,35 @@
                                     ></span>
                                 </x-table.header-cell>
                             </template>
-                            <x-table.header-cell class="text-right pr-6">
+
+                            <x-table.header-cell>
                                 Action
                             </x-table.header-cell>
                         </x-table.row>
                     </thead>
-
                     <tbody class="divide-y divide-gray-100 border-t border-default">
+
                         <template x-for="item in results" :key="item.id">
                             <tr
                                 @click="$dispatch('set-view-id', item.id); $dispatch('open-modal', 'roles-view')"
-                                class="odd:bg-white even:bg-gray-50 border-b border-default hover:bg-blue-50/40 transition cursor-pointer"
+                                class="odd:bg-white even:bg-gray-50 border-b border-default hover:bg-blue-50"
                             >
+
                                 <template x-for="column in activeColumns" :key="column.key">
                                     <td class="px-6 py-4 font-medium">
-                                        {{-- Status Column --}}
+
+                                        {{-- Status --}}
                                         <template x-if="column.key === 'status'">
                                             <div x-on:click.stop class="inline-block">
+
                                                 {{-- Trash History: Static Badge --}}
                                                 <template x-if="activeTab === 'trash'">
                                                     <span
                                                         x-text="item.status"
-                                                        class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider"
-                                                        :class="item.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+                                                        class="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold uppercase tracking-wider"
+                                                        :class="item.status === 'active'
+                                                            ? 'bg-green-100 text-green-700'
+                                                            : 'bg-red-100 text-red-700'"
                                                     ></span>
                                                 </template>
 
@@ -160,8 +169,12 @@
                                                     <select
                                                         x-model="item.status"
                                                         @change="
-                                                            let previousStatus = item.status === 'active' ? 'inactive' : 'active';
+                                                            let previousStatus = item.status === 'active'
+                                                                ? 'inactive'
+                                                                : 'active';
+
                                                             let selectedStatus = $event.target.value;
+
                                                             fetch(`/admin/api/roles/${item.id}/status`, {
                                                                 method: 'PUT',
                                                                 headers: {
@@ -172,6 +185,7 @@
                                                             })
                                                             .then(async res => {
                                                                 const data = await res.json();
+
                                                                 if (!res.ok) {
                                                                     item.status = previousStatus;
                                                                     alert(data.message || 'Error updating role status.');
@@ -183,7 +197,9 @@
                                                             });
                                                         "
                                                         class="block w-28 rounded-md py-1 pl-2.5 pr-8 text-xs font-bold uppercase tracking-wider border border-gray-200 focus:ring-2 focus:ring-offset-1 transition duration-150 cursor-pointer shadow-sm focus:outline-none"
-                                                        :class="item.status === 'active' ? 'bg-green-100 text-green-700 focus:ring-green-500 border-green-200' : 'bg-red-100 text-red-700 focus:ring-red-500 border-red-200'"
+                                                        :class="item.status === 'active'
+                                                            ? 'bg-green-100 text-green-700 focus:ring-green-500 border-green-200'
+                                                            : 'bg-red-100 text-red-700 focus:ring-red-500 border-red-200'"
                                                     >
                                                         <option value="active">Active</option>
                                                         <option value="inactive">Inactive</option>
@@ -192,69 +208,87 @@
                                             </div>
                                         </template>
 
-                                        {{-- List / Permissions Column --}}
+                                        {{-- List / Permissions --}}
                                         <template x-if="column.type === 'list'">
                                             <div class="flex flex-wrap gap-1">
-                                                <template x-for="(value, index) in (item[column.key] ?? [])" :key="index">
+                                                <template
+                                                    x-for="(value, index) in (item[column.key] ?? [])"
+                                                    :key="index"
+                                                >
                                                     <span
                                                         x-text="value"
                                                         class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700"
                                                     ></span>
                                                 </template>
-                                                <span x-show="!(item[column.key] ?? []).length" class="text-gray-400 text-xs">
+
+                                                <span
+                                                    x-show="!(item[column.key] ?? []).length"
+                                                    class="text-gray-400"
+                                                >
                                                     No permissions
                                                 </span>
                                             </div>
                                         </template>
 
-                                        {{-- Text and Number Columns --}}
+                                        {{-- Text and Number --}}
                                         <template x-if="column.key !== 'status' && column.type !== 'list'">
                                             <span
                                                 x-text="item[column.key] ?? (column.type === 'number' ? 0 : '-')"
                                                 class="text-sm text-gray-700"
                                             ></span>
                                         </template>
+
                                     </td>
                                 </template>
+                                {{-- <template x-if="column.key !== 'status' && column.type !== 'list'">
+                                    <span
+                                        x-text="item[column.key] ?? (column.type === 'number' ? 0 : '-')"
+                                        class="text-sm text-gray-700"
+                                    ></span>
+                                </template> --}}
 
-                                {{-- Actions Column --}}
-                                <td class="px-6 py-4 text-right" @click.stop>
-                                    <div class="inline-flex items-center justify-end w-full">
-                                        <x-table.actions
-                                            view-event="set-view-id"
-                                            view-modal="roles-view"
-                                            view-show-when="activeTab === 'roles'"
+                                {{-- Actions --}}
+                                <td class="px-6 py-4 text-center">
+                                    <x-table.actions
+                                        edit-event="set-edit-id"
+                                        edit-modal="roles-edit"
+                                        edit-show-when="activeTab === 'roles'"
 
-                                            edit-event="set-edit-id"
-                                            edit-modal="roles-edit"
-                                            edit-show-when="activeTab === 'roles'"
+                                        delete-event="set-trash-id"
+                                        delete-modal="roles-trash"
+                                        delete-show-when="activeTab === 'roles'"
 
-                                            delete-event="set-trash-id"
-                                            delete-modal="roles-trash"
-                                            delete-show-when="activeTab === 'roles'"
+                                        restore-event="set-restore-id"
+                                        restore-modal="roles-restore"
+                                        restore-show-when="activeTab === 'trash'"
 
-                                            restore-event="set-restore-id"
-                                            restore-modal="roles-restore"
-                                            restore-show-when="activeTab === 'trash'"
-
-                                            force-delete-event="set-force-delete-id"
-                                            force-delete-modal="roles-force-delete"
-                                            force-delete-show-when="activeTab === 'trash'"
-                                        />
-                                    </div>
+                                        force-delete-event="set-force-delete-id"
+                                        force-delete-modal="roles-force-delete"
+                                        force-delete-show-when="activeTab === 'trash'"
+                                    />
                                 </td>
+
                             </tr>
                         </template>
 
                         {{-- Empty State --}}
                         <template x-if="results.length === 0 && !loading">
                             <tr>
-                                <td :colspan="activeColumns.length + 1" class="text-center py-8 text-gray-500 text-sm">
-                                    <span x-text="activeTab === 'roles' ? 'No roles found.' : 'No trash history found.'"></span>
+                                <td
+                                    :colspan="activeColumns.length + 1"
+                                    class="text-center py-8 text-gray-500"
+                                >
+                                    <span
+                                        x-text="activeTab === 'roles'
+                                            ? 'No roles found.'
+                                            : 'No trash history found.'"
+                                    ></span>
                                 </td>
                             </tr>
                         </template>
+
                     </tbody>
+
                 </x-table.container>
             </div>
 

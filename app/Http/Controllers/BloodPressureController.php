@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\BloodPressure;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BloodPressureController extends Controller
 {
     //index
     public function index(){
-        $bpview = BloodPressure::where('user_id', auth()->id())->latest()->get();
+        $auth = Auth::user();
+
+        $bpview = BloodPressure::where('user_id', $auth->id)->latest()->get();
 
          $columns = [
             [
@@ -69,6 +72,7 @@ class BloodPressureController extends Controller
      * Store a newly created resource in storage
      */
     public function store(Request $request){
+        $auth = Auth::user();
 
         // Validate
         try{
@@ -90,11 +94,11 @@ class BloodPressureController extends Controller
                 $request->diastolic,
             );
 
-            $validate['user_id'] = auth()->id();
+            $validate['user_id'] = $auth->id;
 
             BloodPressure::create($validate);
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $auth->id,
                 'type' => 'Blood Pressure',
                 'description' => "Logged a new reading of {$request->systolic} / {$request->diastolic} mmHg and pulse rate is {$request->pulse}." ,
                 'status' => $this->detectRiskLevel(
@@ -114,7 +118,9 @@ class BloodPressureController extends Controller
      * Search Filter
      */
     public function search(Request $request){
-        $query = BloodPressure::where('user_id', auth()->id());
+        $auth = Auth::user();
+
+        $query = BloodPressure::where('user_id', $auth->id);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -140,7 +146,9 @@ class BloodPressureController extends Controller
      * Export All
      */
     public function exportAll(Request $request){
-        $query = BloodPressure::where('user_id', auth()->id());
+        $auth = Auth::user();
+
+        $query = BloodPressure::where('user_id', $auth->id);
 
         if($request->filled('search')){
             $search = $request->search;
@@ -171,6 +179,8 @@ class BloodPressureController extends Controller
      */
 
     public function update(Request $request, $id){
+        $auth = Auth::user();
+
         $bp = BloodPressure::findOrFail($id);
         $data = [
             'systolic' => $request->systolic,
@@ -193,7 +203,7 @@ class BloodPressureController extends Controller
         try{
             $bp->update($data);
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $auth->id,
                 'type' => 'Blood Pressure',
                 'description' => "Updated a previous reading of {$request->systolic} / {$request->diastolic} mmHg to {$request->systolic} / {$request->diastolic} mmHg and pulse rate is {$request->pulse}",
                 'status' => $this->detectRiskLevel(
@@ -213,13 +223,15 @@ class BloodPressureController extends Controller
      */
 
     public function destroy($id){
+        $auth = Auth::user();
+
         $bp = BloodPressure::findOrFail($id);
 
         $bpDetails = "{$bp->systolic}/{$bp->diastolic} mmHg (Pulse: {$bp->pulse}) recorded on " . $bp->created_at->format('M d, Y');
 
         $bp->delete();
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => $auth->id,
             'type' => 'Blood Pressure',
             'description' => "Deleted a blood pressure entry of {$bpDetails}",
             'status' => 'deleted'

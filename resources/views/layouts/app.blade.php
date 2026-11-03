@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html
+    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    class="{{ ($preferences?->theme ?? 'light') === 'dark' ? 'dark' : '' }}"
+>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,10 +17,10 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased text-[#1b1b18] min-h-screen">
+    <body class="font-sans antialiased text-[#1b1b18] dark:text-gray-100 min-h-screen">
         <x-alert-text />
-        <div class="min-h-screen bg-[#ffecec] flex w-full relative transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0"
-             x-data="sidebarManager()">
+        <div class="min-h-screen bg-[#ffecec] dark:bg-gray-900 flex w-full relative transition-colors duration-300 opacity-100 lg:grow starting:opacity-0"
+        x-data="sidebarManager()">
             <!-- Mobile sidebar backdrop -->
             <div x-show="sidebarOpen"
                  x-transition:enter="transition-opacity ease-linear duration-300"
@@ -53,7 +56,7 @@
                     </div>
                 </div>
                 <!-- Content -->
-                <div class="main-content p-4 sm:p-6">
+                <div class="main-content p-4 sm:p-6 text-gray-900 dark:text-gray-100">
                     <div class="flex flex-row items-center gap-4">
                         <!-- Page Heading -->
                         @isset($header)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\WorkoutTracker;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WorkoutTrackerController extends Controller
 {
@@ -13,7 +14,9 @@ class WorkoutTrackerController extends Controller
      */
     public function index()
     {
-        $workoutList = WorkoutTracker::where('user_id', auth()->id())->latest()->get();
+        $auth = Auth::user();
+
+        $workoutList = WorkoutTracker::where('user_id', $auth->id)->latest()->get();
 
         $columns = [
             [
@@ -60,9 +63,10 @@ class WorkoutTrackerController extends Controller
      */
     public function store(Request $request)
     {
-        //Validation start
+        $auth = Auth::user();
 
         try{
+            //Validation start
             $validate = $request->validate([
                 'activity_type' => 'required|string',
                 'duration_minutes' => 'required|integer',
@@ -70,11 +74,11 @@ class WorkoutTrackerController extends Controller
                 'calories_burned' => 'nullable|numeric',
             ]);
 
-            $validate['user_id'] = auth()->id();
+            $validate['user_id'] = $auth->id;
 
             WorkoutTracker::create($validate);
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $auth->id,
                 'type' => 'Workout',
                 'description' => "Performed a {$request->activity_type} session lasting {$request->duration_minutes} mins, covering {$request->distance_km} km and burning {$request->calories_burned} kcal.",
                 'status' => 'completed'
@@ -101,7 +105,8 @@ class WorkoutTrackerController extends Controller
      * Search Filter
      */
     public function search(Request $request){
-        $query = WorkoutTracker::where('user_id', auth()->id());
+        $auth = Auth::user();
+        $query = WorkoutTracker::where('user_id', $auth->id);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -125,7 +130,8 @@ class WorkoutTrackerController extends Controller
      * Export All
      */
     public function exportAll(Request $request){
-        $query = WorkoutTracker::where('user_id', auth()->id());
+        $auth = Auth::user();
+        $query = WorkoutTracker::where('user_id', $auth->id);
 
         if($request->filled('search')){
             $search = $request->search;
@@ -153,8 +159,9 @@ class WorkoutTrackerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
-    {
+    public function update(Request $request, $id) {
+        $auth = Auth::user();
+
         $workout = WorkoutTracker::findOrFail($id);
         $data = [
             'activity_type' => $request->activity_type,
@@ -166,7 +173,7 @@ class WorkoutTrackerController extends Controller
         try{
             $workout->update($data);
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $auth->id,
                 'type' => 'Workout',
                 'description' => "Updated a previous {$request->activity_type} workout record to {$request->duration_minutes} mins.",
                 'status' => 'updated'
@@ -181,15 +188,16 @@ class WorkoutTrackerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
+        $auth = Auth::user();
+
         $workout = WorkoutTracker::findOrFail($id);
 
         $workDetails = "{$workout->activity_type} session recorded on " .$workout->created_at->format('M d, Y');
 
         $workout->delete();
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => $auth->id,
             'type' => 'Workout',
             'description' => "Deleted a workout entry of {$workDetails}",
             'status' => 'deleted'

@@ -8,7 +8,7 @@ use App\Models\BloodPressure;
 use App\Models\WeightTracker;
 use App\Models\WorkoutTracker;
 use App\Models\ActivityLog;
-
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -16,7 +16,8 @@ class DashboardController extends Controller
      * Display the user health metrics overview dashboard.
      */
     public function index() {
-        $userId = auth()->id();
+        $auth = Auth::user();
+        $userId = $auth->id;
 
         // BP Reading
         $latestBP = BloodPressure::where('user_id', $userId)->latest()->first();
@@ -51,7 +52,9 @@ class DashboardController extends Controller
      * Activities Logs
      */
     public function activities(){
-        $activities = ActivityLog::where('user_id', auth()->id())
+        $auth = Auth::user();
+
+        $activities = ActivityLog::where('user_id', $auth->id)
                     ->latest()
                     ->paginate(10);
 

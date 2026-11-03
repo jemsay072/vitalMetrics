@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use App\Model\User;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class WeightTracker extends Model
 {
@@ -31,9 +32,12 @@ class WeightTracker extends Model
      */
     protected function formattedDate(): Attribute
     {
+        $auth = Auth::user();
+        $dateFormat = $auth?->preferences?->date_format ?? 'M d, Y';
+
         return Attribute::make(
             get: fn () => $this->created_at
-                ? $this->created_at->format('M d, Y')
+                ? $this->created_at->format($dateFormat)
                 : ''
         );
     }

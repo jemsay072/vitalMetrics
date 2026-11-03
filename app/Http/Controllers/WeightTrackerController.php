@@ -6,6 +6,8 @@ use App\Models\WeightTracker;
 use Illuminate\Http\Request;
 use App\Models\ActivityLog;
 
+use Illuminate\Support\Facades\Auth;
+
 class WeightTrackerController extends Controller
 {
     /**
@@ -13,8 +15,9 @@ class WeightTrackerController extends Controller
      */
     public function index()
     {
+        $auth = Auth::user();
         //View the Weight Tracker Page
-        $wtView = WeightTracker::where('user_id', auth()->id())->latest()->get();
+        $wtView = WeightTracker::where('user_id', $auth->id)->latest()->get();
 
         $columns = [
             [
@@ -50,7 +53,7 @@ class WeightTrackerController extends Controller
 
         //Validation using try catch
         try{
-            // dd($request->all());
+            $auth = Auth::user();
 
             //validate the data from the form.
             $validate = $request->validate([
@@ -59,13 +62,15 @@ class WeightTrackerController extends Controller
                 'notes' => 'nullable|string',
             ]);
 
-            $validate['user_id'] = auth()->id();
+            $validate['user_id'] = $auth->id;
+
+            $unit = $auth->preferences?->weight_unit ?? 'kg';
 
             WeightTracker::create($validate);
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $auth->id,
                 'type' => 'Weight',
-                'description' => "Weight {$request->weight} kg",
+                'description' => "Weight {$request->weight} {$unit}",
                 'status' => 'normal'
             ]);
 
@@ -81,7 +86,9 @@ class WeightTrackerController extends Controller
      * Search Filter
      */
     public function search(Request $request){
-        $query = WeightTracker::where('user_id', auth()->id());
+        $auth = Auth::user();
+
+        $query = WeightTracker::where('user_id', $auth->id);
 
         if($request->filled('search')){
             $search = $request->search;
@@ -103,7 +110,9 @@ class WeightTrackerController extends Controller
      * Export All
      */
     public function exportAll(Request $request){
-        $query = WeightTracker::where('user_id', auth()->id());
+        $auth = Auth::user();
+
+        $query = WeightTracker::where('user_id', $auth->id);
 
         if($request->filled('search')){
             $search = $request->search;
@@ -142,6 +151,8 @@ class WeightTrackerController extends Controller
     public function update(Request $request, WeightTracker $weightTracker, $id)
     {
         //
+        $auth = Auth::user();
+
         $weight = $weightTracker::findOrFail($id);
         $data = [
             'weight' => $request->weight,
@@ -152,7 +163,7 @@ class WeightTrackerController extends Controller
         try {
             $weight->update($data);
             ActivityLog::create([
-                'user_id' => auth()->id(),
+                'user_id' => $auth->id,
                 'type' => 'Weight',
                 'description' => "Updated a previous reading of {$request->weight} to {$request->weight}",
                 'status' => 'updated'
@@ -168,13 +179,15 @@ class WeightTrackerController extends Controller
      */
     public function destroy(WeightTracker $weightTracker, $id)
     {
+        $auth = Auth::user();
+
         $weight = $weightTracker::findOrFail($id);
 
         $weightDetails = "{$weight->weight} recorded on " . $weight->created_at->format('M d, Y');
 
         $weight->delete();
         ActivityLog::create([
-            'user_id' => auth()->id(),
+            'user_id' => $auth->id,
             'type' => 'Weight',
             'description' => "Deleted a weight entry of {$weightDetails}",
             'status' => 'deleted'

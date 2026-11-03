@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\WorkoutTracker;
 use App\Models\Role;
 use App\Models\UserProfile;
+use App\Models\UserPreferences;
 
 class User extends Authenticatable
 {
@@ -107,6 +108,14 @@ class User extends Authenticatable
      */
     public function profile():HasOne {
         return $this->hasOne(UserProfile::class);
+    }
+
+    /**
+     * User: Settings
+     */
+
+    public function preferences(): HasOne{
+        return $this->hasOne(UserPreferences::class);
     }
 
 

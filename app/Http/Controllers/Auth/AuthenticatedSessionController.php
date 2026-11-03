@@ -44,8 +44,17 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        // Admin checker
         if($user->isAdmin()){
             return redirect()->intended(route('admin.dashboard'));
+        }
+
+        $preferences = $user->preferences;
+        $landing = $preferences?->dashboard_landing;
+
+        // User dashboard checker
+        if($landing && $user->hasPermission('dashboard')){
+            return redirect()->route('dashboard');
         }
 
         return redirect()->route(

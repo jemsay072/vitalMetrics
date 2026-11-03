@@ -11,6 +11,7 @@ use App\Http\Controllers\User\DashboardController as UserDashboard;
 use App\Http\Controllers\BloodPressureController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserSettingsController;
 use App\Http\Controllers\WeightTrackerController;
 use App\Http\Controllers\WorkoutTrackerController;
 use App\Models\Role;
@@ -70,6 +71,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/activities', [UserDashboard::class, 'activities'])
         ->middleware('hasPermission:dashboard')
         ->name('dashboard.activities');
+
+
+    Route::get('/settings', [UserSettingsController::class, 'index'])->name('settings.index');
+    Route::put('/settings/update', [UserSettingsController::class, 'update'])->name('settings.update');
 
 
     // Profile
