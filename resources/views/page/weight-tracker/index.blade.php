@@ -96,7 +96,7 @@
                             $dispatch('set-weight-id', item.id);
                             $dispatch('open-modal', 'weight-view');
                         "
-                        class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm dark:shadow-black/10 hover:shadow-md dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer"
                     >
                         <div
                             class="flex justify-between items-start mb-3"
@@ -108,7 +108,7 @@
                                         $dispatch('set-edit-id', item.id);
                                         $dispatch('open-modal', 'weight-edit');
                                     "
-                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                    class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-solid fa-pen text-sm"></i>
                                 </button>
@@ -117,7 +117,7 @@
                                         $dispatch('set-delete-id', item.id);
                                         $dispatch('open-modal', 'weight-delete');
                                     "
-                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                    class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-regular fa-trash-can text-sm"></i>
                                 </button>
@@ -126,32 +126,32 @@
 
 
                         <div>
-                            <span class="text-gray-500">Weight:</span>
-                            <span class="font-medium ml-1" x-text="item.weight"></span>
+                            <span class="text-gray-500 dark:text-gray-400">Weight:</span>
+                            <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.weight"></span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Measurement Date:</span>
-                            <span class="font-medium ml-1" x-text="item.formatted_date || 'N/A'"></span>
+                            <span class="text-gray-500 dark:text-gray-400">Measurement Date:</span>
+                            <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.formatted_date || 'N/A'"></span>
                         </div>
                         <div>
-                            <span class="text-gray-500">Notes:</span>
-                            <span class="font-medium ml-1" x-text="item.notes || 'N/A'"></span>
+                            <span class="text-gray-500 dark:text-gray-400">Notes:</span>
+                            <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.notes || 'N/A'"></span>
                         </div>
                     </div>
                 </template>
-                <div x-show="results.length === 0 && !loading" class="text-center py-8 text-gray-500">
+                <div x-show="results.length === 0 && !loading" class="text-center py-8 text-gray-500 dark:text-gray-400">
                     No Weight found.
                 </div>
             </div>
             <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden md:block relative overflow-hidden bg-white rounded-xl border border-gray-200" x-show="view === 'list'">
+            <div class="hidden md:block relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300" x-show="view === 'list'">
                 <!---Loading Overlay -->
-                <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
+                <div x-show="loading" class="absolute inset-0 bg-gray-200/75 dark:bg-gray-900/75 flex items-center justify-center z-10">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
                 <div class="overflow-x-auto">
                     <x-table.container>
-                        <thead class="bg-gray-100 border-b border-default">
+                        <thead class="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                             <x-table.row>
                                 @foreach ($columns as $column)
                                     <x-table.header-cell> {{ $column['label'] }} </x-table.header-cell>
@@ -159,7 +159,7 @@
                                 <x-table.header-cell> Action </x-table.header-cell>
                             </x-table.row>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 border-t border-default">
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700 border-t border-gray-200 dark:border-gray-700">
                             <template x-for="item in results" :key="item.id">
                                 <x-table.row
                                     x-data
@@ -167,7 +167,7 @@
                                         $dispatch('set-weight-id', item.id);
                                         $dispatch('open-modal', 'weight-view');
                                     "
-                                    class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
+                                    class="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-800 dark:even:bg-gray-750 border-b border-gray-200 dark:border-gray-700 hover:cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 tracking-wider transition-colors duration-150"
                                 >
                                     @foreach ( $columns as $column )
 
@@ -189,7 +189,7 @@
                             </template>
                             <template x-if="results.length === 0 && !loading">
                                 <tr>
-                                    <td colspan="6" class="text-center py-8 text-gray-500">
+                                    <td colspan="6" class="text-center py-8 text-gray-500 dark:text-gray-400">
                                         No bps found.
                                     </td>
                                 </tr>
@@ -203,23 +203,23 @@
             <x-pagination/>
 
             <!-- Modal toggle Create -->
-            <x-modal name="wt-form" :show="false" maxWidth="lg">
-                <div class="p-6 bg-white rounded-2xl" x-data="weightComponent">
+            <x-modal name="wt-form" :show="false" maxWidth="lg" overflow="visible">
+                <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl" x-data="weightComponent">
                     <!-- Header Strip Layer -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                                 <i class="fa-solid fa-plus text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Create Weight</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Add a new record metric entry to your health log</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Create Weight</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Add a new record metric entry to your health log</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'wt-form')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -230,20 +230,22 @@
                             @csrf
                             <div>
                                 <label for="weight" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Weight (kg)</label>
-                                <input type="number" step="0.01" name="weight" id="weight" x-model="form.weight" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
+                                <input type="number" step="0.01" name="weight" id="weight" x-model="form.weight" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                             </div>
-                            <div>
-                                <label for="measurement_date" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Measured Time / Date</label>
-                                <input type="time" name="measurement_date" id="measurement_date" x-model="form.measurement_date" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
-                            </div>
+                            <!-- READING TIME FIELD BOX -->
+                            <x-reading-time
+                                name="measurement_date"
+                                id="measurement_date"
+                                label="Measured Time / Date"
+                            />
                             <div>
                                 <label for="notes" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Progress Notes</label>
-                                <textarea name="notes" id="notes" x-model="form.notes" rows="3" placeholder="Add optional daily context or remarks..." class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
+                                <textarea name="notes" id="notes" x-model="form.notes" rows="3" placeholder="Add optional daily context or remarks..." class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
                             </div>
 
                             <!-- Footer Buttons Strip -->
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
-                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
                                     Cancel
                                 </button>
                                 <button type="submit" class="inline-flex items-center justify-center px-5 h-[42px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none">
@@ -258,7 +260,7 @@
             <!-- Modal View-->
             <x-modal name="weight-view" :show="false" maxWidth="lg">
                 <div
-                    class="p-6 bg-white rounded-2xl relative"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl relative"
                     x-data="weightComponent()"
                     x-on:set-weight-id.window="
                         weightId = $event.detail;
@@ -266,21 +268,21 @@
                     "
                 >
                     <!-- MODAL HEADER SECTION -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center text-orange-500">
                                 <i class="fa-solid fa-weight-scale text-base"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Weight Details</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Logs and health records history</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Weight Details</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Logs and health records history</p>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'weight-view')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -297,39 +299,39 @@
                         <!-- Highlight Main Metric Container Row -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <!-- Weight Card Badge Box -->
-                            <div class="p-4 bg-gray-50/70 rounded-xl border border-gray-100 flex flex-col justify-between min-h-[90px]">
+                            <div class="p-4 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 flex flex-col justify-between min-h-[90px]">
                                 <span class="text-xs font-bold text-gray-400 tracking-wide uppercase select-none">Current Weight</span>
                                 <div class="flex items-baseline gap-1 mt-1">
-                                    <span class="text-2xl font-black text-gray-900 tracking-tight" x-text="weight.weight || '0.00'"></span>
+                                    <span class="text-2xl font-black text-gray-900 dark:text-white tracking-tight" x-text="weight.weight || '0.00'"></span>
                                     <span class="text-xs font-bold text-gray-500">kg</span>
                                 </div>
                             </div>
 
                             <!-- Date Card Badge Box -->
-                            <div class="p-4 bg-gray-50/70 rounded-xl border border-gray-100 flex flex-col justify-between min-h-[90px]">
+                            <div class="p-4 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 flex flex-col justify-between min-h-[90px]">
                                 <span class="text-xs font-bold text-gray-400 tracking-wide uppercase select-none">Log Date / Time</span>
                                 <div class="flex items-center gap-2 mt-1">
                                     <i class="fa-regular fa-calendar text-gray-400 text-sm"></i>
-                                    <span class="text-sm font-bold text-gray-800 tracking-tight" x-text="weight.measurement_date || 'No Date'"></span>
+                                    <span class="text-sm font-bold text-gray-800 dark:text-white tracking-tight" x-text="weight.measurement_date || 'No Date'"></span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Full-Width Notes Capsule Section -->
-                        <div class="p-4 bg-gray-50/70 rounded-xl border border-gray-100">
+                        <div class="p-4 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600">
                             <span class="text-xs font-bold text-gray-400 tracking-wide uppercase select-none block mb-1.5">User / Admin Notes</span>
                             <div class="flex items-start gap-2.5">
                                 <i class="fa-regular fa-comment-dots text-gray-400 text-sm mt-0.5 shrink-0"></i>
-                                <p class="text-sm font-medium text-gray-700 leading-relaxed break-words" x-text="weight.notes || 'No description or remarks provided for this entry.'"></p>
+                                <p class="text-sm font-medium text-gray-700 dark:text-white leading-relaxed break-words" x-text="weight.notes || 'No description or remarks provided for this entry.'"></p>
                             </div>
                         </div>
 
                         <!-- MODAL ACTIONS SLOT WRAPPER BUTTONS -->
-                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
                             <button
                                 type="button"
                                 x-on:click="$dispatch('close-modal', 'weight-view')"
-                                class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                             >
                                 Close View
                             </button>
@@ -339,9 +341,9 @@
             </x-modal>
 
             <!-- Modal Edit-->
-            <x-modal name="weight-edit" :show="false" maxWidth="lg">
+            <x-modal name="weight-edit" :show="false" maxWidth="lg" overflow="visible">
                 <div
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                     x-data="weightComponent()"
                     x-on:set-edit-id.window="
                         weightId = $event.detail;
@@ -349,20 +351,20 @@
                     "
                 >
                     <!-- Header Strip Layer -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                            <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                                 <i class="fa-solid fa-pen-to-square text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Weight Edit</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Modify and correct your existing health record logs</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Weight Edit</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Modify and correct your existing health record logs</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'weight-edit')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -382,20 +384,29 @@
 
                             <div>
                                 <label for="weight_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Weight (kg)</label>
-                                <input type="number" step="0.01" name="weight" id="weight_edit" x-model="weight.weight" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
+                                <input type="number" step="0.01" name="weight" id="weight_edit" x-model="weight.weight" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                             </div>
-                            <div>
+                            {{-- <div>
                                 <label for="measurement_date_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Measured Time / Date</label>
                                 <input type="time" name="measurement_date" id="measurement_date_edit" x-model="weight.measurement_date" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
-                            </div>
+                            </div> --}}
+
+
+                            <!-- READING TIME FIELD BOX -->
+                            <x-reading-time
+                                name="measurement_date_edit"
+                                id="bp_edit_measurement_date_edit"
+                                label="Measured Time / Date"
+                                :listen-for-updates="true"
+                            />
                             <div>
                                 <label for="notes_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Progress Notes</label>
-                                <textarea name="notes" id="notes_edit" x-model="weight.notes" rows="3" class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150"></textarea>
+                                <textarea name="notes" id="notes_edit" x-model="weight.notes" rows="3" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
                             </div>
 
                             <!-- Footer Buttons Strip -->
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
-                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
                                     Cancel
                                 </button>
                                 <button type="submit" class="inline-flex items-center justify-center px-5 h-[42px] bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none">
@@ -411,7 +422,7 @@
             <!-- Modal Delete-->
             <x-modal name="weight-delete" :show="false" maxWidth="md">
                 <div
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                     x-data="weightComponent()"
                     x-on:set-delete-id.window="
                         weightId = $event.detail;
@@ -421,24 +432,24 @@
                     <!-- Content Wrapper Layer -->
                     <div class="flex flex-col items-center text-center py-4">
                         <!-- Warning Accent Hex Icon Marker Circle -->
-                        <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                        <div class="w-14 h-14 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 rounded-full flex items-center justify-center mb-4 animate-pulse">
                             <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
                         </div>
 
-                        <h2 class="text-lg font-black text-gray-900 tracking-tight">Delete Weight Entry</h2>
-                        <p class="text-sm font-medium text-gray-500 mt-1.5 max-w-xs leading-relaxed">
+                        <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Delete Weight Entry</h2>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1.5 max-w-xs leading-relaxed">
                             Are you absolutely sure you want to delete this weight log record? This action cannot be reversed.
                         </p>
                     </div>
 
                     <!-- Forms Action Controllers Footer Strip Section -->
-                    <form :action="'/weight/' + weightId" method="post" class="flex items-center justify-center gap-3 pt-3 mt-4 border-t border-gray-50">
+                    <form :action="'/weight/' + weightId" method="post" class="flex items-center justify-center gap-3 pt-3 mt-4 border-t border-gray-50 dark:border-gray-700">
                         @csrf
                         @method('DELETE')
 
                         <button
                             type="button"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none w-full sm:w-auto"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                             x-on:click="$dispatch('close-modal', 'weight-delete')"
                         >
                             No, Keep It

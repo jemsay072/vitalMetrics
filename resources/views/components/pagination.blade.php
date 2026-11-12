@@ -1,5 +1,5 @@
 @props([
-    'containerClass' => 'bg-white px-4 py-3 sm:px-6 rounded-xl border border-gray-200',
+    'containerClass' => 'bg-white dark:bg-gray-800 px-4 py-3 sm:px-6 rounded-xl border border-gray-200 dark:border-gray-700',
     'perPageOptions' => [10, 25, 50],
     'pageChangeEvent' => 'page-changed',
     'perPageChangeEvent' => 'per-page-changed',
@@ -35,10 +35,10 @@
         <!-- Desktop pagination -->
         <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div class="flex items-center gap-3">
-                <p class="text-sm text-gray-700">
-                    Showing <span class="font-medium" x-text="(currentPage - 1) * perPage + 1"></span> to
-                    <span class="font-medium" x-text="Math.min(currentPage * perPage, total)"></span> of
-                    <span class="font-medium" x-text="total"></span> results
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    Showing <span class="font-medium text-gray-900 dark:text-white" x-text="(currentPage - 1) * perPage + 1"></span> to
+                    <span class="font-medium text-gray-900 dark:text-white" x-text="Math.min(currentPage * perPage, total)"></span> of
+                    <span class="font-medium text-gray-900 dark:text-white" x-text="total"></span> results
                 </p>
                 <div class="relative" @click.outside="perPageOpen = false">
 
@@ -46,7 +46,7 @@
                     <button
                         type="button"
                         x-on:click="perPageOpen = !perPageOpen"
-                        class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                        class="inline-flex items-center gap-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2.5 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800"
                     >
                         <span x-text="perPage"></span>
                         <svg
@@ -69,7 +69,7 @@
                     <div
                         x-show="perPageOpen"
                         x-cloak
-                        class="absolute left-0 bottom-11 z-50 mt-2 w-20 rounded-md border border-gray-200 bg-white shadow-lg"
+                        class="absolute left-0 bottom-11 z-50 mt-2 w-20 rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-lg"
                     >
                         <template x-for="option in {{ json_encode($perPageOptions) }}" :key="option">
 
@@ -77,9 +77,9 @@
                                 type="button"
                                 x-on:click="$dispatch('{{ $perPageChangeEvent }}', option); perPageOpen = false"
                                 :class="perPage === option
-                                ? 'bg-gray-50 font-medium text-gray-900'
-                                : 'text-gray-700 hover:bg-gray-50'"
-                                class="flex w-full items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                ? 'bg-gray-200 dark:bg-gray-600 font-semibold text-gray-900 dark:text-white'
+                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'"
+                                class="flex w-full items-center gap-1 px-3 py-2 text-sm transition-colors duration-150"
                             >
                                 <span
                                     x-show="perPage === option"
@@ -103,7 +103,7 @@
                     <button
                         x-on:click="$dispatch('{{ $pageChangeEvent }}', currentPage - 1)"
                         :disabled="currentPage === 1"
-                        class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="relative inline-flex items-center rounded-l-md bg-white dark:bg-gray-700 px-2 py-2 text-gray-500 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
                     >
                         <span class="sr-only">Previous</span>
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -117,7 +117,9 @@
                     }).filter(p => p <= lastPage)" :key="page">
                         <button
                             x-on:click="$dispatch('{{ $pageChangeEvent }}', page)"
-                            :class="page === currentPage ? 'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'"
+                            :class="page === currentPage
+                            ? 'relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white ring-1 ring-inset ring-blue-600'
+                            : 'relative inline-flex items-center bg-white dark:bg-gray-700 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-white transition-colors duration-150'"
                             x-text="page"
                         ></button>
                     </template>
@@ -125,7 +127,7 @@
                     <button
                         x-on:click="$dispatch('{{ $pageChangeEvent }}', currentPage + 1)"
                         :disabled="currentPage === lastPage"
-                        class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="relative inline-flex items-center rounded-r-md bg-white dark:bg-gray-700 px-2 py-2 text-gray-500 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
                     >
                         <span class="sr-only">Next</span>
                         <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

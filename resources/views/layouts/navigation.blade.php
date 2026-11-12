@@ -1,4 +1,4 @@
-<nav x-data="{ open: false, dropdownOpen: false }" @click.outside="open = false; dropdownOpen = false" class="relative text-white">
+<nav x-data="{ open: false, dropdownOpen: false }" @click.outside="open = false; dropdownOpen = false" class="relative text-white ">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -35,39 +35,39 @@
                     x-transition:leave="transition ease-in duration-100"
                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                     x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-                    class="absolute right-0 top-full mt-1.5 w-56 rounded-2xl border border-gray-100 bg-white p-1.5 shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
+                    class="absolute right-0 top-full mt-1.5 w-56 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1.5 shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
                 >
                     <!-- Profile User Profile Information Panel Header -->
-                    <div class="px-3.5 py-3 border-b border-gray-50 mb-1.5 bg-gray-50/50 rounded-t-xl">
-                        <p class="text-sm font-bold text-gray-800 tracking-wide truncate">{{ Auth::user()->name }}</p>
+                    <div class="px-3.5 py-3 border-b border-gray-50 dark:border-gray-700 mb-1.5 bg-gray-50/50 dark:bg-gray-800 dark:hover:bg-gray-600/50 rounded-t-xl">
+                        <p class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide truncate">{{ Auth::user()->name }}</p>
                         <p class="text-[11px] font-semibold text-gray-400 truncate mt-0.5">{{ Auth::user()->email }}</p>
                     </div>
 
                     <!-- Action Links Container Area -->
                     <div class="space-y-0.5">
                         @if (auth()->user()->hasPermission('profile'))
-                            <a href="{{ route('profile.edit') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition duration-150">
-                                <i class="fa-regular fa-user text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
+                            <a href="{{ route('profile.edit') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-gray-600/50 hover:text-slate-900 dark:hover:text-white transition duration-150">
+                                <i class="fa-regular fa-user text-gray-400 dark:group-hover:text-white group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
                                 <span>Profile</span>
                             </a>
                         @endif
 
-                        <a href="{{ route('profile.edit') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition duration-150">
-                            <i class="fa-solid fa-gear text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
+                        <a href="{{ route('settings.index') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-gray-600/50 hover:text-slate-900 dark:hover:text-white transition duration-150">
+                            <i class="fa-solid fa-gear text-gray-400 dark:group-hover:text-white group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
                             <span>Settings</span>
                         </a>
 
                         <!-- FIXED ACTION GUARD LAYER: Hindi lumalabas kapag ang role_id ay Admin (1) -->
                         @if (auth()->user()->role_id !== 1)
-                            <a href="{{ route('dashboard.activities') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition duration-150">
-                                <i class="fa-solid fa-clock-rotate-left text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
+                            <a href="{{ route('dashboard.activities') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-gray-600/50 hover:text-slate-900 dark:hover:text-white transition duration-150">
+                                <i class="fa-solid fa-clock-rotate-left text-gray-400 dark:group-hover:text-white group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
                                 <span>Activity Logs</span>
                             </a>
                         @endif
                     </div>
 
                     <!-- System Log Out Action Container Node -->
-                    <div class="mt-1.5 pt-1.5 border-t border-gray-100">
+                    <div class="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button
@@ -112,7 +112,7 @@
                 </x-responsive-nav-link>
             @endif
 
-            <x-responsive-nav-link :href="route('profile.edit')" @click="open = false">
+            <x-responsive-nav-link :href="route('settings.index')" @click="open = false">
                 <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600">
                     <i class="fa-solid fa-gear text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
                     <span>{{ __('Settings') }}</span>

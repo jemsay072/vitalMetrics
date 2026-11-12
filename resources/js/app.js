@@ -192,10 +192,31 @@ document.addEventListener('alpine:init', () => {
         },
         async loadBp(id) {
             this.loading = true;
-            try{
-                const response = await fetch(`/bp/${id}`);
+
+            try {
+                const response = await fetch(`/bp/${id}`, {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load Blood Pressure record.');
+                }
+
                 this.bp = await response.json();
-            } finally{
+
+                this.$nextTick(() => {
+                    window.dispatchEvent(
+                        new CustomEvent('set-reading-time', {
+                            detail: this.bp.reading_time
+                        })
+                    );
+                });
+
+            } catch (error) {
+                console.error('Error loading Blood Pressure:', error);
+            } finally {
                 this.loading = false;
             }
         },
@@ -442,6 +463,109 @@ document.addEventListener('alpine:init', () => {
                 this.loading = false;
             }
         },
+    }));
+
+    Alpine.data('readingTime', (initialValue = '', listenForUpdates = false) => ({
+        open: false,
+        hour: '',
+        minute: '',
+        period: '',
+        timeValue: initialValue || '',
+        error: false,
+
+        init() {
+            if (this.timeValue) {
+                this.setTime(this.timeValue);
+            } else {
+                this.setCurrentTime();
+            }
+
+            if (listenForUpdates) {
+                window.addEventListener('set-reading-time', (event) => {
+                    this.setTime(event.detail);
+                });
+            }
+        },
+
+        setTime(value) {
+            if (!value) return;
+
+            const [h, m] = value.substring(0, 5).split(':');
+            let parsedHour = parseInt(h, 10);
+
+            if (Number.isNaN(parsedHour) || !m) return;
+
+            this.period = parsedHour >= 12 ? 'PM' : 'AM';
+            parsedHour = parsedHour % 12;
+
+            this.hour = String(
+                parsedHour === 0 ? 12 : parsedHour
+            ).padStart(2, '0');
+
+            this.minute = m;
+            this.timeValue = `${h}:${m}`;
+            this.error = false;
+        },
+
+        setCurrentTime() {
+            const now = new Date();
+            let currentHour = now.getHours();
+
+            this.period = currentHour >= 12 ? 'PM' : 'AM';
+            currentHour = currentHour % 12;
+
+            this.hour = String(
+                currentHour === 0 ? 12 : currentHour
+            ).padStart(2, '0');
+
+            this.minute = String(now.getMinutes()).padStart(2, '0');
+
+            this.updateTime();
+        },
+
+        selectHour(value) {
+            this.hour = value;
+            this.error = false;
+        },
+
+        selectMinute(value) {
+            this.minute = value;
+            this.error = false;
+        },
+
+        selectPeriod(value) {
+            this.period = value;
+            this.error = false;
+        },
+
+        get displayTime() {
+            if (!this.hour || !this.minute || !this.period) {
+                return '--:-- --';
+            }
+
+            return `${this.hour}:${this.minute} ${this.period}`;
+        },
+
+        updateTime() {
+            if (!this.hour || !this.minute || !this.period) {
+                this.error = true;
+                return;
+            }
+
+            let convertedHour = parseInt(this.hour, 10);
+
+            if (this.period === 'AM' && convertedHour === 12) {
+                convertedHour = 0;
+            } else if (this.period === 'PM' && convertedHour !== 12) {
+                convertedHour += 12;
+            }
+
+            this.timeValue =
+                String(convertedHour).padStart(2, '0') + ':' + this.minute;
+
+            this.error = false;
+            this.open = false;
+        }
     }));
 });
 

@@ -26,10 +26,10 @@ $width = match ($width) {
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
             x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-            class="absolute right-0 top-full z-50 mt-1.5 {{ $width }} rounded-2xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 p-1.5"
+            class="absolute right-0 top-full z-50 mt-2 {{ $width }} rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl dark:shadow-black/30 p-1.5"
             style="display: none;"
             @click.stop>
-        <div class="rounded-xl {{ $contentClasses }} overflow-hidden space-y-0.5">
+        <div class="rounded-xl {{ $contentClasses }} dark:bg-gray-800 overflow-hidden space-y-0.5">
             {{ $content }}
         </div>
     </div>

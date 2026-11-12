@@ -92,20 +92,20 @@
                             $dispatch('set-bp-id', item.id);
                             $dispatch('open-modal', 'bp-view');
                         "
-                        class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm dark:shadow-black/10 hover:shadow-md dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer"
                     >
                         <div
                             class="flex justify-between items-start mb-3"
                             :class="getColor(liveTerm())"
                         >
-                            <h3 class="text-lg font-semibold text-gray-900" x-text="item.terms"></h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="item.terms"></h3>
                             <div class="flex space-x-2">
                                 <button
                                     x-on:click.stop="
                                         $dispatch('set-edit-id', item.id);
                                         $dispatch('open-modal', 'bp-edit');
                                     "
-                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                                    class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-solid fa-pen text-sm"></i>
                                 </button>
@@ -114,7 +114,7 @@
                                         $dispatch('set-delete-id', item.id);
                                         $dispatch('open-modal', 'bp-delete');
                                     "
-                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg"
+                                    class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-regular fa-trash-can text-sm"></i>
                                 </button>
@@ -123,42 +123,42 @@
 
                         <div class="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span class="text-gray-500">Systolic / Diastolic:</span>
-                                <span class="font-medium ml-1" x-text="item.systolic + '/' + item.diastolic"></span>
+                                <span class="text-gray-500 dark:text-gray-400">Systolic / Diastolic:</span>
+                                <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.systolic + '/' + item.diastolic"></span>
                             </div>
                             <div>
-                                <span class="text-gray-500">Heart Rate:</span>
-                                <span class="font-medium ml-1" x-text="item.pulse"></span>
+                                <span class="text-gray-500 dark:text-gray-400">Heart Rate:</span>
+                                <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.pulse"></span>
                             </div>
                             <div>
-                                <span class="text-gray-500">Time:</span>
-                                <span class="font-medium ml-1" x-text="item.formatted_time"></span>
+                                <span class="text-gray-500 dark:text-gray-400">Time:</span>
+                                <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.formatted_time"></span>
                             </div>
                             <div>
-                                <span class="text-gray-500">Risk Level:</span>
-                                <span class="font-medium ml-1" x-text="item.risk_level"></span>
+                                <span class="text-gray-500 dark:text-gray-400">Risk Level:</span>
+                                <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.risk_level"></span>
                             </div>
                             <div>
-                                <span class="text-gray-500">Notes:</span>
-                                <span class="font-medium ml-1" x-text="item.notes"></span>
+                                <span class="text-gray-500 dark:text-gray-400">Notes:</span>
+                                <span class="font-medium ml-1 text-gray-900 dark:text-gray-100" x-text="item.notes"></span>
                             </div>
                         </div>
                     </div>
                 </template>
-                <div x-show="results.length === 0 && !loading" class="text-center py-8 text-gray-500">
+                <div x-show="results.length === 0 && !loading" class="text-center py-8 text-gray-500 dark:text-gray-400">
                     No bps found.
                 </div>
             </div>
 
             <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden md:block relative overflow-hidden bg-white rounded-xl border border-gray-200" x-show="view === 'list'">
+            <div class="hidden md:block relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300" x-show="view === 'list'">
                 <!---Loading Overlay -->
-                <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
+                <div x-show="loading" class="absolute inset-0 bg-gray-200/75 dark:bg-gray-900/75 flex items-center justify-center z-10">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
                 <div class="overflow-x-auto">
                     <x-table.container>
-                        <thead class="bg-gray-100 border-b border-default">
+                        <thead class="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                             <x-table.row>
 
                                 @foreach ($columns as $column )
@@ -167,7 +167,7 @@
                                 <x-table.header-cell> Action </x-table.header-cell>
                             </x-table.row>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 border-t border-default">
+                        <tbody class="dividivide-y divide-gray-100 dark:divide-gray-700 border-t border-gray-200 dark:border-gray-700">
                             <template x-for="item in results" :key="item.id">
                                 <x-table.row
                                     x-data
@@ -175,7 +175,7 @@
                                         $dispatch('set-bp-id', item.id);
                                         $dispatch('open-modal', 'bp-view');
                                     "
-                                    class="odd:bg-white even:bg-gray-50 border-b border-default hover:cursor-pointer hover:bg-blue-50 tracking-wider"
+                                    class="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-800 dark:even:bg-gray-750 border-b border-gray-200 dark:border-gray-700 hover:cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 tracking-wider transition-colors duration-150"
                                 >
                                     @foreach ( $columns as $column )
 
@@ -184,8 +184,8 @@
                                         @elseif ($column['type'] === 'reading' )
                                             <x-table.cell>
                                                 <div class="flex flex-col">
-                                                    <span class="text-gray-800" x-text="item.formatted_time"></span>
-                                                    <span class="text-xs text-gray-500 italic" x-text="item.formatted_date"></span>
+                                                    <span class="text-gray-800 dark:text-gray-100" x-text="item.formatted_time"></span>
+                                                    <span class="text-xs text-gray-500 italic dark:text-gray-400" x-text="item.formatted_date"></span>
                                                 </div>
                                             </x-table.cell>
 
@@ -204,7 +204,7 @@
                             </template>
                             <template x-if="results.length === 0 && !loading">
                                 <x-table.row>
-                                    <td colspan="6" class="text-center py-8 text-gray-500">
+                                    <td colspan="6" class="text-center py-8 text-gray-500 dark:text-gray-400">
                                         No bps found.
                                     </td>
                                 </x-table.row>
@@ -218,58 +218,68 @@
             <x-pagination/>
 
             <!-- Modal toggle Create -->
-            <x-modal name="bp-form" :show="false" maxWidth="lg">
-                <div class="p-6 bg-white rounded-2xl" x-data="bpComponent">
+            <x-modal name="bp-form" :show="false" maxWidth="lg" overflow="visible">
+                <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl" x-data="bpComponent">
                     <!-- Modal: Header -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                                 <i class="fa-solid fa-heart-pulse text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Create Blood Pressure</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Log daily blood pressure readings and vitals</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Create Blood Pressure</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Log daily blood pressure readings and vitals</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'bp-form')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
                     </div>
 
                     <div id="bp-form-content">
-                        <form action="{{route('bp.store')}}" method="post" class="space-y-4">
+                        <form action="{{route('bp.store')}}" method="post" class="space-y-4"
+                            @submit.prevent="
+                                if (!$el.querySelector('[name=reading_time]').value) {
+                                    alert('Please select a reading time.');
+                                    return;
+                                }
+
+                                $el.submit();
+                            "
+                        >
                             @csrf
 
                             <!-- 3-COLUMN INTUITIVE VITALS ROW METRIC GRID -->
                             <div class="grid grid-cols-3 gap-3">
                                 <div>
-                                    <label for="systolic" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Systolic</label>
-                                    <input type="number" name="systolic" id="systolic" x-model="form.systolic" required placeholder="120" class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 placeholder-gray-300 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
+                                    <label for="systolic" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Systolic</label>
+                                    <input type="number" name="systolic" id="systolic" x-model="form.systolic" required placeholder="120" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                                 </div>
                                 <div>
-                                    <label for="diastolic" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Diastolic</label>
-                                    <input type="number" name="diastolic" id="diastolic" x-model="form.diastolic" required placeholder="80" class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 placeholder-gray-300 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
+                                    <label for="diastolic" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Diastolic</label>
+                                    <input type="number" name="diastolic" id="diastolic" x-model="form.diastolic" required placeholder="80" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                                 </div>
                                 <div>
-                                    <label for="pulse" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Heart Rate</label>
-                                    <input type="number" name="pulse" id="pulse" x-model="form.pulse" required placeholder="72" class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 placeholder-gray-300 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
+                                    <label for="pulse" class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Heart Rate</label>
+                                    <input type="number" name="pulse" id="pulse" x-model="form.pulse" required placeholder="72" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                                 </div>
                             </div>
 
                             <!-- READING TIME FIELD BOX -->
-                            <div>
-                                <label for="reading_time" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Reading Time / Timestamp</label>
-                                <input type="time" name="reading_time" id="reading_time" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
-                            </div>
+                            <x-reading-time
+                                name="reading_time"
+                                id="bp_create_reading_time"
+                                label="Reading Time"
+                            />
 
                             <!-- PROGRESS HEALTH NOTES AREA -->
                             <div>
                                 <label for="notes" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Context Notes</label>
-                                <textarea name="notes" id="notes" rows="2" placeholder="e.g., Taken after resting for 5 minutes in the morning..." class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
+                                <textarea name="notes" id="notes" rows="2" placeholder="e.g., Taken after resting for 5 minutes in the morning..." class="block w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
                             </div>
 
                             <!-- PREMIUM EMBEDDED REAL-TIME RISK STATUS BANNER -->
@@ -283,8 +293,8 @@
                             </div>
 
                             <!-- FOOTER ACTIONS ACTION STRIP -->
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
-                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close', 'bp-form')">
                                     Cancel
                                 </button>
                                 <button type="submit" class="inline-flex items-center justify-center px-5 h-[42px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none">
@@ -299,7 +309,7 @@
             <!-- Modal View-->
             <x-modal name="bp-view" :show="false" maxWidth="lg">
                 <div
-                    class="p-6 bg-white rounded-2xl relative"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl relative"
                     x-data="bpComponent()"
                     x-on:set-bp-id.window="
                         bpId = $event.detail;
@@ -307,21 +317,21 @@
                     "
                 >
                     <!-- Modal: Header -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-4">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
                                 <i class="fa-solid fa-file-medical text-base"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">View Blood Pressure</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Comprehensive vitals tracking log diagnostics</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">View Blood Pressure</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Comprehensive vitals tracking log diagnostics</p>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'bp-view')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -348,41 +358,41 @@
                         <!-- COMPACT READINGS CARD INFORMATION CLUSTER CONTAINER -->
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                             <!-- Systolic Card Box -->
-                            <div class="p-3 bg-gray-50/70 rounded-xl border border-gray-100 text-center sm:text-left">
+                            <div class="p-3 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 text-center sm:text-left">
                                 <span class="text-[10px] font-bold text-gray-400 tracking-wider uppercase block">Systolic</span>
                                 <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
-                                    <span class="text-lg font-black text-gray-900 tracking-tight" x-text="bp.systolic"></span>
+                                    <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight" x-text="bp.systolic"></span>
                                     <span class="text-[10px] font-bold text-gray-400">mmHg</span>
                                 </div>
                             </div>
 
                             <!-- Diastolic Card Box -->
-                            <div class="p-3 bg-gray-50/70 rounded-xl border border-gray-100 text-center sm:text-left">
+                            <div class="p-3 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 text-center sm:text-left">
                                 <span class="text-[10px] font-bold text-gray-400 tracking-wider uppercase block">Diastolic</span>
                                 <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
-                                    <span class="text-lg font-black text-gray-900 tracking-tight" x-text="bp.diastolic"></span>
+                                    <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight" x-text="bp.diastolic"></span>
                                     <span class="text-[10px] font-bold text-gray-400">mmHg</span>
                                 </div>
                             </div>
 
                             <!-- Pulse Card Box -->
-                            <div class="p-3 bg-gray-50/70 rounded-xl border border-gray-100 text-center sm:text-left">
+                            <div class="p-3 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 text-center sm:text-left">
                                 <span class="text-[10px] font-bold text-gray-400 tracking-wider uppercase block">Pulse Rate</span>
                                 <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
-                                    <span class="text-lg font-black text-gray-900 tracking-tight" x-text="bp.pulse"></span>
+                                    <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight" x-text="bp.pulse"></span>
                                     <span class="text-[10px] font-bold text-gray-400">bpm</span>
                                 </div>
                             </div>
 
                             <!-- Level Card Box -->
-                            <div class="p-3 bg-gray-50/70 rounded-xl border border-gray-100 text-center sm:text-left">
+                            <div class="p-3 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600 text-center sm:text-left">
                                 <span class="text-[10px] font-bold text-gray-400 tracking-wider uppercase block">Risk Level</span>
-                                <span class="block text-xs font-black text-gray-700 tracking-tight mt-1.5 uppercase" x-text="bp.risk_level || 'N/A'"></span>
+                                <span class="block text-xs font-black text-gray-700 dark:text-white tracking-tight mt-1.5 uppercase" x-text="bp.risk_level || 'N/A'"></span>
                             </div>
                         </div>
 
                         <!-- FULL DESCRIPTION REMARKS CAPSULE -->
-                        <div class="p-4 bg-gray-50/70 rounded-xl border border-gray-100">
+                        <div class="p-4 bg-gray-50/70 dark:bg-gray-700 rounded-xl border border-gray-100 dark:border-gray-600">
                             <span class="text-xs font-bold text-gray-400 tracking-wide uppercase block mb-1.5 select-none">Log Entry Notes / Context</span>
                             <div class="flex items-start gap-2.5">
                                 <i class="fa-regular fa-clipboard text-gray-400 text-sm mt-0.5 shrink-0"></i>
@@ -391,8 +401,8 @@
                         </div>
 
                         <!-- MODAL ACTIONS WRAPPER -->
-                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
-                            <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                            <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
                                 Close Diagnostics
                             </button>
                         </div>
@@ -401,31 +411,30 @@
             </x-modal>
 
             <!-- Modal Edit-->
-            <x-modal name="bp-edit" :show="false" maxWidth="lg">
+            <x-modal name="bp-edit" :show="false" maxWidth="lg" overflow="visible">
                 <div
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                     x-data="bpComponent()"
                     x-on:set-edit-id.window="
-                        weightId = $event.detail; {{-- Binago ko lang para sumunod sa property loading logic ng structure mo --}}
                         bpId = $event.detail;
                         loadBp(bpId)
                     "
                 >
                     <!-- Modal: Header Layout Strip -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
                                 <i class="fa-solid fa-pen-to-square text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Blood Pressure Edit</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Modify and correct your existing cardiovascular entries</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Blood Pressure Edit</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Modify and correct your existing cardiovascular entries</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'bp-edit')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -447,28 +456,30 @@
                             <div class="grid grid-cols-3 gap-3">
                                 <div>
                                     <label for="bp_systolic" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Systolic</label>
-                                    <input type="number" name="systolic" id="bp_systolic" x-model="bp.systolic" required class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
+                                    <input type="number" name="systolic" id="bp_systolic" x-model="bp.systolic" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                                 </div>
                                 <div>
                                     <label for="bp_diastolic" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Diastolic</label>
-                                    <input type="number" name="diastolic" id="bp_diastolic" x-model="bp.diastolic" required class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
+                                    <input type="number" name="diastolic" id="bp_diastolic" x-model="bp.diastolic" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                                 </div>
                                 <div>
                                     <label for="bp_pulse" class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Heart Rate</label>
-                                    <input type="number" name="pulse" id="bp_pulse" x-model="bp.pulse" required class="block w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
+                                    <input type="number" name="pulse" id="bp_pulse" x-model="bp.pulse" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                                 </div>
                             </div>
 
                             <!-- READING TIME FIELD BOX -->
-                            <div>
-                                <label for="bp_reading_time" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Reading Time / Timestamp</label>
-                                <input type="time" name="reading_time" id="bp_reading_time" x-model="bp.reading_time" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
-                            </div>
+                            <x-reading-time
+                                name="reading_time"
+                                id="bp_edit_reading_time"
+                                label="Reading Time"
+                                :listen-for-updates="true"
+                            />
 
                             <!-- PROGRESS HEALTH NOTES AREA -->
                             <div>
                                 <label for="bp_notes" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Context Notes</label>
-                                <textarea name="notes" id="bp_notes" rows="2" x-model="bp.notes" class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150"></textarea>
+                                <textarea name="notes" id="bp_notes" rows="2" x-model="bp.notes" class="block w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white placeholder-gray-400 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
                             </div>
 
                             <!-- LIVE REAL-TIME EDIT RISK STATUS BANNER -->
@@ -482,8 +493,8 @@
                             </div>
 
                             <!-- FOOTER ACTIONS ACTION STRIP -->
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
-                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                                <button type="button" class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none" x-on:click="$dispatch('close')">
                                     Cancel
                                 </button>
                                 <button type="submit" class="inline-flex items-center justify-center px-5 h-[42px] bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none">
@@ -498,7 +509,7 @@
             <!-- Modal Delete-->
             <x-modal name="bp-delete" :show="false" maxWidth="md">
                 <div
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white rounded-2xl dark:bg-gray-800"
                     x-data="bpComponent()"
                     x-on:set-delete-id.window="
                         weightId = $event.detail;
@@ -509,26 +520,26 @@
                     <!-- Center-Aligned Warning Content Header Area -->
                     <div class="flex flex-col items-center text-center py-4">
                         <!-- Alert Warning Pulse Circle Hex Icon Wrapper -->
-                        <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                        <div class="w-14 h-14 bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 rounded-full flex items-center justify-center mb-4 animate-pulse">
                             <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
                         </div>
 
-                        <h2 class="text-lg font-black text-gray-900 tracking-tight">Delete Blood Pressure Log</h2>
-                        <p class="text-sm font-medium text-gray-500 mt-1.5 max-w-xs leading-relaxed">
+                        <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">Delete Blood Pressure Log</h2>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1.5 max-w-xs leading-relaxed">
                             Are you absolutely sure you want to wipe out this blood pressure record entry? This destructive change cannot be undone.
                         </p>
                     </div>
 
                     <!-- Form Context Layout Controllers Footer Section Strip -->
                     <div id="delete-bp-form">
-                        <form :action="'/bp/' + bpId" method="post" class="flex items-center justify-center gap-3 pt-3 mt-4 border-t border-gray-50">
+                        <form :action="'/bp/' + bpId" method="post" class="flex items-center justify-center gap-3 pt-3 mt-4 border-t border-gray-50 dark:border-gray-700">
                             @csrf
                             @method('DELETE')
 
                             <button
                                 type="button"
                                 x-on:click="$dispatch('close-modal', 'bp-delete')"
-                                class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none w-full sm:w-auto"
+                                class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                             >
                                 No, Keep Log
                             </button>

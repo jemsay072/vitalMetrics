@@ -21,14 +21,14 @@
             </x-nav-link>
         @endif
         @if (auth()->user()->hasPermission('trackers'))
-            <x-nav-link :href="route('workout-tracker')" variant="sidebar" icon="fa-solid fa-dumbbell" :active="request()->routeIs('workout-tracker')">
-                {{__('Workout')}}
-            </x-nav-link>
             <x-nav-link :href="route('bp')" variant="sidebar" icon="fa-solid fa-fire" :active="request()->routeIs('bp')">
-                {{__('BP')}}
+                {{__('Blood Pressure')}}
             </x-nav-link>
             <x-nav-link :href="route('weight')" variant="sidebar" icon="fa-solid fa-fire" :active="request()->routeIs('weight')">
                 {{__('Weight Tracker')}}
+            </x-nav-link>
+            <x-nav-link :href="route('workout-tracker')" variant="sidebar" icon="fa-solid fa-dumbbell" :active="request()->routeIs('workout-tracker')">
+                {{__('Workout')}}
             </x-nav-link>
         @endif
     </nav>

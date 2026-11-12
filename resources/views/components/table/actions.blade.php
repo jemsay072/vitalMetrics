@@ -35,7 +35,7 @@
                     $dispatch('{{ $editEvent }}', item.id);
                     $dispatch('open-modal', '{{ $editModal }}');
                 "
-                class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg"
+                class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg"
                 title="Edit"
             >
                 <i class="fa-solid fa-pen"></i>
@@ -53,7 +53,7 @@
                     $dispatch('{{ $deleteEvent }}', item.id);
                     $dispatch('open-modal', '{{ $deleteModal }}');
                 "
-                class="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                class="p-2 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg"
                 title="Move to Trash"
             >
                 <i class="fa-regular fa-trash-can"></i>
@@ -71,7 +71,7 @@
                     $dispatch('{{ $restoreEvent }}', item.id);
                     $dispatch('open-modal', '{{ $restoreModal }}');
                 "
-                class="p-2 text-green-600 hover:bg-green-100 rounded-lg"
+                class="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors duration-150"
                 title="Restore Role"
             >
                 <i class="fa-solid fa-rotate-left"></i>
@@ -89,7 +89,7 @@
                     $dispatch('{{ $forceDeleteEvent }}', item.id);
                     $dispatch('open-modal', '{{ $forceDeleteModal }}');
                 "
-                class="p-2 text-red-600 hover:bg-red-100 rounded-lg"
+                class="p-2 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg"
                 title="Permanently Delete"
             >
                 <i class="fa-regular fa-trash-can"></i>

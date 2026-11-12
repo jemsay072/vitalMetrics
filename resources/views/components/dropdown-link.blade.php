@@ -6,9 +6,9 @@
     {{ $slot }}
 </a> --}}
 
-<a {{ $attributes->merge(['class' => 'group flex items-center gap-3 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition duration-150']) }}>
+<a {{ $attributes->merge(['class' => 'group flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium text-slate-600 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-slate-900 dark:hover:text-white transition duration-150']) }}>
     @if($icon)
-        <i class="{{ $icon }} text-gray-400 group-hover:text-slate-500 w-4 text-center transition duration-150"></i>
+        <i class="{{ $icon }} text-gray-400 dark:text-gray-400 group-hover:text-slate-600 dark:group-hover:text-gray-200 w-4 text-center transition duration-150"></i>
     @endif
     <span>{{ $slot }}</span>
 </a>
