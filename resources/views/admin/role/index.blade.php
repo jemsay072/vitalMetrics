@@ -60,14 +60,15 @@
             </x-page-header>
         </div>
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div class="border-b border-gray-200">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                     <button
                         button
                         @click="switchTabs('roles')"
                         :class="activeTab === 'roles'
-                            ? 'border-b-2 border-blue-600 text-blue-600 font-semibold'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-semibold'
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'"
+
                         class="px-4 py-3 text-sm border-b-2 transition-colors"
                     >
                         Roles
@@ -77,8 +78,9 @@
                         type="button"
                         @click="switchTabs('trash')"
                         :class="activeTab === 'trash'
-                            ? 'border-b-2 border-blue-600 text-blue-600 font-semibold'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'"
+                            ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 font-semibold'
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'"
+
                         class="px-4 py-3 text-sm border-b-2 transition-colors"
                     >
                         Trash History
@@ -95,9 +97,9 @@
             </x-table.toolbar>
 
             <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden xl:block relative overflow-hidden bg-white rounded-xl border border-gray-200">
+            <div class="hidden xl:block relative overflow-hidden bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                 <!---Loading Overlay -->
-                <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
+                <div x-show="loading" class="absolute inset-0 bg-gray-200/75 dark:bg-gray-900/75 flex items-center justify-center z-10">
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
 
@@ -105,16 +107,16 @@
                     <div
                         x-show="activeTab === 'trash'"
                         x-cloak
-                        class="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4"
+                        class="mb-4 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-4"
                     >
                         <div class="flex items-start gap-3">
-                            <span class="text-amber-600 text-lg">⚠</span>
+                            <span class="text-amber-600 dark:text-amber-400 text-lg">⚠</span>
 
                             <div>
-                                <h3 class="font-semibold text-amber-800">
+                                <h3 class="font-semibold text-amber-800 dark:text-amber-300">
                                     Trash History
                                 </h3>
-                                <p class="text-sm text-amber-700">
+                                <p class="text-sm text-amber-700 dark:text-amber-400">
                                     These roles have been moved to trash.
                                     You can restore them or permanently delete them.
                                 </p>
@@ -122,28 +124,28 @@
                         </div>
                     </div>
                     {{-- Table Header --}}
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead class="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                         <x-table.row>
                             <template x-for="column in activeColumns" :key="column.key">
                                 <x-table.header-cell>
                                     <span
-                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500"
+                                        class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300"
                                         x-text="column.label"
                                     ></span>
                                 </x-table.header-cell>
                             </template>
 
-                            <x-table.header-cell>
+                            <x-table.header-cell class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
                                 Action
                             </x-table.header-cell>
                         </x-table.row>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 border-t border-default">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700 border-t border-gray-200 dark:border-gray-700">
 
                         <template x-for="item in results" :key="item.id">
                             <tr
                                 @click="$dispatch('set-view-id', item.id); $dispatch('open-modal', 'roles-view')"
-                                class="odd:bg-white even:bg-gray-50 border-b border-default hover:bg-blue-50"
+                                class="odd:bg-white even:bg-gray-50 dark:odd:bg-gray-800 dark:even:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
                             >
 
                                 <template x-for="column in activeColumns" :key="column.key">
@@ -196,10 +198,11 @@
                                                                 item.status = previousStatus;
                                                             });
                                                         "
-                                                        class="block w-28 rounded-md py-1 pl-2.5 pr-8 text-xs font-bold uppercase tracking-wider border border-gray-200 focus:ring-2 focus:ring-offset-1 transition duration-150 cursor-pointer shadow-sm focus:outline-none"
+                                                        class="block w-28 rounded-md py-1 pl-2.5 pr-8 text-xs font-bold uppercase tracking-wider border focus:ring-2 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition duration-150 cursor-pointer shadow-sm focus:outline-none"
                                                         :class="item.status === 'active'
                                                             ? 'bg-green-100 text-green-700 focus:ring-green-500 border-green-200'
                                                             : 'bg-red-100 text-red-700 focus:ring-red-500 border-red-200'"
+
                                                     >
                                                         <option value="active">Active</option>
                                                         <option value="inactive">Inactive</option>
@@ -217,13 +220,13 @@
                                                 >
                                                     <span
                                                         x-text="value"
-                                                        class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700"
+                                                        class="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
                                                     ></span>
                                                 </template>
 
                                                 <span
                                                     x-show="!(item[column.key] ?? []).length"
-                                                    class="text-gray-400"
+                                                    class="text-gray-400 dark:text-gray-500"
                                                 >
                                                     No permissions
                                                 </span>
@@ -234,7 +237,7 @@
                                         <template x-if="column.key !== 'status' && column.type !== 'list'">
                                             <span
                                                 x-text="item[column.key] ?? (column.type === 'number' ? 0 : '-')"
-                                                class="text-sm text-gray-700"
+                                                class="text-sm text-gray-700 dark:text-gray-300"
                                             ></span>
                                         </template>
 
@@ -276,7 +279,7 @@
                             <tr>
                                 <td
                                     :colspan="activeColumns.length + 1"
-                                    class="text-center py-8 text-gray-500"
+                                    class="text-center py-8 text-gray-500 dark:text-gray-400"
                                 >
                                     <span
                                         x-text="activeTab === 'roles'
@@ -417,7 +420,7 @@
 
                                 <span
                                     x-show="!(item.permissions ?? []).length"
-                                    class="text-sm text-gray-400"
+                                    class="text-sm text-gray-400 dark:text-gray-500"
                                 >
                                     No permissions
                                 </span>
@@ -511,24 +514,25 @@
                 </div>
 
             </div>
+
             <!-- Modal: Create -->
             <x-modal name="roles-form" :show="false" maxWidth="lg">
-                <div class="p-6 bg-white rounded-2xl" x-data="roleComponent">
+                <div class="p-6 bg-white dark:bg-gray-800 rounded-2xl" x-data="roleComponent">
                     <!-- Modal: Header Layout -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-700 border border-gray-100">
+                            <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-gray-700 flex items-center justify-center text-slate-700 dark:text-gray-200 border border-gray-100 dark:border-gray-600">
                                 <i class="fa-solid fa-user-shield text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Create New Role</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Define role identifiers and privilege assignment states</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Create New Role</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Define role identifiers and privilege assignment states</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-form')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -540,7 +544,7 @@
 
                             <!-- Role Name Input -->
                             <div>
-                                <label for="role_name" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                                <label for="role_name" class="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                                     Role Name <span class="text-emerald-500">*</span>
                                 </label>
                                 <x-text-input
@@ -548,7 +552,7 @@
                                     name="name"
                                     type="text"
                                     x-model="form.name"
-                                    class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
+                                    class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
                                     placeholder="e.g., Content Editor, Support Team"
                                     required
                                     autofocus
@@ -558,7 +562,7 @@
 
                             <!-- Description Textarea -->
                             <div>
-                                <label for="role_description" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                                <label for="role_description" class="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                                     Description
                                 </label>
                                 <textarea
@@ -566,7 +570,7 @@
                                     name="description"
                                     x-model="form.description"
                                     rows="3"
-                                    class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
+                                    class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
                                     placeholder="Describe the operational scope or limitations of this access profile..."
                                 ></textarea>
                                 <x-input-error class="mt-1" :messages="$errors->get('description')" />
@@ -574,33 +578,33 @@
 
                             <!-- Vitals / Permissions Selection Area -->
                             <div class="pt-2">
-                                <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-3">
-                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Module Permissions</span>
+                                <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-2 mb-3">
+                                    <span class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">Module Permissions</span>
 
                                     <!-- Select All Toggle Component Box -->
-                                    <label class="inline-flex items-center text-xs font-bold text-slate-600 hover:text-emerald-600 cursor-pointer select-none transition">
+                                    <label class="inline-flex items-center text-xs font-bold text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer select-none transition">
                                         <input
                                             type="checkbox"
                                             x-model="selectAll"
-                                            class="rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2 h-4 w-4 shadow-sm transition"
+                                            class="rounded-md border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-emerald-600 focus:ring-emerald-500 mr-2 h-4 w-4 shadow-sm transition"
                                         >
                                         <span>Select All Modules</span>
                                     </label>
                                 </div>
 
                                 <!-- Scrollable Grid Field Matrix Card -->
-                                <div class="bg-gray-50/60 border border-gray-100/80 rounded-xl p-3.5">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6 text-sm text-gray-700 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+                                <div class="bg-gray-50/60 dark:bg-gray-700/40 border border-gray-100/80 dark:border-gray-600 rounded-xl p-3.5">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6 text-sm text-gray-700 dark:text-gray-300 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
                                         @foreach ( $permissions as $permission )
-                                            <label class="inline-flex items-center cursor-pointer select-none py-1 px-2 rounded-lg hover:bg-white hover:shadow-xs transition">
+                                            <label class="inline-flex items-center cursor-pointer select-none py-1 px-2 rounded-lg hover:bg-white hover:shadow-xs dark:hover:bg-slate-700 dark:hover:shadow-none transition">
                                                 <input
                                                     type="checkbox"
                                                     name="permissions[]"
                                                     value="{{ $permission['key'] }}"
                                                     x-model="form.permissions['{{ $permission['key'] }}']"
-                                                    class="rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-3 h-4 w-4 shadow-sm transition"
+                                                    class="rounded-md border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-emerald-600 focus:ring-emerald-500 mr-3 h-4 w-4 shadow-sm transition"
                                                 >
-                                                <span class="text-xs font-semibold text-gray-700 tracking-tight">{{ $permission['label'] }}</span>
+                                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-200 tracking-tight">{{ $permission['label'] }}</span>
                                             </label>
                                         @endforeach
                                     </div>
@@ -608,17 +612,17 @@
                             </div>
 
                             <!-- Footer Action Buttons -->
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
                                 <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'roles-form')"
-                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                                 >
                                     Create Profile
                                 </button>
@@ -631,7 +635,7 @@
             <!-- Modal: Edit -->
             <x-modal name="roles-edit" :show="false" maxWidth="lg">
                 <div
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                     x-data="roleComponent"
                     x-on:set-edit-id.window="
                         roleId = $event.detail;
@@ -639,20 +643,20 @@
                     "
                 >
                     <!-- Modal: Header Layout -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-700 border border-gray-100">
+                            <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-gray-700 flex items-center justify-center text-slate-700 dark:text-gray-200 border border-gray-100 dark:border-gray-600">
                                 <i class="fa-solid fa-user-gear text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Edit Role Configuration</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Modify role identifiers and update privilege assignment states</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Edit Role Configuration</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Modify role identifiers and update privilege assignment states</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-edit')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -666,7 +670,7 @@
 
                             <!-- Role Name Field -->
                             <div>
-                                <label for="role_name_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                                <label for="role_name_edit" class="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                                     Role Name <span class="text-emerald-500">*</span>
                                 </label>
                                 <x-text-input
@@ -674,7 +678,7 @@
                                     name="name"
                                     type="text"
                                     x-model="form.name"
-                                    class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
+                                    class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
                                     placeholder="Enter role name"
                                     required
                                     autofocus
@@ -689,7 +693,7 @@
 
                             <!-- Description Field -->
                             <div>
-                                <label for="role_description_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                                <label for="role_description_edit" class="block text-xs font-bold text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-1.5">
                                     Description
                                 </label>
                                 <textarea
@@ -697,7 +701,7 @@
                                     name="description"
                                     x-model="form.description"
                                     rows="3"
-                                    class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
+                                    class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-700 placeholder-gray-400 dark:placeholder-gray-400 shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"
                                     placeholder="Enter role description (optional)"
                                 ></textarea>
                                 <x-input-error class="mt-1" :messages="$errors->get('description')" />
@@ -705,33 +709,33 @@
 
                             <!-- Module Permissions Mapping Area -->
                             <div class="pt-2">
-                                <div class="flex items-center justify-between border-b border-gray-100 pb-2 mb-3">
-                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Module Permissions</span>
+                                <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-2 mb-3">
+                                    <span class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">Module Permissions</span>
 
                                     <!-- Select All Action Matrix Toggle Component Box -->
-                                    <label class="inline-flex items-center text-xs font-bold text-slate-600 hover:text-emerald-600 cursor-pointer select-none transition">
+                                    <label class="inline-flex items-center text-xs font-bold text-slate-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer select-none transition">
                                         <input
                                             type="checkbox"
                                             x-model="selectAll"
-                                            class="rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2 h-4 w-4 shadow-sm transition"
+                                            class="rounded-md border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-emerald-600 focus:ring-emerald-500 mr-2 h-4 w-4 shadow-sm transition"
                                         >
                                         <span>Select All Modules</span>
                                     </label>
                                 </div>
 
                                 <!-- Encapsulated Custom Scrollable Grid Frame -->
-                                <div class="bg-gray-50/60 border border-gray-100/80 rounded-xl p-3.5">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6 text-sm text-gray-700 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
+                                <div class="bg-gray-50/60 dark:bg-gray-700/40 border border-gray-100/80 dark:border-gray-600 rounded-xl p-3.5">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2.5 gap-x-6 text-sm text-gray-700 dark:text-gray-300 max-h-[200px] overflow-y-auto pr-1 custom-scrollbar">
                                         @foreach ( $permissions as $permission )
-                                            <label class="inline-flex items-center cursor-pointer select-none py-1 px-2 rounded-lg hover:bg-white hover:shadow-xs transition">
+                                            <label class="inline-flex items-center cursor-pointer select-none py-1 px-2 rounded-lg hover:bg-white hover:shadow-xs dark:hover:bg-slate-700 dark:hover:shadow-none transition">
                                                 <input
                                                     type="checkbox"
                                                     name="permissions[]"
                                                     value="{{ $permission['key'] }}"
                                                     x-model="form.permissions['{{ $permission['key'] }}']"
-                                                    class="rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-3 h-4 w-4 shadow-sm transition"
+                                                    class="rounded-md border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-700 text-emerald-600 focus:ring-emerald-500 mr-3 h-4 w-4 shadow-sm transition"
                                                 >
-                                                <span class="text-xs font-semibold text-gray-700 tracking-tight">{{ $permission['label'] }}</span>
+                                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-200 tracking-tight">{{ $permission['label'] }}</span>
                                             </label>
                                         @endforeach
                                     </div>
@@ -739,17 +743,17 @@
                             </div>
 
                             <!-- Footer Operations Control Strip Section -->
-                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
                                 <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'roles-edit')"
-                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                                 >
                                     Save Configuration
                                 </button>
@@ -762,7 +766,7 @@
             <!-- Modal: View -->
             <x-modal name="roles-view" :show="false" maxWidth="lg">
                 <div
-                    class="p-6 bg-white rounded-2xl relative"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl relative"
                     x-data="roleComponent"
                     x-on:set-view-id.window="
                         roleId = $event.detail;
@@ -770,14 +774,14 @@
                     "
                 >
                     <!-- Modal: Header Layout -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-700 border border-gray-100">
+                            <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-gray-700 flex items-center justify-center text-slate-700 dark:text-gray-200 border border-gray-100 dark:border-gray-600">
                                 <i class="fa-solid fa-id-card text-sm"></i>
                             </div>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <h2 class="text-lg font-black text-gray-900 tracking-tight" x-text="role.name || 'Role Details'"></h2>
+                                    <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh" x-text="role.name || 'Role Details'"></h2>
 
                                     <!-- Role Status Badge -->
                                     <template x-if="role.status">
@@ -790,14 +794,14 @@
                                         ></span>
                                     </template>
                                 </div>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Overview of assigned privileges and associated user accounts</p>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Overview of assigned privileges and associated user accounts</p>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-view')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -843,7 +847,7 @@
 
                         <!-- Module Permissions Section -->
                         <div class="border-t border-gray-100 pt-4">
-                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5">Enabled Modules</h3>
+                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">Enabled Modules</h3>
                             <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
                                 <template x-for="permission in (role.permissions ?? [])" :key="permission.name" >
                                     <span class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold bg-gray-100 border border-gray-200/40 text-gray-700 tracking-tight" x-text="permission.label" ></span>
@@ -854,7 +858,7 @@
 
                         <!-- Assigned Users Section -->
                         <div class="border-t border-gray-100 pt-4">
-                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5">Assigned Members</h3>
+                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">Assigned Members</h3>
                             <div class="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
                                 <template x-for="user in (role.users ?? [])" :key="user.id" >
                                     <div class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-2.5 hover:shadow-xs transition duration-150">
@@ -877,7 +881,7 @@
                     <div class="flex justify-end gap-3 border-t border-gray-100 mt-6 pt-4">
                         <button
                             type="button"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                             x-on:click="$dispatch('close-modal', 'roles-view')"
                         >
                             Close Details
@@ -885,7 +889,7 @@
 
                         <button
                             type="button"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                             x-on:click=" $dispatch('close-modal', 'roles-view'); $nextTick(() => { $dispatch('open-modal', 'roles-edit'); window.dispatchEvent( new CustomEvent('set-edit-id', { detail: roleId }) ); }) "
                         >
                             Edit Role
@@ -947,24 +951,24 @@
                         trashRoleName = results.find(role => role.id === $event.detail)?.name ?? '';
                         trashError = '';
                     "
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                 >
                     {{-- Modal: Header Layout --}}
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100/50">
                                 <i class="fa-solid fa-trash-can text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Move to Trash</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Archive inactive user roles temporarily to the trash log</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Move to Trash</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Archive inactive user roles temporarily to the trash log</p>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-trash')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -1012,7 +1016,7 @@
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-trash')"
                             x-bind:disabled="trashLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                         >
                             Cancel
                         </button>
@@ -1093,24 +1097,24 @@
                         restoreRoleName = results.find(role => role.id === $event.detail)?.name ?? '';
                         restoreError = '';
                     "
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                 >
                     {{-- Modal: Header Layout --}}
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100/50">
                                 <i class="fa-solid fa-rotate-left text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Restore Role</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Recover and reactivate an archived permission profile</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Restore Role</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Recover and reactivate an archived permission profile</p>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-restore')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -1158,7 +1162,7 @@
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-restore')"
                             x-bind:disabled="restoreLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                         >
                             Cancel
                         </button>
@@ -1239,24 +1243,24 @@
                         forceDeleteRoleName = results.find(role => role.id === $event.detail)?.name ?? '';
                         forceDeleteError = '';
                     "
-                    class="p-6 bg-white rounded-2xl"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                 >
                     {{-- Modal: Header Layout --}}
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600 border border-red-100/50">
                                 <i class="fa-solid fa-triangle-exclamation text-sm"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 tracking-tight">Permanent Delete</h2>
-                                <p class="text-[11px] font-medium text-gray-400 -mt-0.5">Irreversible destructive action to wipe out role history</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Permanent Delete</h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Irreversible destructive action to wipe out role history</p>
                             </div>
                         </div>
 
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-force-delete')"
-                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition cursor-pointer"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
                         >
                             <i class="fa-solid fa-xmark text-sm"></i>
                         </button>
@@ -1308,7 +1312,7 @@
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-force-delete')"
                             x-bind:disabled="forceDeleteLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white border border-gray-200 hover:bg-gray-50 text-slate-700 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                         >
                             Cancel
                         </button>

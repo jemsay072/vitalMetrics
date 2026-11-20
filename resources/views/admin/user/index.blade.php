@@ -28,10 +28,11 @@
                 </x-slot>
             </x-page-header>
         </div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            {{--Search Filter--}}
-            <x-table.toolbar>
 
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+            {{-- Search Filter --}}
+            <x-table.toolbar>
                 <x-table.search
                     x-model="search"
                     placeholder="Search User..."
@@ -49,8 +50,9 @@
                         x-on:click="
                             window.location.href = '{{ route('admin.users.show', ['user' => '__USER_ID__']) }}'.replace('__USER_ID__', item.id)
                         "
-                        class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md hover:border-blue-200 transition-all duration-200 cursor-pointer"
+                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500 transition-all duration-200 cursor-pointer"
                     >
+
                         {{-- User Header --}}
                         <div class="flex items-start justify-between gap-3 mb-4">
 
@@ -64,13 +66,13 @@
                                         ? '/storage/' + item.profile.avatar
                                         : ''"
                                     x-bind:alt="item.name"
-                                    class="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-gray-100"
+                                    class="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
                                 >
 
                                 {{-- Initials Fallback --}}
                                 <div
                                     x-show="!item.profile?.avatar"
-                                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700 ring-2 ring-blue-50"
+                                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40 text-sm font-semibold text-blue-700 dark:text-blue-300 ring-2 ring-blue-50 dark:ring-blue-900/30"
                                     x-text="(item.name ?? 'U')
                                         .trim()
                                         .split(/\s+/)
@@ -82,12 +84,12 @@
 
                                 <div class="min-w-0">
                                     <h3
-                                        class="text-sm font-semibold text-gray-900 break-words"
+                                        class="text-sm font-semibold text-gray-900 dark:text-white break-words"
                                         x-text="item.name"
                                     ></h3>
 
                                     <p
-                                        class="text-xs text-gray-500 mt-1 break-all"
+                                        class="text-xs text-gray-500 dark:text-gray-400 mt-1 break-all"
                                         x-text="item.email"
                                     ></p>
                                 </div>
@@ -105,7 +107,7 @@
                                     "
                                     title="Edit User"
                                     aria-label="Edit User"
-                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                    class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-solid fa-pen text-sm"></i>
                                 </button>
@@ -115,11 +117,11 @@
                                     type="button"
                                     x-on:click.stop="
                                         $dispatch('set-deactivated-id', item.id);
-                                        $dispatch('open-modal', 'users-deactivate');
+                                        $dispatch('open-modal', 'users-deactivated');
                                     "
                                     title="Deactivate User"
                                     aria-label="Deactivate User"
-                                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                    class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-regular fa-eye-slash text-sm"></i>
                                 </button>
@@ -128,14 +130,16 @@
                         </div>
 
                         {{-- Divider --}}
-                        <div class="border-t border-gray-100 my-3"></div>
+                        <div class="border-t border-gray-100 dark:border-gray-700 my-3"></div>
 
                         {{-- Role + Status --}}
                         <div class="flex items-center justify-between gap-3">
 
                             {{-- Role Badge --}}
                             <div>
-                                <p class="text-xs text-gray-500 mb-2">Role</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                    Role
+                                </p>
 
                                 <span
                                     x-bind:class="{
@@ -153,7 +157,9 @@
 
                             {{-- Status Badge --}}
                             <div class="text-right">
-                                <p class="text-xs text-gray-500 mb-2">Status</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                    Status
+                                </p>
 
                                 <span
                                     x-bind:class="{
@@ -176,40 +182,49 @@
                 {{-- Empty State --}}
                 <div
                     x-show="results.length === 0 && !loading"
-                    class="md:col-span-2 lg:col-span-3 text-center py-10 px-4 bg-white rounded-xl border border-gray-200"
+                    class="md:col-span-2 lg:col-span-3 text-center py-10 px-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
                 >
-                    <i class="fa-solid fa-users text-3xl text-gray-300 mb-3"></i>
+                    <i class="fa-solid fa-users text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
 
-                    <p class="text-sm font-medium text-gray-700">
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
                         No users found.
                     </p>
 
-                    <p class="text-xs text-gray-500 mt-1">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Try adjusting your search.
                     </p>
                 </div>
             </div>
 
-            <!-- Desktop Table View (hidden on mobile) -->
-            <div class="hidden xl:block relative bg-white rounded-xl border border-gray-200" x-show="view === 'list'">
-                <!---Loading Overlay -->
-                <div x-show="loading" class="absolute inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center z-10">
+            {{-- Desktop Table View --}}
+            <div
+                class="hidden xl:block relative bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
+                x-show="view === 'list'"
+            >
+
+                {{-- Loading Overlay --}}
+                <div
+                    x-show="loading"
+                    class="absolute inset-0 bg-gray-200/75 dark:bg-gray-900/75 flex items-center justify-center z-10"
+                >
                     <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                 </div>
+
                 <x-table.container>
+
                     {{-- Table Header --}}
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead class="bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                         <x-table.row>
                             @foreach ($columns as $column)
                                 <x-table.header-cell>
-                                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                         {{ $column['label'] }}
                                     </span>
                                 </x-table.header-cell>
                             @endforeach
 
                             <x-table.header-cell>
-                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                                     Actions
                                 </span>
                             </x-table.header-cell>
@@ -217,10 +232,11 @@
                     </thead>
 
                     {{-- Table Body --}}
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+
                         <template x-for="item in results" :key="item.id">
                             <x-table.row
-                                class="bg-white hover:bg-blue-50/50 transition-colors duration-150 cursor-pointer"
+                                class="bg-white dark:bg-gray-800 hover:bg-blue-50/50 dark:hover:bg-gray-700/50 transition-colors duration-150 cursor-pointer"
                                 x-on:click="
                                     window.location.href = '{{ route('admin.users.show', ['user' => '__USER_ID__']) }}'.replace('__USER_ID__', item.id)
                                 "
@@ -259,13 +275,13 @@
                                                             ? '/storage/' + item.profile.avatar
                                                             : ''"
                                                         x-bind:alt="item.name"
-                                                        class="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-gray-100"
+                                                        class="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700"
                                                     >
 
                                                     {{-- Initials Fallback --}}
                                                     <div
                                                         x-show="!item.profile?.avatar"
-                                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700 ring-2 ring-blue-50"
+                                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40 text-sm font-semibold text-blue-700 dark:text-blue-300 ring-2 ring-blue-50 dark:ring-blue-900/30"
                                                         x-text="(item.name ?? 'U')
                                                             .trim()
                                                             .split(/\s+/)
@@ -277,7 +293,7 @@
 
                                                     {{-- Name --}}
                                                     <span
-                                                        class="text-sm font-medium text-gray-800"
+                                                        class="text-sm font-medium text-gray-800 dark:text-gray-100"
                                                         x-text="item.name"
                                                     ></span>
 
@@ -288,7 +304,7 @@
                                         @else
                                             <x-table.cell>
                                                 <span
-                                                    class="text-sm text-gray-700"
+                                                    class="text-sm text-gray-700 dark:text-gray-300"
                                                     x-text="item['{{ $column['key'] }}'] ?? '-'"
                                                 ></span>
                                             </x-table.cell>
@@ -318,7 +334,7 @@
                                         @else
                                             <x-table.cell>
                                                 <span
-                                                    class="text-sm text-gray-700"
+                                                    class="text-sm text-gray-700 dark:text-gray-300"
                                                     x-text="item['{{ $column['key'] }}']?.['{{ $column['field'] }}'] ?? '-'"
                                                 ></span>
                                             </x-table.cell>
@@ -333,54 +349,70 @@
                                     edit-event="set-edit-id"
                                     edit-modal="users-edit"
                                     deactivated-event="set-deactivated-id"
-                                    deactivated-modal="users-deactivate"
+                                    deactivated-modal="users-deactivated"
                                 />
 
                             </x-table.row>
                         </template>
+
                     </tbody>
                 </x-table.container>
             </div>
 
-            <!-- Modal deactivated-->
+            {{-- Deactivate User Modal --}}
             <x-modal name="users-deactivated" :show="false" maxWidth="lg">
                 <div
                     class="p-6"
-                    x-data="{usersId: null}"
-                    x-on:set-deactivated-id.window="
-                        usersId = $event.detail;
-                        fetch('/admin/users/' + usersId)
-                            .then(res => res.json())
-                            .then(data => users = data);
-                    "
+                    x-data="{ usersId: null }"
+                    x-on:set-deactivated-id.window="usersId = $event.detail"
                 >
-                    <h2 class="text-lg font-semibold mb-4">Deactivate User</h2>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                            <i class="fa-solid fa-user-slash"></i>
+                        </div>
+
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Deactivate User
+                        </h2>
+                    </div>
+
                     <div class="form" id="deactivated-users-form">
-                        <form :action="'/admin/users/' + usersId" method="post">
+                        <form
+                            x-bind:action="'/admin/users/' + usersId + '/deactivate'"
+                            method="POST"
+                        >
                             @csrf
                             @method('PUT')
-                            <p>Are you sure you want to deactivate this user?</p>
-                            <!-- Buttons -->
-                            <div class="flex justify-end space-x-2 mt-4">
+
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Are you sure you want to deactivate this user?
+                                This account will no longer be able to access the system.
+                            </p>
+
+                            {{-- Buttons --}}
+                            <div class="flex justify-end gap-2 mt-6">
+
                                 <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'users-deactivated')"
-                                    class="px-4 py-2 bg-gray-200 rounded-md"
+                                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition"
                                 >
                                     Cancel
                                 </button>
 
                                 <button
                                     type="submit"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-md"
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition"
                                 >
-                                    Deactivate Workout
+                                    Deactivate User
                                 </button>
+
                             </div>
                         </form>
                     </div>
                 </div>
             </x-modal>
+
         </div>
     </div>
 </x-app-layout>

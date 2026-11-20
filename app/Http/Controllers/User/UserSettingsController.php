@@ -62,11 +62,29 @@ class UserSettingsController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
 
+        // Checking if Admin is set
+        if($user->isAdmin()){
+            $validated = $request->validate([
+                'theme' => 'required|string|in:light,dark',
+            ]);
+
+            $user->preferences()->updateOrCreate(
+                [],
+                $validated
+            );
+
+            return back()->with([
+                'success' =>'Theme updated successfully!',
+                'active_tab' => 'general',
+            ]);
+        }
+
+        // Normal validation & Update
         $validated = $request->validate([
             'theme' => 'required|string|in:light,dark',
             'weight_unit' => 'required|string|in:kg,lbs',
             'date_format' => 'required|string|in:M d, Y,Y-m-d,d/m/Y',
-            'dashboard_landing' => 'required|string|in:dashboard,bp,workout-tracker,weight',
+            'dashboard_landing' => 'required|string|in:dashboard,analytics',
             'notifications_enabled' => 'nullable|boolean',
             'email_notifications' => 'nullable|boolean',
         ]);

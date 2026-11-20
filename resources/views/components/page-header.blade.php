@@ -15,12 +15,16 @@
     >
         @foreach ($breadcrumbs as $crumb)
 
-            <a
-                href="{{ $crumb['url'] }}"
-                class="hover:text-blue-600 dark:hover:text-blue-400 transition duration-150"
-            >
+            @if (isset( $crumb['url']))
+                <a
+                    href="{{ $crumb['url'] }}"
+                    class="hover:text-blue-600 dark:hover:text-blue-400 transition duration-150"
+                >
+                    {{ $crumb['label'] }}
+                </a>
+            @else
                 {{ $crumb['label'] }}
-            </a>
+            @endif
 
             @if (!$loop->last)
                 <span class="mx-1.5 text-gray-300 dark:text-gray-600">/</span>
