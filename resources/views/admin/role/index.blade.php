@@ -135,8 +135,10 @@
                                 </x-table.header-cell>
                             </template>
 
-                            <x-table.header-cell class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600">
-                                Action
+                            <x-table.header-cell class="!px-3 py-3 text-center whitespace-nowrap">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-300">
+                                    Action
+                                </span>
                             </x-table.header-cell>
                         </x-table.row>
                     </thead>
@@ -251,8 +253,9 @@
                                 </template> --}}
 
                                 {{-- Actions --}}
-                                <td class="px-6 py-4 text-center">
+                                <td class="px-3 py-4 text-center whitespace-nowrap">
                                     <x-table.actions
+                                        :as-cell="false"
                                         edit-event="set-edit-id"
                                         edit-modal="roles-edit"
                                         edit-show-when="activeTab === 'roles'"
@@ -303,24 +306,24 @@
                     x-show="loading"
                     class="flex justify-center py-6"
                 >
-                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+                    <div class="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 dark:border-gray-700 border-t-blue-500 dark:border-t-emerald-500"></div>
                 </div>
 
                 {{-- Trash Notice --}}
                 <div
                     x-show="activeTab === 'trash'"
                     x-cloak
-                    class="rounded-lg border border-amber-200 bg-amber-50 p-4"
+                    class="rounded-xl border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-900/20 p-4"
                 >
                     <div class="flex items-start gap-3">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-1"></i>
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600 dark:text-amber-400 mt-1"></i>
 
                         <div>
-                            <h3 class="font-semibold text-amber-800">
+                            <h3 class="font-semibold text-amber-800 dark:text-amber-300">
                                 Trash History
                             </h3>
 
-                            <p class="text-sm text-amber-700">
+                            <p class="text-sm text-amber-700 dark:text-amber-400 mt-1">
                                 These roles have been moved to trash.
                                 You can restore them or permanently delete them.
                             </p>
@@ -330,25 +333,24 @@
 
                 {{-- Role Cards --}}
                 <template x-for="item in results" :key="item.id">
-                    <div
-                        class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 space-y-4"
-                    >
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 space-y-4 transition-colors duration-200">
 
                         {{-- Role Information --}}
                         <div class="flex items-start justify-between gap-3">
 
                             <div class="min-w-0">
                                 <h3
-                                    class="font-semibold text-gray-900 text-base"
+                                    class="font-semibold text-gray-900 dark:text-white text-base"
                                     x-text="item.name"
                                 ></h3>
 
                                 <p
-                                    class="text-sm text-gray-500 mt-1 break-words"
+                                    class="text-sm text-gray-500 dark:text-gray-400 mt-1 break-words"
                                     x-text="item.description || 'No description provided.'"
                                 ></p>
                             </div>
 
+                            {{-- Role Status --}}
                             <select
                                 x-model="item.status"
                                 @change="
@@ -378,10 +380,10 @@
                                         item.status = previousStatus;
                                     });
                                 "
-                                class="w-28 rounded-md px-2 py-1 text-xs font-bold uppercase border"
+                                class="w-28 shrink-0 rounded-lg px-2 py-1.5 text-xs font-bold uppercase border focus:outline-none focus:ring-2 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition-colors"
                                 :class="item.status === 'active'
-                                    ? 'bg-green-100 text-green-700 border-green-200'
-                                    : 'bg-red-100 text-red-700 border-red-200'"
+                                    ? 'bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 focus:ring-green-500'
+                                    : 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800 focus:ring-red-500'"
                             >
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
@@ -390,19 +392,21 @@
                         </div>
 
                         {{-- Users --}}
-                        <div class="flex items-center justify-between text-sm border-t border-gray-100 pt-3">
-                            <span class="text-gray-500">Assigned Users</span>
+                        <div class="flex items-center justify-between text-sm border-t border-gray-100 dark:border-gray-700 pt-3">
+                            <span class="text-gray-500 dark:text-gray-400">
+                                Assigned Users
+                            </span>
 
                             <span
-                                class="font-semibold text-gray-800"
+                                class="font-semibold text-gray-800 dark:text-gray-200"
                                 x-text="item.users_count ?? 0"
                             ></span>
                         </div>
 
                         {{-- Permissions --}}
-                        <div class="border-t border-gray-100 pt-3">
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
 
-                            <p class="text-sm font-semibold text-gray-700 mb-2">
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                 Permissions
                             </p>
 
@@ -413,7 +417,7 @@
                                     :key="index"
                                 >
                                     <span
-                                        class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-blue-100 text-blue-700"
+                                        class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/50"
                                         x-text="permission"
                                     ></span>
                                 </template>
@@ -432,14 +436,14 @@
                         <div
                             x-show="activeTab === 'trash'"
                             x-cloak
-                            class="border-t border-gray-100 pt-3"
+                            class="border-t border-gray-100 dark:border-gray-700 pt-3"
                         >
-                            <p class="text-sm text-gray-500">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
                                 Deleted At
                             </p>
 
                             <p
-                                class="text-sm font-medium text-gray-800 mt-1"
+                                class="text-sm font-medium text-gray-800 dark:text-gray-200 mt-1"
                                 x-text="item.deleted_at
                                     ? new Date(item.deleted_at).toLocaleString()
                                     : '-'"
@@ -447,14 +451,14 @@
                         </div>
 
                         {{-- Actions --}}
-                        <div class="flex items-center justify-end gap-2 border-t border-gray-100 pt-3">
+                        <div class="flex flex-wrap items-center justify-end gap-2 border-t border-gray-100 dark:border-gray-700 pt-3">
 
                             {{-- Edit --}}
                             <button
                                 x-show="activeTab === 'roles'"
                                 type="button"
                                 @click="$dispatch('set-edit-id', item.id); $dispatch('open-modal', 'roles-edit')"
-                                class="inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-100"
+                                class="inline-flex items-center gap-2 rounded-lg bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800/50 px-3 py-2 text-sm font-medium text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition cursor-pointer"
                             >
                                 <i class="fa-solid fa-pen"></i>
                                 Edit
@@ -465,7 +469,7 @@
                                 x-show="activeTab === 'roles'"
                                 type="button"
                                 @click="$dispatch('set-trash-id', item.id); $dispatch('open-modal', 'roles-trash')"
-                                class="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+                                class="inline-flex items-center gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800/50 px-3 py-2 text-sm font-medium text-amber-600 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition cursor-pointer"
                             >
                                 <i class="fa-solid fa-trash"></i>
                                 Trash
@@ -476,7 +480,7 @@
                                 x-show="activeTab === 'trash'"
                                 type="button"
                                 @click="$dispatch('set-restore-id', item.id); $dispatch('open-modal', 'roles-restore')"
-                                class="inline-flex items-center gap-2 rounded-lg bg-green-50 px-3 py-2 text-sm font-medium text-green-600 hover:bg-green-100"
+                                class="inline-flex items-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800/50 px-3 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition cursor-pointer"
                             >
                                 <i class="fa-solid fa-rotate-left"></i>
                                 Restore
@@ -487,7 +491,7 @@
                                 x-show="activeTab === 'trash'"
                                 type="button"
                                 @click="$dispatch('set-force-delete-id', item.id); $dispatch('open-modal', 'roles-force-delete')"
-                                class="inline-flex items-center gap-2 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-100"
+                                class="inline-flex items-center gap-2 rounded-lg bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800/50 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/50 transition cursor-pointer"
                             >
                                 <i class="fa-solid fa-trash-can"></i>
                                 Delete
@@ -501,12 +505,12 @@
                 {{-- Empty State --}}
                 <div
                     x-show="results.length === 0 && !loading"
-                    class="rounded-xl border border-gray-200 bg-white py-10 text-center"
+                    class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-10 text-center"
                 >
-                    <i class="fa-solid fa-folder-open text-3xl text-gray-300 mb-3"></i>
+                    <i class="fa-solid fa-folder-open text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
 
                     <p
-                        class="text-sm text-gray-500"
+                        class="text-sm text-gray-500 dark:text-gray-400"
                         x-text="activeTab === 'roles'
                             ? 'No roles found.'
                             : 'No trash history found.'"
@@ -773,28 +777,36 @@
                         loadRole(roleId)
                     "
                 >
+
                     <!-- Modal: Header Layout -->
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-gray-700 flex items-center justify-center text-slate-700 dark:text-gray-200 border border-gray-100 dark:border-gray-600">
                                 <i class="fa-solid fa-id-card text-sm"></i>
                             </div>
+
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh" x-text="role.name || 'Role Details'"></h2>
+                                    <h2
+                                        class="text-lg font-black text-gray-900 dark:text-white tracking-tight"
+                                        x-text="role.name || 'Role Details'"
+                                    ></h2>
 
                                     <!-- Role Status Badge -->
                                     <template x-if="role.status">
                                         <span
                                             x-text="role.status"
-                                            class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border shadow-2xs"
+                                            class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border"
                                             :class="role.status === 'active'
-                                                ? 'bg-green-50 text-green-700 border-green-200/60'
-                                                : 'bg-red-50 text-red-700 border-red-200/60'"
+                                                ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800'
+                                                : 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800'"
                                         ></span>
                                     </template>
                                 </div>
-                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Overview of assigned privileges and associated user accounts</p>
+
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">
+                                    Overview of assigned privileges and associated user accounts
+                                </p>
                             </div>
                         </div>
 
@@ -808,77 +820,154 @@
                     </div>
 
                     <!-- Loading State Spinner -->
-                    <div x-show="loading" class="flex flex-col justify-center items-center py-12 gap-3" x-cloak>
-                        <div class="animate-spin rounded-full h-8 w-8 border-2 border-gray-100 border-b-slate-600"></div>
-                        <p class="text-xs font-semibold text-gray-400 tracking-wide">Loading role details...</p>
+                    <div
+                        x-show="loading"
+                        class="flex flex-col justify-center items-center py-12 gap-3"
+                        x-cloak
+                    >
+                        <div class="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 dark:border-gray-700 border-b-slate-600 dark:border-b-emerald-500"></div>
+
+                        <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 tracking-wide">
+                            Loading role details...
+                        </p>
                     </div>
 
                     <!-- Modal: Content View -->
-                    <div id="role-view-content" x-show="!loading" class="space-y-5" x-cloak>
+                    <div
+                        id="role-view-content"
+                        x-show="!loading"
+                        class="space-y-5"
+                        x-cloak
+                    >
 
                         <!-- Summary Information Micro Cards -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="p-3 bg-slate-50/60 border border-gray-100 rounded-xl flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-white shadow-xs border border-gray-100 flex items-center justify-center text-slate-500">
+
+                            <!-- Users Count -->
+                            <div class="p-3 bg-slate-50/60 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-white dark:bg-gray-700 shadow-xs border border-gray-100 dark:border-gray-600 flex items-center justify-center text-slate-500 dark:text-gray-300">
                                     <i class="fa-solid fa-users text-xs"></i>
                                 </div>
+
                                 <div>
-                                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Active Users</span>
-                                    <span class="text-sm font-black text-gray-800" x-text="(role.users_count ?? 0) + ' Accounts'"></span>
+                                    <span class="block text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">
+                                        Active Users
+                                    </span>
+
+                                    <span
+                                        class="text-sm font-black text-gray-800 dark:text-white"
+                                        x-text="(role.users_count ?? 0) + ' Accounts'"
+                                    ></span>
                                 </div>
                             </div>
 
-                            <div class="p-3 bg-slate-50/60 border border-gray-100 rounded-xl flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-white shadow-xs border border-gray-100 flex items-center justify-center text-slate-500">
+                            <!-- Permissions Count -->
+                            <div class="p-3 bg-slate-50/60 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600 rounded-xl flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-white dark:bg-gray-700 shadow-xs border border-gray-100 dark:border-gray-600 flex items-center justify-center text-slate-500 dark:text-gray-300">
                                     <i class="fa-solid fa-toggle-on text-xs"></i>
                                 </div>
+
                                 <div>
-                                    <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Permissions</span>
-                                    <span class="text-sm font-black text-gray-800" x-text="(role.permissions_count ?? 0) + ' Enabled'"></span>
+                                    <span class="block text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider">
+                                        Permissions
+                                    </span>
+
+                                    <span
+                                        class="text-sm font-black text-gray-800 dark:text-white"
+                                        x-text="(role.permissions_count ?? 0) + ' Enabled'"
+                                    ></span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Description Frame -->
-                        <div class="p-3.5 bg-gray-50/40 border border-gray-100/70 rounded-xl">
-                            <span class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">Operational Scope</span>
-                            <p class="text-sm font-medium text-gray-600 leading-relaxed" x-text="role.description || 'No custom description notes provided for this management profile.'" ></p>
+                        <div class="p-3.5 bg-gray-50/40 dark:bg-gray-700/40 border border-gray-100/70 dark:border-gray-600 rounded-xl">
+                            <span class="block text-[11px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-1">
+                                Operational Scope
+                            </span>
+
+                            <p
+                                class="text-sm font-medium text-gray-600 dark:text-gray-300 leading-relaxed"
+                                x-text="role.description || 'No custom description notes provided for this management profile.'"
+                            ></p>
                         </div>
 
                         <!-- Module Permissions Section -->
-                        <div class="border-t border-gray-100 pt-4">
-                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">Enabled Modules</h3>
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">
+                                Enabled Modules
+                            </h3>
+
                             <div class="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-1">
-                                <template x-for="permission in (role.permissions ?? [])" :key="permission.name" >
-                                    <span class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold bg-gray-100 border border-gray-200/40 text-gray-700 tracking-tight" x-text="permission.label" ></span>
+                                <template
+                                    x-for="permission in (role.permissions ?? [])"
+                                    :key="permission.name"
+                                >
+                                    <span
+                                        class="inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold bg-gray-100 dark:bg-gray-700 border border-gray-200/60 dark:border-gray-600 text-gray-700 dark:text-gray-200 tracking-tight"
+                                        x-text="permission.label"
+                                    ></span>
                                 </template>
-                                <span x-show="!(role.permissions ?? []).length" class="text-xs font-medium text-gray-400 bg-gray-50 px-2.5 py-1 rounded-lg border border-dashed border-gray-200" > No permissions assigned. </span>
+
+                                <span
+                                    x-show="!(role.permissions ?? []).length"
+                                    class="text-xs font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 px-2.5 py-1 rounded-lg border border-dashed border-gray-200 dark:border-gray-600"
+                                >
+                                    No permissions assigned.
+                                </span>
                             </div>
                         </div>
 
                         <!-- Assigned Users Section -->
-                        <div class="border-t border-gray-100 pt-4">
-                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">Assigned Members</h3>
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+                            <h3 class="text-xs font-bold text-gray-400 dark:text-gray-400 uppercase tracking-wider mb-2.5">
+                                Assigned Members
+                            </h3>
+
                             <div class="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
-                                <template x-for="user in (role.users ?? [])" :key="user.id" >
-                                    <div class="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-2.5 hover:shadow-xs transition duration-150">
-                                        <!-- Initials Avatar Box Upgrade -->
-                                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-extrabold text-slate-700 uppercase border border-slate-200/40" x-text="user.name.split(' ').map(part => part[0]).slice(0, 2).join('').toUpperCase()" ></div>
+
+                                <template
+                                    x-for="user in (role.users ?? [])"
+                                    :key="user.id"
+                                >
+                                    <div class="flex items-center gap-3 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-700/50 p-2.5 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+
+                                        <!-- Initials Avatar -->
+                                        <div
+                                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-gray-600 text-[10px] font-extrabold text-slate-700 dark:text-gray-200 uppercase border border-slate-200/40 dark:border-gray-500"
+                                            x-text="user.name.split(' ').map(part => part[0]).slice(0, 2).join('').toUpperCase()"
+                                        ></div>
+
                                         <div class="min-w-0">
-                                            <p class="text-xs font-bold text-gray-800" x-text="user.name" ></p>
-                                            <p class="text-[11px] font-medium text-gray-400 truncate -mt-0.5" x-text="user.email" ></p>
+                                            <p
+                                                class="text-xs font-bold text-gray-800 dark:text-gray-100"
+                                                x-text="user.name"
+                                            ></p>
+
+                                            <p
+                                                class="text-[11px] font-medium text-gray-400 dark:text-gray-400 truncate -mt-0.5"
+                                                x-text="user.email"
+                                            ></p>
                                         </div>
                                     </div>
                                 </template>
-                                <div x-show="!(role.users ?? []).length" class="text-center py-4 bg-gray-50/50 border border-dashed border-gray-100 rounded-xl">
-                                    <p class="text-xs font-medium text-gray-400" > No team accounts linked to this role yet. </p>
+
+                                <!-- Empty State -->
+                                <div
+                                    x-show="!(role.users ?? []).length"
+                                    class="text-center py-4 bg-gray-50/50 dark:bg-gray-700/40 border border-dashed border-gray-100 dark:border-gray-600 rounded-xl"
+                                >
+                                    <p class="text-xs font-medium text-gray-400 dark:text-gray-500">
+                                        No team accounts linked to this role yet.
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Modal: Footer Actions -->
-                    <div class="flex justify-end gap-3 border-t border-gray-100 mt-6 pt-4">
+                    <div class="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 mt-6 pt-4">
+
                         <button
                             type="button"
                             class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
@@ -890,7 +979,15 @@
                         <button
                             type="button"
                             class="inline-flex items-center justify-center px-5 h-[42px] bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
-                            x-on:click=" $dispatch('close-modal', 'roles-view'); $nextTick(() => { $dispatch('open-modal', 'roles-edit'); window.dispatchEvent( new CustomEvent('set-edit-id', { detail: roleId }) ); }) "
+                            x-on:click="
+                                $dispatch('close-modal', 'roles-view');
+                                $nextTick(() => {
+                                    $dispatch('open-modal', 'roles-edit');
+                                    window.dispatchEvent(
+                                        new CustomEvent('set-edit-id', { detail: roleId })
+                                    );
+                                })
+                            "
                         >
                             Edit Role
                         </button>
@@ -953,15 +1050,23 @@
                     "
                     class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                 >
+
                     {{-- Modal: Header Layout --}}
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
+
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 border border-amber-100/50">
+                            <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400 border border-amber-100/50 dark:border-amber-800/50">
                                 <i class="fa-solid fa-trash-can text-sm"></i>
                             </div>
+
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Move to Trash</h2>
-                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Archive inactive user roles temporarily to the trash log</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                                    Move to Trash
+                                </h2>
+
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">
+                                    Archive inactive user roles temporarily to the trash log
+                                </p>
                             </div>
                         </div>
 
@@ -976,47 +1081,62 @@
 
                     {{-- Modal: Content Area --}}
                     <div class="space-y-4">
-                        <!-- Center-ish Focused Warning Box Card Layout -->
-                        <div class="p-4 bg-amber-50/40 border border-amber-100/60 rounded-xl flex gap-3.5">
-                            <div class="text-amber-500 text-xl shrink-0 mt-0.5 animate-pulse">
+
+                        {{-- Warning Box --}}
+                        <div class="p-4 bg-amber-50/40 dark:bg-amber-900/20 border border-amber-100/60 dark:border-amber-800/60 rounded-xl flex gap-3.5">
+
+                            <div class="text-amber-500 dark:text-amber-400 text-xl shrink-0 mt-0.5">
                                 <i class="fa-solid fa-circle-exclamation"></i>
                             </div>
 
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold text-gray-800 leading-tight">
+
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">
                                     Are you sure you want to soft-delete this profile?
                                 </p>
 
-                                <!-- Highlighted Target Entity Card Badge -->
-                                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-amber-200/60 rounded-lg shadow-xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                    <span class="text-xs font-black text-slate-700 tracking-tight uppercase" x-text="trashRoleName || 'Target Role Profile'"></span>
+                                {{-- Highlighted Target Entity Badge --}}
+                                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-gray-700 border border-amber-200/60 dark:border-gray-600 rounded-lg shadow-xs">
+
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400"></span>
+
+                                    <span
+                                        class="text-xs font-black text-slate-700 dark:text-gray-100 tracking-tight uppercase"
+                                        x-text="trashRoleName || 'Target Role Profile'"
+                                    ></span>
                                 </div>
 
-                                <p class="mt-2.5 text-xs font-medium text-gray-400 leading-normal">
-                                    This role's authorization capabilities will be suspended, but you can securely restore it later from your <strong class="text-gray-500 font-bold">Trash History</strong> tab.
+                                <p class="mt-2.5 text-xs font-medium text-gray-500 dark:text-gray-400 leading-normal">
+                                    This role's authorization capabilities will be suspended, but you can securely restore it later from your
+                                    <strong class="text-gray-700 dark:text-gray-200 font-bold">
+                                        Trash History
+                                    </strong>
+                                    tab.
                                 </p>
+
                             </div>
                         </div>
 
-                        {{-- Dynamic Error Alert Banner Box --}}
+                        {{-- Dynamic Error Alert Banner --}}
                         <div
                             x-show="trashError"
                             x-cloak
-                            class="rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-semibold text-red-700 tracking-tight flex items-center gap-2"
+                            class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 p-3.5 text-xs font-semibold text-red-700 dark:text-red-300 tracking-tight flex items-center gap-2"
                         >
                             <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                             <span x-text="trashError"></span>
                         </div>
+
                     </div>
 
                     {{-- Modal: Footer Actions --}}
-                    <div class="flex justify-end gap-3 border-t border-gray-100 mt-6 pt-4">
+                    <div class="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 mt-6 pt-4">
+
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-trash')"
                             x-bind:disabled="trashLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Cancel
                         </button>
@@ -1025,8 +1145,9 @@
                             type="button"
                             x-on:click="moveToTrash()"
                             x-bind:disabled="trashLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-amber-600 hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
+
                             <span x-show="!trashLoading" class="flex items-center gap-1.5">
                                 <i class="fa-regular fa-trash-can text-[11px]"></i>
                                 Move to Trash
@@ -1034,13 +1155,28 @@
 
                             <span x-show="trashLoading" class="flex items-center gap-1.5">
                                 <svg class="animate-spin h-3 w-3 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <circle
+                                        class="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                    ></circle>
+
+                                    <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
                                 </svg>
+
                                 Moving...
                             </span>
+
                         </button>
                     </div>
+
                 </div>
             </x-modal>
 
@@ -1099,15 +1235,23 @@
                     "
                     class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                 >
+
                     {{-- Modal: Header Layout --}}
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
+
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100/50">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 dark:border-emerald-800/50">
                                 <i class="fa-solid fa-rotate-left text-sm"></i>
                             </div>
+
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Restore Role</h2>
-                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Recover and reactivate an archived permission profile</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                                    Restore Role
+                                </h2>
+
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">
+                                    Recover and reactivate an archived permission profile
+                                </p>
                             </div>
                         </div>
 
@@ -1122,47 +1266,62 @@
 
                     {{-- Modal: Content Area --}}
                     <div class="space-y-4">
-                        <!-- Center-ish Focused Recovery Box Card Layout -->
-                        <div class="p-4 bg-emerald-50/40 border border-emerald-100/60 rounded-xl flex gap-3.5">
-                            <div class="text-emerald-500 text-xl shrink-0 mt-0.5">
+
+                        {{-- Recovery Confirmation Box --}}
+                        <div class="p-4 bg-emerald-50/40 dark:bg-emerald-900/20 border border-emerald-100/60 dark:border-emerald-800/60 rounded-xl flex gap-3.5">
+
+                            <div class="text-emerald-500 dark:text-emerald-400 text-xl shrink-0 mt-0.5">
                                 <i class="fa-solid fa-circle-check"></i>
                             </div>
 
                             <div class="min-w-0">
-                                <p class="text-sm font-semibold text-gray-800 leading-tight">
+
+                                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 leading-tight">
                                     Confirm profile reactivation
                                 </p>
 
-                                <!-- Highlighted Target Entity Card Badge -->
-                                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-emerald-200/60 rounded-lg shadow-xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <span class="text-xs font-black text-slate-700 tracking-tight uppercase" x-text="restoreRoleName || 'Target Role Profile'"></span>
+                                {{-- Highlighted Target Entity Badge --}}
+                                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-gray-700 border border-emerald-200/60 dark:border-gray-600 rounded-lg shadow-xs">
+
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
+
+                                    <span
+                                        class="text-xs font-black text-slate-700 dark:text-gray-100 tracking-tight uppercase"
+                                        x-text="restoreRoleName || 'Target Role Profile'"
+                                    ></span>
                                 </div>
 
-                                <p class="mt-2.5 text-xs font-medium text-gray-400 leading-normal">
-                                    This operation will immediately return this profile to your main <strong class="text-gray-500 font-bold">Role List</strong>, re-enabling all its assigned access states.
+                                <p class="mt-2.5 text-xs font-medium text-gray-500 dark:text-gray-400 leading-normal">
+                                    This operation will immediately return this profile to your main
+                                    <strong class="text-gray-700 dark:text-gray-200 font-bold">
+                                        Role List
+                                    </strong>,
+                                    re-enabling all its assigned access states.
                                 </p>
+
                             </div>
                         </div>
 
-                        {{-- Dynamic Error Alert Banner Box --}}
+                        {{-- Dynamic Error Alert Banner --}}
                         <div
                             x-show="restoreError"
                             x-cloak
-                            class="rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-semibold text-red-700 tracking-tight flex items-center gap-2"
+                            class="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 p-3.5 text-xs font-semibold text-red-700 dark:text-red-300 tracking-tight flex items-center gap-2"
                         >
                             <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                             <span x-text="restoreError"></span>
                         </div>
+
                     </div>
 
                     {{-- Modal: Footer Actions --}}
-                    <div class="flex justify-end gap-3 border-t border-gray-100 mt-6 pt-4">
+                    <div class="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 mt-6 pt-4">
+
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-restore')"
                             x-bind:disabled="restoreLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Cancel
                         </button>
@@ -1171,8 +1330,9 @@
                             type="button"
                             x-on:click="restoreRole()"
                             x-bind:disabled="restoreLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
+
                             <span x-show="!restoreLoading" class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-rotate-left text-[11px]"></i>
                                 Restore Role
@@ -1180,13 +1340,28 @@
 
                             <span x-show="restoreLoading" class="flex items-center gap-1.5">
                                 <svg class="animate-spin h-3 w-3 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <circle
+                                        class="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                    ></circle>
+
+                                    <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
                                 </svg>
+
                                 Restoring...
                             </span>
+
                         </button>
                     </div>
+
                 </div>
             </x-modal>
 
@@ -1245,15 +1420,23 @@
                     "
                     class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
                 >
+
                     {{-- Modal: Header Layout --}}
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
+
                         <div class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-600 border border-red-100/50">
+                            <div class="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 border border-red-100/50 dark:border-red-800/50">
                                 <i class="fa-solid fa-triangle-exclamation text-sm"></i>
                             </div>
+
                             <div>
-                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tigh">Permanent Delete</h2>
-                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">Irreversible destructive action to wipe out role history</p>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                                    Permanent Delete
+                                </h2>
+
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">
+                                    Irreversible destructive action to wipe out role history
+                                </p>
                             </div>
                         </div>
 
@@ -1268,51 +1451,62 @@
 
                     {{-- Modal: Content Area --}}
                     <div class="space-y-4">
-                        <!-- Severe Alert Warning Box Card Layout -->
-                        <div class="p-4 bg-red-50/40 border border-red-100/60 rounded-xl flex gap-3.5">
-                            <div class="text-red-500 text-xl shrink-0 mt-0.5 animate-bounce">
+
+                        {{-- Severe Alert Warning Box --}}
+                        <div class="p-4 bg-red-50/40 dark:bg-red-900/20 border border-red-100/60 dark:border-red-800/60 rounded-xl flex gap-3.5">
+
+                            <div class="text-red-500 dark:text-red-400 text-xl shrink-0 mt-0.5">
                                 <i class="fa-solid fa-skull-crossbones"></i>
                             </div>
 
                             <div class="min-w-0">
-                                <p class="text-sm font-black text-red-700 leading-tight tracking-tight">
+
+                                <p class="text-sm font-black text-red-700 dark:text-red-300 leading-tight tracking-tight">
                                     Warning: This action cannot be undone!
                                 </p>
 
-                                <p class="mt-2 text-xs font-semibold text-gray-700 leading-normal">
+                                <p class="mt-2 text-xs font-semibold text-gray-700 dark:text-gray-200 leading-normal">
                                     Are you completely certain you want to purge this role structure from the databases?
                                 </p>
 
-                                <!-- Highlighted Destructive Target Card Badge -->
-                                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white border border-red-200/60 rounded-lg shadow-xs">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span>
-                                    <span class="text-xs font-black text-red-700 tracking-tight uppercase" x-text="forceDeleteRoleName || 'Target Role Profile'"></span>
+                                {{-- Highlighted Destructive Target Badge --}}
+                                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-gray-700 border border-red-200/60 dark:border-gray-600 rounded-lg shadow-xs">
+
+                                    <span class="w-1.5 h-1.5 rounded-full bg-red-500 dark:bg-red-400"></span>
+
+                                    <span
+                                        class="text-xs font-black text-red-700 dark:text-red-300 tracking-tight uppercase"
+                                        x-text="forceDeleteRoleName || 'Target Role Profile'"
+                                    ></span>
                                 </div>
 
-                                <p class="mt-2.5 text-xs font-medium text-gray-400 leading-normal">
+                                <p class="mt-2.5 text-xs font-medium text-gray-500 dark:text-gray-400 leading-normal">
                                     Every system security privilege linked here will be permanently destroyed. Linked historical audit codes might break if active associations exist.
                                 </p>
+
                             </div>
                         </div>
 
-                        {{-- Dynamic Error Alert Banner Box --}}
+                        {{-- Dynamic Error Alert Banner --}}
                         <div
                             x-show="forceDeleteError"
                             x-cloak
-                            class="rounded-xl bg-red-100 border border-red-200 p-3.5 text-xs font-semibold text-red-800 tracking-tight flex items-center gap-2"
+                            class="rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-100 dark:border-red-800/50 p-3.5 text-xs font-semibold text-red-700 dark:text-red-300 tracking-tight flex items-center gap-2"
                         >
                             <i class="fa-solid fa-triangle-exclamation text-xs"></i>
                             <span x-text="forceDeleteError"></span>
                         </div>
+
                     </div>
 
                     {{-- Modal: Footer Actions --}}
-                    <div class="flex justify-end gap-3 border-t border-gray-100 mt-6 pt-4">
+                    <div class="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 mt-6 pt-4">
+
                         <button
                             type="button"
                             x-on:click="$dispatch('close-modal', 'roles-force-delete')"
                             x-bind:disabled="forceDeleteLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Cancel
                         </button>
@@ -1321,8 +1515,9 @@
                             type="button"
                             x-on:click="forceDeleteRole()"
                             x-bind:disabled="forceDeleteLoading"
-                            class="inline-flex items-center justify-center px-5 h-[42px] bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50"
+                            class="inline-flex items-center justify-center px-5 h-[42px] bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-500 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         >
+
                             <span x-show="!forceDeleteLoading" class="flex items-center gap-1.5">
                                 <i class="fa-solid fa-dumpster-fire text-[11px]"></i>
                                 Delete Permanently
@@ -1330,16 +1525,30 @@
 
                             <span x-show="forceDeleteLoading" class="flex items-center gap-1.5">
                                 <svg class="animate-spin h-3 w-3 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <circle
+                                        class="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                    ></circle>
+
+                                    <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
                                 </svg>
+
                                 Deleting...
                             </span>
+
                         </button>
                     </div>
+
                 </div>
             </x-modal>
-
 
         </div>
     </div>

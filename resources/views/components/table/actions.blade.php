@@ -19,10 +19,14 @@
     'deleteShowWhen' => null,
     'restoreShowWhen' => null,
     'forceDeleteShowWhen' => null,
+    'asCell' => true,
 ])
 
-<x-table.cell>
-    <div class="flex items-center space-x-2 justify-end">
+@if ($asCell)
+    <td class="px-3 py-4 font-medium text-gray-600 dark:text-gray-300">
+@endif
+
+    <div class="flex items-center justify-center gap-1 whitespace-nowrap">
 
         {{-- Edit Modal --}}
         @if ($editEvent && $editModal)
@@ -97,4 +101,7 @@
         @endif
 
     </div>
-</x-table.cell>
+
+@if ($asCell)
+    </td>
+@endif
