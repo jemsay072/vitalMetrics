@@ -1,10 +1,18 @@
 <x-app-layout>
-    <div>
+    <div
+        x-data="{
+            isEditing: new URLSearchParams(window.location.search).get('edit') === '1',
+            cancelEdit() {
+                this.isEditing = false;
+                window.location.reload();
+            }
+        }"
+    >
         <!-- Page Header -->
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <x-page-header
                 title="User Details"
-                description="Tingnan at i-edit ang kumpletong impormasyon ng user profile."
+                description="View and edit the complete user profile information."
                 :breadcrumbs="[
                     ['label' => 'Home', 'url' => '/admin/dashboard'],
                     ['label' => 'User', 'url' => '/admin/users'],
@@ -32,8 +40,12 @@
                         <div class="relative mb-4 flex justify-center w-fit mx-auto">
                             <button
                                 type="button"
+                                x-bind:disabled="!isEditing"
                                 x-on:click="$dispatch('open-modal','users-avatar')"
-                                class="group relative w-28 h-28 aspect-square rounded-full focus:outline-none focus:ring-4 focus:ring-amber-500 transition duration-150 ease-in-out"
+                                x-bind:class="isEditing
+                                 ? 'cursor-pointer hover:scale-105 focus:outline-none focus:ring-4 focus:ring-amber-500'
+                                 : 'cursor-default'"
+                                class="group relative w-28 h-28 aspect-square rounded-full transition duration-150 ease-in-out"
                             >
                                 @if($user->profile?->avatar)
                                     <div class="w-full h-full aspect-square rounded-full ring-4 ring-offset-2 ring-amber-500 overflow-hidden bg-white dark:bg-gray-700">
@@ -50,7 +62,7 @@
                                 @endif
 
                                 <!-- Hover Overlay -->
-                                <div class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition duration-200">
+                                <div x-show="isEditing" x-cloak class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full opacity-0 group-hover:opacity-100 transition duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
@@ -101,64 +113,88 @@
 
                                 <div>
                                     <x-input-label for="user_name" :value="__('Name')" class="dark:text-gray-300" />
-                                    <x-text-input
-                                        id="user_name"
-                                        name="name"
-                                        type="text"
-                                        class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                                        :value="old('name', $user->name)"
-                                        required
-                                        autofocus
-                                        autocomplete="name"
-                                    />
-                                    <x-input-error class="mt-2" :messages="$errors->get('name')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->name ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input
+                                            id="user_name"
+                                            name="name"
+                                            type="text"
+                                            class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                            :value="old('name', $user->name)"
+                                            required
+                                            autofocus
+                                            autocomplete="name"
+                                        />
+                                        <x-input-error class="mt-2" :messages="$errors->get('name')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_email" :value="__('Email')" class="dark:text-gray-300" />
-                                    <x-text-input
-                                        id="user_email"
-                                        name="email"
-                                        type="email"
-                                        class="mt-1 block w-full bg-gray-50 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300 dark:border-gray-600"
-                                        :value="old('email', $user->email)"
-                                        required
-                                        autocomplete="email"
-                                        readonly
-                                    />
-                                    <x-input-error class="mt-2" :messages="$errors->get('email')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->email ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input
+                                            id="user_email"
+                                            name="email"
+                                            type="email"
+                                            class="mt-1 block w-full bg-gray-50 text-gray-500 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300 dark:border-gray-600"
+                                            :value="old('email', $user->email)"
+                                            required
+                                            autocomplete="email"
+                                            readonly
+                                        />
+                                        <x-input-error class="mt-2" :messages="$errors->get('email')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_role" :value="__('Role')" class="dark:text-gray-300" />
-                                    <select
-                                        id="user_role"
-                                        name="role_id"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                    >
-                                        <option value="" {{ old('role_id', $user->role_id) == '' ? 'selected' : '' }}>Select Role</option>
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->role_id ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <select
+                                            id="user_role"
+                                            name="role_id"
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                        >
+                                            <option value="" {{ old('role_id', $user->role_id) == '' ? 'selected' : '' }}>Select Role</option>
 
-                                        @foreach ($roles as $role)
-                                            <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
-                                                {{ $role->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <x-input-error class="mt-2" :messages="$errors->get('role_id')" />
+                                            @foreach ($roles as $role)
+                                                <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                                                    {{ $role->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <x-input-error class="mt-2" :messages="$errors->get('role_id')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_status" :value="__('Status')" class="dark:text-gray-300" />
-                                    <select
-                                        id="user_status"
-                                        name="status"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                    >
-                                        <option value="" {{ old('status', $user->status) == '' ? 'selected' : '' }}>Select Status</option>
-                                        <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                        <option value="inactive" {{ old('status', $user->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                    </select>
-                                    <x-input-error class="mt-2" :messages="$errors->get('status')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->status ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <select
+                                            id="user_status"
+                                            name="status"
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                                        >
+                                            <option value="" {{ old('status', $user->status) == '' ? 'selected' : '' }}>Select Status</option>
+                                            <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="inactive" {{ old('status', $user->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                        <x-input-error class="mt-2" :messages="$errors->get('status')" />
+                                    </div>
                                 </div>
 
                             </div>
@@ -175,61 +211,109 @@
 
                                 <div>
                                     <x-input-label for="user_phone" :value="__('Phone')" class="dark:text-gray-300" />
-                                    <x-text-input id="user_phone" name="phone" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('phone', $user->profile?->phone)" autocomplete="tel"/>
-                                    <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->phone ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input id="user_phone" name="phone" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('phone', $user->profile?->phone)" autocomplete="tel"/>
+                                        <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_birth_date" :value="__('Birth Date')" class="dark:text-gray-300" />
-                                    <x-text-input id="user_birth_date" name="birth_date" type="date" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:[&::-webkit-calendar-picker-indicator]:invert" :value="old('birth_date', $user->profile?->birth_date)"/>
-                                    <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->birth_date ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input id="user_birth_date" name="birth_date" type="date" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:[&::-webkit-calendar-picker-indicator]:invert" :value="old('birth_date', $user->profile?->birth_date)"/>
+                                        <x-input-error class="mt-2" :messages="$errors->get('birth_date')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_sex" :value="__('Sex')" class="dark:text-gray-300" />
-                                    <select id="user_sex" name="sex" class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
-                                        <option value="" {{ old('sex', $user->profile?->sex) == '' ? 'selected' : '' }}>Select Sex</option>
-                                        <option value="male" {{ old('sex', $user->profile?->sex) == 'male' ? 'selected' : '' }}>Male</option>
-                                        <option value="female" {{ old('sex', $user->profile?->sex) == 'female' ? 'selected' : '' }}>Female</option>
-                                    </select>
-                                    <x-input-error class="mt-2" :messages="$errors->get('sex')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->sex ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <select id="user_sex" name="sex" class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                                            <option value="" {{ old('sex', $user->profile?->sex) == '' ? 'selected' : '' }}>Select Sex</option>
+                                            <option value="male" {{ old('sex', $user->profile?->sex) == 'male' ? 'selected' : '' }}>Male</option>
+                                            <option value="female" {{ old('sex', $user->profile?->sex) == 'female' ? 'selected' : '' }}>Female</option>
+                                        </select>
+                                        <x-input-error class="mt-2" :messages="$errors->get('sex')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_marital_status" :value="__('Marital Status')" class="dark:text-gray-300" />
-                                    <select id="user_marital_status" name="marital_status" class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
-                                        <option value="" {{ old('marital_status', $user->profile?->marital_status) == '' ? 'selected' : '' }}>Select Marital Status</option>
-                                        <option value="single" {{ old('marital_status', $user->profile?->marital_status) == 'single' ? 'selected' : '' }}>Single</option>
-                                        <option value="married" {{ old('marital_status', $user->profile?->marital_status) == 'married' ? 'selected' : '' }}>Married</option>
-                                        <option value="widowed" {{ old('marital_status', $user->profile?->marital_status) == 'widowed' ? 'selected' : '' }}>Widowed</option>
-                                        <option value="divorced" {{ old('marital_status', $user->profile?->marital_status) == 'divorced' ? 'selected' : '' }}>Divorced</option>
-                                        <option value="separated" {{ old('marital_status', $user->profile?->marital_status) == 'separated' ? 'selected' : '' }}>Separated</option>
-                                    </select>
-                                    <x-input-error class="mt-2" :messages="$errors->get('marital_status')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->marital_status ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <select id="user_marital_status" name="marital_status" class="mt-1 block w-full border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                                            <option value="" {{ old('marital_status', $user->profile?->marital_status) == '' ? 'selected' : '' }}>Select Marital Status</option>
+                                            <option value="single" {{ old('marital_status', $user->profile?->marital_status) == 'single' ? 'selected' : '' }}>Single</option>
+                                            <option value="married" {{ old('marital_status', $user->profile?->marital_status) == 'married' ? 'selected' : '' }}>Married</option>
+                                            <option value="widowed" {{ old('marital_status', $user->profile?->marital_status) == 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                            <option value="divorced" {{ old('marital_status', $user->profile?->marital_status) == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                            <option value="separated" {{ old('marital_status', $user->profile?->marital_status) == 'separated' ? 'selected' : '' }}>Separated</option>
+                                        </select>
+                                        <x-input-error class="mt-2" :messages="$errors->get('marital_status')" />
+                                    </div>
                                 </div>
 
                                 <div class="md:col-span-2">
                                     <x-input-label for="user_address" :value="__('Address')" class="dark:text-gray-300" />
-                                    <x-text-input id="user_address" name="address" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('address', $user->profile?->address)"/>
-                                    <x-input-error class="mt-2" :messages="$errors->get('address')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->address ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input id="user_address" name="address" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('address', $user->profile?->address)"/>
+                                        <x-input-error class="mt-2" :messages="$errors->get('address')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_city" :value="__('City')" class="dark:text-gray-300" />
-                                    <x-text-input id="user_city" name="city" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('city', $user->profile?->city)"/>
-                                    <x-input-error class="mt-2" :messages="$errors->get('city')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{$user->profile?->city ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input id="user_city" name="city" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('city', $user->profile?->city)"/>
+                                        <x-input-error class="mt-2" :messages="$errors->get('city')" />
+                                    </div>
                                 </div>
 
                                 <div>
                                     <x-input-label for="user_province" :value="__('Province')" class="dark:text-gray-300" />
-                                    <x-text-input id="user_province" name="province" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('province', $user->profile?->province)"/>
-                                    <x-input-error class="mt-2" :messages="$errors->get('province')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->province ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input id="user_province" name="province" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('province', $user->profile?->province)"/>
+                                        <x-input-error class="mt-2" :messages="$errors->get('province')" />
+                                    </div>
                                 </div>
 
                                 <div class="md:col-span-2">
                                     <x-input-label for="user_zip_code" :value="__('Zip Code')" class="dark:text-gray-300" />
-                                    <x-text-input id="user_zip_code" name="zip_code" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('zip_code', $user->profile?->zip_code)"/>
-                                    <x-input-error class="mt-2" :messages="$errors->get('zip_code')" />
+                                    <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
+                                        {{ $user->profile?->zip_code ?: '—' }}
+                                    </p>
+                                    {{-- Edit Mode --}}
+                                    <div x-show="isEditing" x-cloak>
+                                        <x-text-input id="user_zip_code" name="zip_code" type="text" class="mt-1 block w-full bg-white text-gray-900 dark:bg-gray-700 dark:text-white dark:border-gray-600" :value="old('zip_code', $user->profile?->zip_code)"/>
+                                        <x-input-error class="mt-2" :messages="$errors->get('zip_code')" />
+                                    </div>
                                 </div>
 
                             </div>
@@ -237,13 +321,43 @@
 
                         <!-- Action Buttons -->
                         <div class="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg border border-gray-100 dark:border-gray-700 flex items-center justify-end gap-3">
-                            <x-secondary-button type="button" onclick="window.history.back()">
-                                {{ __('Cancel') }}
-                            </x-secondary-button>
 
-                            <x-primary-button type="submit">
-                                {{ __('Save Changes') }}
-                            </x-primary-button>
+                            {{-- View Mode --}}
+                            <div x-show="!isEditing" class="flex items-center gap-3">
+
+                                <a
+                                    href="{{ route('admin.users') }}"
+                                    class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                                >
+                                    Back to Users
+                                </a>
+
+                                <x-primary-button
+                                    type="button"
+                                    x-on:click="isEditing = true"
+                                >
+                                    <i class="fa-solid fa-pen mr-2"></i>
+                                    Edit User
+                                </x-primary-button>
+
+                            </div>
+
+                            {{-- Edit Mode --}}
+                            <div x-show="isEditing" class="flex items-center gap-3">
+
+                                <x-secondary-button
+                                    type="button"
+                                    x-on:click="cancelEdit()"
+                                >
+                                    Cancel
+                                </x-secondary-button>
+
+                                <x-primary-button type="submit">
+                                    Save Changes
+                                </x-primary-button>
+
+                            </div>
+
                         </div>
 
                     </div>

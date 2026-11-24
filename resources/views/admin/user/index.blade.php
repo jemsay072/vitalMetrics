@@ -346,8 +346,7 @@
 
                                 {{-- Action Buttons --}}
                                 <x-table.actions
-                                    edit-event="set-edit-id"
-                                    edit-modal="users-edit"
+                                    :edit-url="route('admin.users.show', ['user' => '__USER_ID__']) . '?edit=1'"
                                     deactivated-event="set-deactivated-id"
                                     deactivated-modal="users-deactivated"
                                 />

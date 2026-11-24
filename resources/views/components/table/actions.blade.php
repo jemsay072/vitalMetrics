@@ -19,7 +19,9 @@
     'deleteShowWhen' => null,
     'restoreShowWhen' => null,
     'forceDeleteShowWhen' => null,
+
     'asCell' => true,
+    'editUrl' => null,
 ])
 
 @if ($asCell)
@@ -29,7 +31,18 @@
     <div class="flex items-center justify-center gap-1 whitespace-nowrap">
 
         {{-- Edit Modal --}}
-        @if ($editEvent && $editModal)
+        @if ($editUrl)
+            {{-- Navigate to Edit Page --}}
+            <a
+                x-bind:href="'{{ $editUrl }}'.replace('__USER_ID__', item.id)"
+                x-on:click.stop
+                class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg"
+                title="Edit"
+            >
+                <i class="fa-solid fa-pen"></i>
+            </a>
+
+        @elseif ($editEvent && $editModal)
             <button
                 @if ($editShowWhen)
                     x-show="{{ $editShowWhen }}"
