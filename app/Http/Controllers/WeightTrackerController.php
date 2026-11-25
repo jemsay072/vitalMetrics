@@ -51,19 +51,17 @@ class WeightTrackerController extends Controller
     public function store(Request $request)
     {
 
-        //Validation using try catch
+        $auth = Auth::user();
+
+        //validate the data from the form.
+        $validate = $request->validate([
+            'weight' => 'required|numeric|min:1|max:500',
+            'measurement_date' => 'required|date_format:H:i',
+            'notes' => 'nullable|string',
+        ]);
+
         try{
-            $auth = Auth::user();
-
-            //validate the data from the form.
-            $validate = $request->validate([
-                'weight' => 'required|numeric|min:1|max:500',
-                'measurement_date' => 'required|date_format:H:i',
-                'notes' => 'nullable|string',
-            ]);
-
             $validate['user_id'] = $auth->id;
-
             $unit = $auth->preferences?->weight_unit ?? 'kg';
 
             WeightTracker::create($validate);
@@ -130,43 +128,45 @@ class WeightTrackerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(WeightTracker $weightTracker, $id)
-    {
-        //
-        $weight = WeightTracker::findOrFail($id);
+    public function show($id) {
+        // $weight = WeightTracker::findOrFail($id);
+        $weight = WeightTracker::where('user_id', Auth::id())->findOrFail($id);
+
+        // remove the json once input to the address bar.
+        // if (! request()->expectsJson()) abort(404);
+
         return response()->json($weight);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(WeightTracker $weightTracker)
-    {
-        //
-    }
+    public function edit(WeightTracker $weightTracker){}
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, WeightTracker $weightTracker, $id)
-    {
-        //
+    public function update(Request $request, $id) {
         $auth = Auth::user();
 
-        $weight = $weightTracker::findOrFail($id);
-        $data = [
-            'weight' => $request->weight,
-            'measurement_date' =>$request->measurement_date,
-            'notes' => $request->notes,
-        ];
+        // $weight = $weightTracker::findOrFail($id);
+        $weight = WeightTracker::where('user_id', $auth->id)->findOrFail($id);
+
+        $validate = $request->validate([
+            'weight' => 'required|numeric|min:1|max:500',
+            'measurement_date' => 'required|date_format:H:i',
+            'notes' => 'nullable|string',
+        ]);
+
+        $oldWeight = $weight->weight;
 
         try {
-            $weight->update($data);
+            $weight->update($validate);
             ActivityLog::create([
                 'user_id' => $auth->id,
                 'type' => 'Weight',
-                'description' => "Updated a previous reading of {$request->weight} to {$request->weight}",
-                'status' => 'updated'
+                'description' => "Updated a previous reading of {$oldWeight} to {$validate['weight']}",
+                'status' => 'updated',
             ]);
             return back()->with('success', 'Weight updated successfully!');
         } catch(\Exception $e){
@@ -177,21 +177,24 @@ class WeightTrackerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(WeightTracker $weightTracker, $id)
+    public function destroy($id)
     {
         $auth = Auth::user();
 
-        $weight = $weightTracker::findOrFail($id);
+        // $weight = $weightTracker::findOrFail($id);
+        $weight = WeightTracker::where('user_id', $auth->id)->findOrFail($id);
 
         $weightDetails = "{$weight->weight} recorded on " . $weight->created_at->format('M d, Y');
 
         $weight->delete();
+
         ActivityLog::create([
             'user_id' => $auth->id,
             'type' => 'Weight',
             'description' => "Deleted a weight entry of {$weightDetails}",
-            'status' => 'deleted'
+            'status' => 'deleted',
         ]);
+
         return back()->with('Success', 'Blood Pressure Deleted Successfully!.');
     }
 }

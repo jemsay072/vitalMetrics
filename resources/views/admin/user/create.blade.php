@@ -51,7 +51,31 @@
                                 Account Credentials
                             </h2>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div
+                                x-data="{
+                                    password: '',
+                                    confirmPassword: '',
+                                    showPassword: false,
+                                    copied: false,
+                                    generatePassword() {
+                                        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%';
+                                        let result = '';
+                                        for (let i = 0; i < 12; i++) {
+                                            result += chars.charAt(Math.floor(Math.random() * chars.length));
+                                        }
+                                        this.password = result;
+                                        this.confirmPassword = result;
+                                        this.showPassword = true;
+                                    },
+                                    copyPassword() {
+                                        if (!this.password) return;
+                                        navigator.clipboard.writeText(this.password);
+                                        this.copied = true;
+                                        setTimeout(() => this.copied = false, 2000);
+                                    }
+                                }"
+                                class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                            >
 
                                 <div>
                                     <x-input-label for="user_name" :value="__('Name')" class="dark:text-gray-300" />
@@ -65,15 +89,80 @@
                                     <x-input-error class="mt-2" :messages="$errors->get('email')" />
                                 </div>
 
+                                <!-- Password Field -->
                                 <div>
-                                    <x-input-label for="password" :value="__('Password')" class="dark:text-gray-300" />
-                                    <x-text-input id="password" name="password" type="password" class="mt-1 block w-full" required />
+                                    <div class="flex items-center justify-between">
+                                        <x-input-label for="password" :value="__('Password')" class="dark:text-gray-300" />
+
+                                        <div class="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                @click="generatePassword()"
+                                                class="text-xs font-medium text-teal-600 hover:text-teal-500 dark:text-teal-400 flex items-center gap-1"
+                                            >
+                                                <i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Generate
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                x-show="password.length > 0"
+                                                @click="copyPassword()"
+                                                class="text-xs font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex items-center gap-1"
+                                            >
+                                                <i class="fa-solid" :class="copied ? 'fa-check text-emerald-500' : 'fa-copy'"></i>
+                                                <span x-text="copied ? 'Copied!' : 'Copy'"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative mt-1">
+                                        <x-text-input
+                                            id="password"
+                                            name="password"
+                                            x-bind:type="showPassword ? 'text' : 'password'"
+                                            x-model="password"
+                                            class="block w-full pr-10"
+                                            required
+                                        />
+
+                                        <!-- Eye Toggle Button -->
+                                        <button
+                                            type="button"
+                                            @click="showPassword = !showPassword"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                            title="Show/Hide Password"
+                                        >
+                                            <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
+                                    </div>
+
                                     <x-input-error class="mt-2" :messages="$errors->get('password')" />
                                 </div>
 
-                                <div>
+                                <!-- Confirm Password Field -->
+                                 <div>
                                     <x-input-label for="password_confirmation" :value="__('Confirm Password')" class="dark:text-gray-300" />
-                                    <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" required />
+
+                                    <div class="relative mt-1">
+                                        <x-text-input
+                                            id="password_confirmation"
+                                            name="password_confirmation"
+                                            x-bind:type="showPassword ? 'text' : 'password'"
+                                            x-model="confirmPassword"
+                                            class="block w-full pr-10"
+                                            required
+                                        />
+
+                                        <!-- Eye Toggle Button -->
+                                        <button
+                                            type="button"
+                                            @click="showPassword = !showPassword"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                            title="Show/Hide Password"
+                                        >
+                                            <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div>

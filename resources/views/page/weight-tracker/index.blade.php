@@ -98,10 +98,7 @@
                         "
                         class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 shadow-sm dark:shadow-black/10 hover:shadow-md dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer"
                     >
-                        <div
-                            class="flex justify-between items-start mb-3"
-                            :class="getColor(liveTerm())"
-                        >
+                        <div class="flex justify-between items-start mb-3">
                             <div class="flex space-x-2">
                                 <button
                                     x-on:click.stop="
@@ -382,26 +379,30 @@
                             @csrf
                             @method('PUT')
 
-                            <div>
+                            {{-- <div>
                                 <label for="weight_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Weight (kg)</label>
                                 <input type="number" step="0.01" name="weight" id="weight_edit" x-model="weight.weight" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
                             </div>
-                            {{-- <div>
+                            <div>
                                 <label for="measurement_date_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Measured Time / Date</label>
                                 <input type="time" name="measurement_date" id="measurement_date_edit" x-model="weight.measurement_date" required class="block w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-gray-900 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition duration-150">
                             </div> --}}
+                            <div>
+                                <label for="weight_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Weight (kg)</label>
+                                <input type="number" step="0.01" name="weight" id="weight_edit" x-model="form.weight" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150">
+                            </div>
 
 
                             <!-- READING TIME FIELD BOX -->
                             <x-reading-time
-                                name="measurement_date_edit"
-                                id="bp_edit_measurement_date_edit"
+                                name="measurement_date"
+                                id="weight_edit_measurement_date"
                                 label="Measured Time / Date"
                                 :listen-for-updates="true"
                             />
                             <div>
                                 <label for="notes_edit" class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Progress Notes</label>
-                                <textarea name="notes" id="notes_edit" x-model="weight.notes" rows="3" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
+                                <textarea name="notes" id="notes_edit" x-model="form.notes" rows="3" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-900 dark:text-white dark:bg-gray-700 placeholder-gray-300 shadow-sm hover:border-emerald-400 dark:hover:border-emerald-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition duration-150"></textarea>
                             </div>
 
                             <!-- Footer Buttons Strip -->

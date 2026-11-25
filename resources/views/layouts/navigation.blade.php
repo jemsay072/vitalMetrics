@@ -96,49 +96,63 @@
     </div>
 
     <!-- Responsive Navigation Menu Mobile Viewports Layout Drawer -->
-    <div x-cloak x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-1" class="sm:hidden absolute top-full right-4 mt-2 z-20 w-[calc(100vw-2rem)] max-w-xs rounded-2xl bg-white shadow-2xl ring-1 ring-black ring-opacity-5 overflow-hidden">
-        <div class="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-            <p class="text-sm font-bold text-gray-800 tracking-wide">{{ Auth::user()->name }}</p>
-            <p class="text-[11px] font-semibold text-gray-400 mt-0.5">{{ Auth::user()->email }}</p>
+    <div
+        x-cloak
+        x-show="open"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 translate-y-1"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-1"
+        class="sm:hidden absolute top-full right-4 mt-2 z-20 w-[calc(100vw-2rem)] max-w-xs rounded-2xl bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black/5 dark:ring-gray-700 overflow-hidden"
+    >
+        <!-- User Header -->
+        <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+            <p class="text-sm font-bold text-gray-800 dark:text-white tracking-wide">{{ Auth::user()->name }}</p>
+            <p class="text-[11px] font-semibold text-gray-400 dark:text-gray-400 mt-0.5">{{ Auth::user()->email }}</p>
         </div>
 
+        <!-- Navigation Links -->
         <div class="space-y-0.5 px-2 py-2">
             @if (auth()->user()->hasPermission('profile'))
-                <x-responsive-nav-link :href="route('profile.edit')" @click="open = false">
-                    <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600">
-                        <i class="fa-regular fa-user text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
+                <x-responsive-nav-link :href="route('profile.edit')" @click="open = false" class="rounded-xl dark:hover:bg-gray-700/70">
+                    <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600 dark:text-gray-200">
+                        <i class="fa-regular fa-user text-gray-400 dark:text-gray-400 group-hover:text-slate-500 dark:group-hover:text-gray-200 w-4 text-center text-sm transition"></i>
                         <span>{{ __('Profile') }}</span>
                     </span>
                 </x-responsive-nav-link>
             @endif
 
-            <x-responsive-nav-link :href="route('settings.index')" @click="open = false">
-                <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600">
-                    <i class="fa-solid fa-gear text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
+            <x-responsive-nav-link :href="route('settings.index')" @click="open = false" class="rounded-xl dark:hover:bg-gray-700/70">
+                <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600 dark:text-gray-200">
+                    <i class="fa-solid fa-gear text-gray-400 dark:text-gray-400 group-hover:text-slate-500 dark:group-hover:text-gray-200 w-4 text-center text-sm transition"></i>
                     <span>{{ __('Settings') }}</span>
                 </span>
             </x-responsive-nav-link>
 
             @if (auth()->user()->role_id !== 1)
-                <x-responsive-nav-link :href="route('dashboard.activities')" @click="open = false">
-                    <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600">
-                        <i class="fa-solid fa-clock-rotate-left text-gray-400 group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
+                <x-responsive-nav-link :href="route('dashboard.activities')" @click="open = false" class="rounded-xl dark:hover:bg-gray-700/70">
+                    <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600 dark:text-gray-200">
+                        <i class="fa-solid fa-clock-rotate-left text-gray-400 dark:text-gray-400 group-hover:text-slate-500 dark:group-hover:text-gray-200 w-4 text-center text-sm transition"></i>
                         <span>{{ __('Activity Logs') }}</span>
                     </span>
                 </x-responsive-nav-link>
             @endif
         </div>
 
-        <div class="border-t border-gray-100 px-2 py-2">
+        <!-- Log Out -->
+        <div class="border-t border-gray-100 dark:border-gray-700 px-2 py-2">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <x-responsive-nav-link :href="route('logout')" class="hover:bg-red-50 rounded-xl" onclick="event.preventDefault(); this.closest('form').submit(); open = false;">
-                    <span class="inline-flex items-center gap-3 text-xs font-black text-red-600">
-                        <i class="fa-solid fa-arrow-right-from-bracket text-red-400 w-4 text-center text-sm"></i>
+                <x-responsive-nav-link :href="route('logout')" class="hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl" onclick="event.preventDefault(); this.closest('form').submit(); open = false;">
+                    <span class="inline-flex items-center gap-3 text-xs font-black text-red-600 dark:text-red-400">
+                        <i class="fa-solid fa-arrow-right-from-bracket text-red-400 dark:text-red-400 w-4 text-center text-sm"></i>
                         <span>{{ __('Log Out') }}</span>
                     </span>
                 </x-responsive-nav-link>
             </form>
         </div>
     </div>
+
 </nav>

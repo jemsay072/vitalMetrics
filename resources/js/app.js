@@ -58,6 +58,22 @@ document.addEventListener('alpine:init', () => {
             this.fetchData(1);
         },
 
+        // buildCsv(rows) {
+        //     if (!Array.isArray(this.extractFields) || this.extractFields.length === 0) {
+        //         return '';
+        //     }
+
+        //     const header = this.extractFields.map(field => `"${field.label}"`).join(',');
+        //     const lines = rows.map(row => {
+        //         return this.extractFields.map(field => {
+        //             const value = row[field.key] ?? '';
+        //             const escaped = String(value).replace(/"/g, '""');
+        //             return `"${escaped}"`;
+        //         }).join(',');
+        //     });
+        //     return [header, ...lines].join('\n');
+        // },
+
         buildCsv(rows) {
             if (!Array.isArray(this.extractFields) || this.extractFields.length === 0) {
                 return '';
@@ -66,7 +82,10 @@ document.addEventListener('alpine:init', () => {
             const header = this.extractFields.map(field => `"${field.label}"`).join(',');
             const lines = rows.map(row => {
                 return this.extractFields.map(field => {
-                    const value = row[field.key] ?? '';
+                    const rawValue = row[field.key];
+                    const value = (rawValue === null || rawValue === undefined || rawValue === '')
+                        ? (field.fallback ?? '')
+                        : rawValue;
                     const escaped = String(value).replace(/"/g, '""');
                     return `"${escaped}"`;
                 }).join(',');
@@ -300,16 +319,90 @@ document.addEventListener('alpine:init', () => {
             notes: ''
         },
         async loadWeight(id) {
+            this.weightId = id;
             this.loading = true;
 
             try{
                 const response = await fetch(`/weight/${id}`);
-                this.weight = await response.json();
+                const data = await response.json();
+
+                this.weight = data;
+                this.form = {
+                    weight: data.weight ?? '',
+                    measurement_date: data.measurement_date ?? '',
+                    notes: data.notes ?? ''
+                }
+
+                if(data.measurement_date){
+                    window.dispatchEvent(new CustomEvent('set-reading-time', {
+                        detail: data.measurement_date
+                    }));
+                }
+
+            }  catch (error) {
+                console.error('Error loading weight:', error);
             } finally{
                 this.loading = false;
             }
         }
     }));
+
+    // WorkoutTracker Form (Create & Edit)
+    Alpine.data('workoutForm', (initialData = {}) => ({
+        workoutId: null,
+        loading: false,
+        activityType: initialData.activity_type || 'Treadmill',
+        durationMinutes: initialData.duration_minutes || '',
+        distanceKm: initialData.distance_km || '',
+        caloriesBurned: initialData.calories_burned || '',
+        steps: initialData.steps || '',
+
+        get isStepActivity() {
+            return ['Treadmill', 'Running', 'Walking'].includes(this.activityType);
+        },
+
+        get isDistanceActivity() {
+            return ['Treadmill', 'Running', 'Walking', 'Cycling'].includes(this.activityType);
+        },
+
+        loadWorkout(id) {
+            this.workoutId = id;
+            this.loading = true;
+
+            fetch('/workout-tracker/' + id)
+                .then(res => res.json())
+                .then(data => {
+                    this.activityType = data.activity_type || 'Treadmill';
+                    this.durationMinutes = data.duration_minutes || '';
+                    this.distanceKm = data.distance_km || '';
+                    this.caloriesBurned = data.calories_burned || '';
+                    this.steps = data.steps || '';
+                    this.loading = false;
+                })
+                .catch(() => {
+                    this.loading = false;
+                });
+        },
+
+        handleActivityChange() {
+            if (!this.isDistanceActivity) {
+                this.distanceKm = '';
+            }
+            if (!this.isStepActivity) {
+                this.steps = '';
+            } else if (!this.steps && this.distanceKm) {
+                this.estimateSteps();
+            }
+        },
+
+        estimateSteps() {
+            if (!this.isStepActivity || !this.distanceKm) return;
+            const factor = this.activityType === 'Running' ? 1100 : 1300;
+            this.steps = Math.round(parseFloat(this.distanceKm) * factor);
+        }
+    }));
+
+
 
     // Role Component
     Alpine.data('roleComponent', () => ({

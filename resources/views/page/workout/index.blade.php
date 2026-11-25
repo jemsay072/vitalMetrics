@@ -9,7 +9,8 @@
                 { key: 'activity_type', label: 'Activity Type' },
                 { key: 'duration_minutes', label: 'Duration' },
                 { key: 'distance_km', label: 'Distance' },
-                { key: 'calories_burned', label: 'Calories Burned' }
+                { key: 'calories_burned', label: 'Calories Burned' },
+                { key: 'steps', label: 'Steps', fallback: 'N/A' }
             ]
         })"
         x-on:page-changed="goToPage($event.detail)"
@@ -132,12 +133,16 @@
                             </div>
                             <div>
                                 <span class="text-gray-500 dark:text-gray-400">Steps:</span>
-                                <span class="font-medium ml-1 text-gray-900 dark:text-gray-100">N/A</span>
+                                <span
+                                    class="font-medium ml-1 text-gray-900 dark:text-gray-100"
+                                    x-text="(item.steps !== null && item.steps !== '') ? Number(item.steps).toLocaleString() : 'N/A'"
+                                ></span>
                             </div>
+
                         </div>
                     </div>
                 </template>
-                <div x-show="results.length === 0 && !loading" class="text-center py-8 text-gray-500 dark:text-gray-400">
+                <div x-show="results.length === 0 && !loading" class="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
                     No workouts found.
                 </div>
             </div>
@@ -236,7 +241,10 @@
 
             <!-- Modal toggle Create -->
             <x-modal name="workout-form" :show="false" maxWidth="lg">
-                <div class="p-6 bg-white rounded-2xl  dark:bg-gray-800 ">
+                <div
+                    class="p-6 bg-white rounded-2xl dark:bg-gray-800"
+                    x-data="workoutForm()"
+                >
                     <!-- Modal: Header -->
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
@@ -258,35 +266,68 @@
                     </div>
 
                     <div id="form" class="form">
-                        <form action="{{route('workout-tracker.store')}}" method="post" class="space-y-4">
+                        <form action="{{ route('workout-tracker.store') }}" method="post" class="space-y-4">
                             @csrf
 
-                            <!-- Activity Type (Dropdown Upgrade) -->
+                            <!-- Activity Type -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Activity Type</label>
                                 <div class="relative">
-                                    <select name="activity_type" class="block w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 bg-white dark:bg-gray-700 dark:text-white shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-pointer">
+                                    <select
+                                        name="activity_type"
+                                        x-model="activityType"
+                                        x-on:change="handleActivityChange()"
+                                        class="block w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 bg-white dark:bg-gray-700 dark:text-white shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-pointer"
+                                    >
                                         <option value="Treadmill">🏃‍♂️ Treadmill</option>
                                         <option value="Running">🛣️ Running</option>
                                         <option value="Walking">🚶‍♂️ Walking</option>
                                         <option value="Cycling">🚴‍♂️ Cycling</option>
+                                        <option value="Lifting">🏋️‍♂️ Lifting</option>
                                     </select>
                                 </div>
                             </div>
 
-                            <!-- 3-Column Fitness Grid (Duration, Distance, Calories) -->
-                            <div class="grid grid-cols-3 gap-3">
+                            <!-- Dynamic Grid: 2 Columns when Steps is visible (4 items), 3 Columns when hidden -->
+                            <div class="grid gap-3" :class="isStepActivity ? 'grid-cols-2' : (isDistanceActivity ? 'grid-cols-3' : 'grid-cols-2')">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Duration (min)</label>
+                                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Duration (min)</label>
                                     <input type="number" name="duration_minutes" required placeholder="30" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
                                 </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Distance (km)</label>
-                                    <input type="number" step="0.01" name="distance_km" placeholder="0.00" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
+
+                                <div x-show="isDistanceActivity" x-transition>
+                                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Distance (km)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        name="distance_km"
+                                        x-model="distanceKm"
+                                        x-on:input="estimateSteps()"
+                                        :disabled="!isDistanceActivity"
+                                        placeholder="0.00"
+                                        class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text"
+                                    >
                                 </div>
+
                                 <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Calories (kcal)</label>
+                                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Calories (kcal)</label>
                                     <input type="number" name="calories_burned" placeholder="250" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
+                                </div>
+
+                                <!-- Conditional Steps Input (Shown only for Treadmill, Running, Walking) -->
+                                <div x-show="isStepActivity" x-transition>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Steps</label>
+                                        <span class="text-[10px] text-indigo-500 font-medium" x-show="distanceKm > 0">Auto-est.</span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        name="steps"
+                                        x-model="steps"
+                                        :disabled="!isStepActivity"
+                                        placeholder="3500"
+                                        class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text"
+                                    >
                                 </div>
                             </div>
 
@@ -315,24 +356,11 @@
             <!-- Modal View-->
             <x-modal name="workout-view" :show="false" maxWidth="lg">
                 <div
-                    class="p-6 bg-white rounded-2xl  dark:bg-gray-800  relative"
-                    x-data="{ workoutId: null, workout: {}, loading: false }"
-                    x-on:set-workout-id.window="
-                        if(workoutId === $event.detail) return;
-
-                        workoutId = $event.detail;
-                        loading = true;
-                        workout = {};
-
-                        fetch('/workout-tracker/' + workoutId)
-                            .then(res => res.json())
-                            .then(data => {
-                                workout = data;
-                                loading = false;
-                            });
-                    "
+                    class="p-6 bg-white rounded-2xl dark:bg-gray-800 relative"
+                    x-data="workoutForm()"
+                    x-on:set-workout-id.window="loadWorkout($event.detail)"
                 >
-                    <!-- Modal: Header Layout (Corrected Title Name Typo) -->
+                    <!-- Modal: Header Layout -->
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
                         <div class="flex items-center gap-2.5">
                             <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
@@ -359,37 +387,37 @@
                     </div>
 
                     <!--Form Performance Stats Information Density Grid-->
-                    <div x-show="!loading && workout.id" x-cloak class="space-y-4 transition-all duration-200">
+                    <div x-show="!loading && workoutId" x-cloak class="space-y-4 transition-all duration-200">
 
                         <!-- Activity Category Header Badge Row -->
                         <div class="p-3.5 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600 flex items-center justify-between">
                             <div class="flex items-center gap-2">
                                 <span class="text-xs font-bold text-gray-400 dark:text-gray-400 tracking-wider uppercase">Activity:</span>
-                                <span class="text-sm font-black text-slate-800 dark:text-white tracking-tight" x-text="workout.activity_type"></span>
+                                <span class="text-sm font-black text-slate-800 dark:text-white tracking-tight" x-text="activityType"></span>
                             </div>
                             <div class="text-[10px] font-mono text-gray-400 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 px-2 py-0.5 rounded-md">
-                                ID: #<span x-text="workout.id"></span>
+                                ID: #<span x-text="workoutId"></span>
                             </div>
                         </div>
 
-                        <!-- COMPACT CARD BLOCK CELLS -->
-                        <div class="grid grid-cols-3 gap-2.5">
+                        <!-- COMPACT CARD BLOCK CELLS (Dynamic 2x2 if Steps exists, 3-col if non-step) -->
+                        <div class="grid gap-2.5" :class="isStepActivity ? 'grid-cols-2' : (isDistanceActivity ? 'grid-cols-3' : 'grid-cols-2')">
                             <!-- Duration Metric Cell -->
                             <div class="p-3 bg-indigo-50/40 dark:bg-indigo-900/20 rounded-xl border border-indigo-50 dark:border-indigo-800 text-center sm:text-left">
                                 <span class="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 tracking-wider uppercase block">Duration</span>
 
                                 <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
-                                    <span class="text-lg font-black text-indigo-900 dark:text-indigo-200 tracking-tight" x-text="workout.duration_minutes"></span>
+                                    <span class="text-lg font-black text-indigo-900 dark:text-indigo-200 tracking-tight" x-text="durationMinutes"></span>
                                     <span class="text-[10px] font-bold text-indigo-400 dark:text-indigo-300">mins</span>
                                 </div>
                             </div>
 
-                            <!-- Distance Metric Cell -->
-                            <div class="p-3 bg-gray-50/70 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600 text-center sm:text-left">
+                            <!-- Distance Metric Cell (x-show moved to outer card) -->
+                            <div x-show="isDistanceActivity" class="p-3 bg-gray-50/70 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-600 text-center sm:text-left">
                                 <span class="text-[10px] font-bold text-gray-400 dark:text-gray-400 tracking-wider uppercase block">Distance</span>
 
                                 <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
-                                    <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight" x-text="workout.distance_km || '0.00'"></span>
+                                    <span class="text-lg font-black text-gray-900 dark:text-white tracking-tight" x-text="distanceKm || '0.00'"></span>
                                     <span class="text-[10px] font-bold text-gray-400 dark:text-gray-400">km</span>
                                 </div>
                             </div>
@@ -399,11 +427,22 @@
                                 <span class="text-[10px] font-bold text-orange-500 dark:text-orange-400 tracking-wider uppercase block">Burned</span>
 
                                 <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
-                                    <span class="text-lg font-black text-orange-900 dark:text-orange-200 tracking-tight" x-text="workout.calories_burned || '0'"></span>
+                                    <span class="text-lg font-black text-orange-900 dark:text-orange-200 tracking-tight" x-text="caloriesBurned || '0'"></span>
                                     <span class="text-[10px] font-bold text-orange-400 dark:text-orange-300">kcal</span>
                                 </div>
                             </div>
+
+                            <!-- Steps Metric Cell (Fixed: uses `steps` instead of `workout.steps`) -->
+                            <div x-show="isStepActivity" class="p-3 bg-emerald-50/40 dark:bg-emerald-900/20 rounded-xl border border-emerald-50 dark:border-emerald-800 text-center sm:text-left">
+                                <span class="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 tracking-wider uppercase block">Steps</span>
+
+                                <div class="flex items-baseline justify-center sm:justify-start gap-0.5 mt-1">
+                                    <span class="text-lg font-black text-emerald-900 dark:text-emerald-200 tracking-tight" x-text="steps !== null && steps !== '' ? Number(steps).toLocaleString() : 'N/A'"></span>
+                                    <span class="text-[10px] font-bold text-emerald-500 dark:text-emerald-300" x-show="steps !== null && steps !== ''">steps</span>
+                                </div>
+                            </div>
                         </div>
+
 
                         <!-- Actions Button Row Block -->
                         <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
@@ -422,22 +461,9 @@
             <!-- Modal Edit-->
             <x-modal name="workout-edit" :show="false" maxWidth="lg">
                 <div
-                    class="p-6 bg-white rounded-2xl  dark:bg-gray-800 "
-                    x-data="{workoutId: null, workout: {}, loading: false}"
-                    x-on:set-edit-id.window="
-                        if(workoutId === $event.detail) return;
-
-                        workoutId = $event.detail;
-                        loading = true;
-                        workout = {};
-
-                        fetch('/workout-tracker/' + workoutId)
-                            .then(res => res.json())
-                            .then(data => {
-                                workout = data;
-                                loading = false;
-                            });
-                    "
+                    class="p-6 bg-white rounded-2xl dark:bg-gray-800"
+                    x-data="workoutForm()"
+                    x-on:set-edit-id.window="loadWorkout($event.detail)"
                 >
                     <!-- Modal: Header Layout Strip -->
                     <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
@@ -466,7 +492,7 @@
                     </div>
 
                     <!--Form Input Fields Content-->
-                    <div x-show="!loading && workout.id" x-cloak class="form" id="workout-edit-form">
+                    <div x-show="!loading && workoutId" x-cloak class="form" id="workout-edit-form">
                         <form :action="'/workout-tracker/' + workoutId" method="post" class="space-y-4">
                             @csrf
                             @method('PUT')
@@ -474,31 +500,63 @@
                             <!-- Activity Type Dropdown Grid Row -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Activity Type</label>
-                                <select name="activity_type" class="block w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 bg-white dark:bg-gray-700 dark:text-white shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-pointer" x-model="workout.activity_type">
+                                <select
+                                    name="activity_type"
+                                    x-model="activityType"
+                                    x-on:change="handleActivityChange()"
+                                    class="block w-full border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 bg-white dark:bg-gray-700 dark:text-white shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-pointer"
+                                >
                                     <option value="Treadmill">🏃‍♂️ Treadmill</option>
                                     <option value="Running">🛣️ Running</option>
                                     <option value="Walking">🚶‍♂️ Walking</option>
                                     <option value="Cycling">🚴‍♂️ Cycling</option>
+                                    <option value="Lifting">🏋️‍♂️ Lifting</option>
                                 </select>
                             </div>
 
-                            <!-- 3-COLUMN METRICS HORIZONTAL GRID LAYOUT -->
-                            <div class="grid grid-cols-3 gap-3">
+                            <!-- Dynamic Grid Layout -->
+                            <div class="grid gap-3" :class="isStepActivity ? 'grid-cols-2' : (isDistanceActivity ? 'grid-cols-3' : 'grid-cols-2')">
                                 <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Duration (min)</label>
-                                    <input type="number" name="duration_minutes" x-model="workout.duration_minutes" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
+                                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Duration (min)</label>
+                                    <input type="number" name="duration_minutes" x-model="durationMinutes" required class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
                                 </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Distance (km)</label>
-                                    <input type="number" step="0.01" name="distance_km" x-model="workout.distance_km" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
+
+                                <div x-show="isDistanceActivity" x-transition>
+                                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Distance (km)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        name="distance_km"
+                                        x-model="distanceKm"
+                                        x-on:input="estimateSteps()"
+                                        :disabled="!isDistanceActivity"
+                                        class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text"
+                                    >
                                 </div>
+
                                 <div>
-                                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Calories (kcal)</label>
-                                    <input type="number" name="calories_burned" x-model="workout.calories_burned" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
+                                    <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Calories (kcal)</label>
+                                    <input type="number" name="calories_burned" x-model="caloriesBurned" class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text">
+                                </div>
+
+                                <!-- Conditional Steps Input -->
+                                <div x-show="isStepActivity" x-transition>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label class="block text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Steps</label>
+                                        <span class="text-[10px] text-blue-500 font-medium" x-show="distanceKm > 0">Auto-est.</span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        name="steps"
+                                        x-model="steps"
+                                        :disabled="!isStepActivity"
+                                        placeholder="3500"
+                                        class="block w-full border border-gray-200 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white bg-white dark:bg-gray-700 shadow-sm hover:border-indigo-400 dark:hover:border-indigo-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition duration-150 appearance-none cursor-text"
+                                    >
                                 </div>
                             </div>
 
-                            <!-- FOOTER ACTIONS STRIP CONTROL LAYER -->
+                            <!-- FOOTER -->
                             <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
                                 <button
                                     type="button"

@@ -34,48 +34,51 @@ Route::middleware(['auth', 'admin'])
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
         // User Management
-        Route::get('/users', [UserController::class, 'index'])->name('users');
-        Route::get('/user/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/user/create', [UserController::class, 'store'])->name('users.store');
-        Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar'])->name('users.avatar.update');
-        Route::put('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
-        Route::get('/api/users', [UserController::class, 'search'])->name('api.users');
+        Route::middleware('hasPermission:users')->group(function(){
+            Route::get('/users', [UserController::class, 'index'])->name('users');
+            Route::get('/user/create', [UserController::class, 'create'])->name('users.create');
+            Route::post('/user/create', [UserController::class, 'store'])->name('users.store');
+            Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+            Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+            Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar'])->name('users.avatar.update');
+            Route::put('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
+            Route::get('/api/users', [UserController::class, 'search'])->name('api.users');
+        });
 
         // Settings
-        Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
-        Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+        Route::middleware('hasPermission:settings')->group(function(){
+            Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
+            Route::put('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
+        });
 
         // Role
-        Route::get('/role', [RoleController::class, 'index'])->name('role');
-        Route::post('/role/store', [RoleController::class, 'store'])->name('role.store');
-        Route::get('/roles/{role}', [RoleController::class, 'show'])->name('role.show');
-        Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
-        Route::put('/roles/{role}/trash', [RoleController::class, 'trash'])->name('roles.moveToTrash');
-        Route::get('/roles/trash', [RoleController::class, 'trashList'])->name('roles.trash');
-        Route::get('/api/roles/trash', [RoleController::class, 'trashList'])->name('api.roles.trash');
-        Route::put('/roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
-        Route::put('/api/roles/{role}/status', [RoleController::class, 'updateStatus'])->name('api.roles.updateStatus');
-        Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
-        Route::get('/api/roles', [RoleController::class, 'search'])->name('api.roles');
+        Route::middleware('hasPermission:roles')->group(function(){
+            Route::get('/role', [RoleController::class, 'index'])->name('role');
+            Route::post('/role/store', [RoleController::class, 'store'])->name('role.store');
+            Route::get('/roles/{role}', [RoleController::class, 'show'])->name('role.show');
+            Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+            Route::put('/roles/{role}/trash', [RoleController::class, 'trash'])->name('roles.moveToTrash');
+            Route::get('/roles/trash', [RoleController::class, 'trashList'])->name('roles.trash');
+            Route::get('/api/roles/trash', [RoleController::class, 'trashList'])->name('api.roles.trash');
+            Route::put('/roles/{id}/restore', [RoleController::class, 'restore'])->name('roles.restore');
+            Route::put('/api/roles/{role}/status', [RoleController::class, 'updateStatus'])->name('api.roles.updateStatus');
+            Route::delete('roles/{id}/force-delete', [RoleController::class, 'forceDelete'])->name('roles.forceDelete');
+            Route::get('/api/roles', [RoleController::class, 'search'])->name('api.roles');
+        });
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'user'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', [UserDashboard::class, 'index'])
-        ->middleware('hasPermission:dashboard')
-        ->name('dashboard');
+    Route::middleware('hasPermission:dashboard')->group(function () {
+        Route::get('/dashboard', [UserDashboard::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/activities', [UserDashboard::class, 'activities'])->name('dashboard.activities');
+    });
 
-    Route::get('/dashboard/activities', [UserDashboard::class, 'activities'])
-        ->middleware('hasPermission:dashboard')
-        ->name('dashboard.activities');
-
-
-    Route::get('/settings', [UserSettingsController::class, 'index'])->name('settings.index');
-    Route::put('/settings/update', [UserSettingsController::class, 'update'])->name('settings.update');
-
+    Route::middleware('hasPermission:settings')->group(function () {
+        Route::get('/settings', [UserSettingsController::class, 'index'])->name('settings.index');
+        Route::put('/settings/update', [UserSettingsController::class, 'update'])->name('settings.update');
+    });
 
     // Profile
     Route::middleware('hasPermission:profile')->group(function () {
@@ -89,12 +92,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Workout Tracker
         Route::get('/workout-tracker', [WorkoutTrackerController::class, 'index'])->name('workout-tracker');
+        Route::get('/workout-tracker', [WorkoutTrackerController::class, 'index'])->name('workout-tracker');
         Route::post('/workout-tracker', [WorkoutTrackerController::class, 'store'])->name('workout-tracker.store');
         Route::get('/workout-tracker/{id}', [WorkoutTrackerController::class, 'show'])->name('workout-tracker.show');
         Route::put('/workout-tracker/{id}', [WorkoutTrackerController::class, 'update'])->name('workout-tracker.update');
         Route::delete('/workout-tracker/{id}', [WorkoutTrackerController::class, 'destroy'])->name('workout-tracker.destroy');
         Route::get('/api/workouts', [WorkoutTrackerController::class, 'search'])->name('api.workouts');
-        Route::get('/api/workouts/export', [WorkoutTrackerController::class, 'exportAll'])->name('api.workouts.exportAll');
+        Route::get('/api/workouts/export', [WorkoutTrackerController::class, 'exportAll'])
+            ->middleware('hasPermission:export')
+            ->name('api.workouts.exportAll');
 
         // Blood Pressure
         Route::get('/bp', [BloodPressureController::class, 'index'])->name('bp');
@@ -103,7 +109,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/bp/{id}', [BloodPressureController::class, 'update'])->name('bp.update');
         Route::delete('/bp/{id}', [BloodPressureController::class, 'destroy'])->name('bp.destroy');
         Route::get('/api/bp', [BloodPressureController::class, 'search'])->name('api.bp');
-        Route::get('api/bp/export', [BloodPressureController::class, 'exportAll'])->name('api.bp.exportAll');
+        Route::get('/api/bp/export', [BloodPressureController::class, 'exportAll'])
+            ->middleware('hasPermission:export')
+            ->name('api.bp.exportAll');
 
         // Weight Tracker
         Route::get('/weight', [WeightTrackerController::class, 'index'])->name('weight');
@@ -112,7 +120,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/weight/{id}', [WeightTrackerController::class, 'update'])->name('weight.update');
         Route::delete('/weight/{id}', [WeightTrackerController::class, 'destroy'])->name('weight.destroy');
         Route::get('/api/weight', [WeightTrackerController::class, 'search'])->name('api.weight');
-        Route::get('/api/weight/export', [WeightTrackerController::class, 'exportAll'])->name('api.weight.exportAll');
+        Route::get('/api/weight/export', [WeightTrackerController::class, 'exportAll'])
+            ->middleware('hasPermission:export')
+            ->name('api.weight.exportAll');
     });
 
 });

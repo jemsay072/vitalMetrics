@@ -80,7 +80,7 @@ class BloodPressureController extends Controller
                 'systolic' => 'required|integer',
                 'diastolic' => 'required|integer',
                 'pulse' => 'nullable|integer',
-                'notes' => 'present|string',
+                'notes' => 'nullable|string',
                 'reading_time' => 'required|date_format:H:i',
             ]);
 
@@ -170,7 +170,12 @@ class BloodPressureController extends Controller
      * Display the specified resource
      */
     public function show($id){
-        $bp = BloodPressure::findOrFail($id);
+        // $bp = BloodPressure::findOrFail($id);
+        $bp = BloodPressure::where('user_id', Auth::id())->findOrFail($id);
+
+        // remove the json once input to the address bar.
+        if (! request()->expectsJson()) abort(404);
+
         return response()->json($bp);
     }
 
@@ -181,36 +186,44 @@ class BloodPressureController extends Controller
     public function update(Request $request, $id){
         $auth = Auth::user();
 
-        $bp = BloodPressure::findOrFail($id);
-        $data = [
-            'systolic' => $request->systolic,
-            'diastolic' => $request->diastolic,
-            'pulse' => $request->pulse,
-            'notes' => $request->notes,
-            'reading_time' => $request->reading_time,
-        ];
+        // $bp = BloodPressure::findOrFail($id);
+        $bp = BloodPressure::where('user_id', $auth->id)->findOrFail($id);
 
-        $data['terms'] = $this->detectTerms(
-            $request->systolic,
-            $request->diastolic,
-        );
+        $validate = $request->validate([
+            'systolic' => 'required|integer',
+            'diastolic' => 'required|integer',
+            'pulse' => 'nullable|integer',
+            'notes' => 'nullable|string',
+            'reading_time' => 'required|date_format:H:i',
+        ]);
 
-        $data['risk_level'] = $this->detectRiskLevel(
-            $request->systolic,
-            $request->diastolic,
-        );
+        // $data['terms'] = $this->detectTerms(
+        //     $request->systolic,
+        //     $request->diastolic,
+        // );
+
+        // $data['risk_level'] = $this->detectRiskLevel(
+        //     $request->systolic,
+        //     $request->diastolic,
+        // );
+
+        $oldSystolic = $bp->systolic;
+        $oldDiastolic = $bp->diastolic;
+
+        $validate['terms'] = $this->detectTerms($validate['systolic'], $validate['diastolic']);
+
+        $validate['risk_level'] = $this->detectRiskLevel($validate['systolic'], $validate['diastolic']);
 
         try{
-            $bp->update($data);
+            $bp->update($validate);
+
             ActivityLog::create([
                 'user_id' => $auth->id,
                 'type' => 'Blood Pressure',
-                'description' => "Updated a previous reading of {$request->systolic} / {$request->diastolic} mmHg to {$request->systolic} / {$request->diastolic} mmHg and pulse rate is {$request->pulse}",
-                'status' => $this->detectRiskLevel(
-                        $request->systolic,
-                        $request->diastolic,
-                    )
+                'description' => "Updated a previous reading of {$oldSystolic} / {$oldDiastolic} mmHg to {$validate['systolic']} / {$validate['diastolic']} mmHg and pulse rate is {$validate['pulse']}.",
+                'status' => $validate['risk_level'],
             ]);
+
             return back()->with('success', 'Blood Pressure updated successfully!');
 
         } catch(\Exception $e){
@@ -225,7 +238,7 @@ class BloodPressureController extends Controller
     public function destroy($id){
         $auth = Auth::user();
 
-        $bp = BloodPressure::findOrFail($id);
+        $bp = BloodPressure::where('user_id', $auth->id)->findOrFail($id);
 
         $bpDetails = "{$bp->systolic}/{$bp->diastolic} mmHg (Pulse: {$bp->pulse}) recorded on " . $bp->created_at->format('M d, Y');
 
@@ -234,7 +247,7 @@ class BloodPressureController extends Controller
             'user_id' => $auth->id,
             'type' => 'Blood Pressure',
             'description' => "Deleted a blood pressure entry of {$bpDetails}",
-            'status' => 'deleted'
+            'status' => 'deleted',
         ]);
         return back()->with('Success', 'Blood Pressure Deleted Successfully!.');
     }

@@ -13,6 +13,7 @@ use App\Models\WorkoutTracker;
 use App\Models\Role;
 use App\Models\UserProfile;
 use App\Models\UserPreferences;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -60,16 +61,33 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission) : bool{
         // check active role
-        if( !$this->role || $this->role->status !== 'active' ) return false;
+        // if( !$this->role || $this->role->status !== 'active' ) return false;
 
         // check full access
-        if( $this->isAdmin() ) return true;
+        // if( $this->isAdmin() ) return true;
+
+        if(! $this->isActive()) return false;
 
 
         // Check assigned permission
+        // ->where('name', $permission)
         return $this->role
             ->permissions()
-            ->where('name', $permission)
+            ->whereRaw('LOWER(name) = ?', [strtolower($permission)])
+            ->exists();
+    }
+
+    /**
+     * Check Any permission
+     */
+    public function hasAnyPermission(): bool {
+        if(! $this->isActive()) return false;
+
+        if($this->isAdmin()) return true;
+
+        return $this->role
+            ->permissions()
+            ->whereIn(DB::raw('LOWER(name)'), ['users', 'roles', 'settings', 'reports'])
             ->exists();
     }
 
@@ -88,19 +106,29 @@ class User extends Authenticatable
     }
 
     /**
+     * isActive
+     */
+    public function isActive(): bool{
+        return $this->status === 'active' && $this->role?->status === 'active';
+    }
+
+    /**
      * Checking if user is an Admin
      */
     public function isAdmin(): bool{
-        return $this->role?->name === 'Admin'
-                && $this->role?->status === 'active';
+        // return $this->role?->name === 'Admin'
+        //         && $this->role?->status === 'active';
+
+        return $this->isActive() && $this->role?->name === 'Admin';
     }
 
     /**
      * Checking if user is a regular user
      */
     public function isUser(): bool{
-        return $this->role?->name === 'User'
-                && $this->role?->status === 'active';
+        // return $this->role?->name === 'User'
+        //         && $this->role?->status === 'active';
+        return $this->isActive() && $this->role?->name === 'User';
     }
 
     /**
