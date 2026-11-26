@@ -126,6 +126,11 @@ For production servers:
 - **Phase 1 (Completed):** Authentication, Blood Pressure/Weight/Workout trackers, CSV export, Light/Dark mode, Admin dashboard, User management, Role & Permission management, and route protection.
 - **Phase 2 (Planned):** System-wide admin activity logs, Auth and Payment settings tabs, and user notifications.
 
+## Documentation
+
+- [Architecture & Project Notes](docs/ARCHITECTURE.md)
+- [Deployment & Maintenance Checklist](docs/DEPLOYMENT.md)
+
 ## License
 
 MIT License
