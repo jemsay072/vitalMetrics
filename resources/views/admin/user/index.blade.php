@@ -99,22 +99,21 @@
                             <div class="flex items-center gap-1 shrink-0">
 
                                 {{-- Edit --}}
-                                <button
-                                    type="button"
-                                    x-on:click.stop="
-                                        $dispatch('set-edit-id', item.id);
-                                        $dispatch('open-modal', 'users-edit');
-                                    "
+                                <a
+                                    x-bind:href="'{{ route('admin.users.show', ['user' => '__USER_ID__']) }}'.replace('__USER_ID__', item.id) + '?edit=1'"
+                                    x-on:click.stop
                                     title="Edit User"
                                     aria-label="Edit User"
                                     class="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-solid fa-pen text-sm"></i>
-                                </button>
+                                </a>
 
                                 {{-- Deactivate --}}
                                 <button
                                     type="button"
+                                    x-show="item.status?.toLowerCase() === 'active' && item.id !== {{ auth()->id() }} && item.role?.name?.toLowerCase() !== 'admin'"
+                                    x-cloak
                                     x-on:click.stop="
                                         $dispatch('set-deactivated-id', item.id);
                                         $dispatch('open-modal', 'users-deactivated');
@@ -124,6 +123,23 @@
                                     class="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                                 >
                                     <i class="fa-regular fa-eye-slash text-sm"></i>
+                                </button>
+
+
+                                {{-- Re-activate --}}
+                                <button
+                                    type="button"
+                                    x-show="item.status?.toLowerCase() === 'inactive'"
+                                    x-cloak
+                                    x-on:click.stop="
+                                        $dispatch('set-reactivate-id', item.id);
+                                        $dispatch('open-modal', 'users-reactivated');
+                                    "
+                                    title="Re-activate User"
+                                    aria-label="Re-activate User"
+                                    class="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors"
+                                >
+                                    <i class="fa-solid fa-user-check text-sm"></i>
                                 </button>
 
                             </div>
@@ -178,7 +194,6 @@
                         </div>
                     </div>
                 </template>
-
                 {{-- Empty State --}}
                 <div
                     x-show="results.length === 0 && !loading"
@@ -349,6 +364,10 @@
                                     :edit-url="route('admin.users.show', ['user' => '__USER_ID__']) . '?edit=1'"
                                     deactivated-event="set-deactivated-id"
                                     deactivated-modal="users-deactivated"
+                                    deactivated-show-when="item.status?.toLowerCase() === 'active' && item.id !== {{ auth()->id() }} && item.role?.name?.toLowerCase() !== 'admin'"
+                                    reactivate-event="set-reactivate-id"
+                                    reactivate-modal="users-reactivated"
+                                    reactivate-show-when="item.status?.toLowerCase() === 'inactive'"
                                 />
 
                             </x-table.row>
@@ -359,23 +378,39 @@
             </div>
 
             {{-- Deactivate User Modal --}}
-            <x-modal name="users-deactivated" :show="false" maxWidth="lg">
+            <x-modal name="users-deactivated" :show="false" maxWidth="md">
                 <div
-                    class="p-6"
+                    class=" bg-white dark:bg-gray-800 rounded-2xl"
                     x-data="{ usersId: null }"
                     x-on:set-deactivated-id.window="usersId = $event.detail"
                 >
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
-                            <i class="fa-solid fa-user-slash"></i>
+                    <!-- Modal Header Strip -->
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 px-6 pt-6 pb-4 mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                                <i class="fa-solid fa-user-slash text-base"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                                    Deactivate User
+                                </h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">
+                                    Restrict system access for this account
+                                </p>
+                            </div>
                         </div>
 
-                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
-                            Deactivate User
-                        </h2>
+                        <button
+                            type="button"
+                            x-on:click="$dispatch('close-modal', 'users-deactivated')"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
                     </div>
 
-                    <div class="form" id="deactivated-users-form">
+                    <!-- Form Content -->
+                    <div class="form p-6" id="deactivated-users-form">
                         <form
                             x-bind:action="'/admin/users/' + usersId + '/deactivate'"
                             method="POST"
@@ -383,29 +418,113 @@
                             @csrf
                             @method('PUT')
 
-                            <p class="text-sm text-gray-600 dark:text-gray-300">
-                                Are you sure you want to deactivate this user?
-                                This account will no longer be able to access the system.
-                            </p>
+                            <!-- Warning Callout Box -->
+                            <div class="p-4 rounded-xl bg-red-50/60 dark:bg-red-900/15 border border-red-100 dark:border-red-900/40 flex items-start gap-3">
+                                <i class="fa-solid fa-triangle-exclamation text-red-500 dark:text-red-400 text-sm mt-0.5 shrink-0"></i>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                        Are you sure you want to deactivate this user?
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                        This account will immediately lose access to the system, though their existing records and logs will remain preserved.
+                                    </p>
+                                </div>
+                            </div>
 
-                            {{-- Buttons --}}
-                            <div class="flex justify-end gap-2 mt-6">
-
+                            <!-- Footer Actions Strip -->
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
                                 <button
                                     type="button"
                                     x-on:click="$dispatch('close-modal', 'users-deactivated')"
-                                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium transition"
+                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                                 >
                                     Cancel
                                 </button>
 
                                 <button
                                     type="submit"
-                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-medium transition"
+                                    class="inline-flex items-center justify-center gap-2 px-5 h-[42px] bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
                                 >
-                                    Deactivate User
+                                    <i class="fa-solid fa-user-slash text-[11px]"></i>
+                                    <span>Confirm Deactivate</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </x-modal>
+
+            {{-- Re-activate User Modal --}}
+            <x-modal name="users-reactivated" :show="false" maxWidth="md">
+                <div
+                    class="p-6 bg-white dark:bg-gray-800 rounded-2xl"
+                    x-data="{ usersId: null }"
+                    x-on:set-reactivate-id.window="usersId = $event.detail"
+                >
+                    <!-- Modal Header Strip -->
+                    <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-4 mb-5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                                <i class="fa-solid fa-user-check text-base"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-black text-gray-900 dark:text-white tracking-tight">
+                                    Re-activate User
+                                </h2>
+                                <p class="text-[11px] font-medium text-gray-400 dark:text-gray-400 -mt-0.5">
+                                    Restore system access for this account
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            x-on:click="$dispatch('close-modal', 'users-reactivated')"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-200 transition cursor-pointer"
+                        >
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- Form Content -->
+                    <div class="form" id="reactivated-users-form">
+                        <form
+                            x-bind:action="'/admin/users/' + usersId + '/reactivate'"
+                            method="POST"
+                        >
+                            @csrf
+                            @method('PUT')
+
+                            <!-- Info Callout Box -->
+                            <div class="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-900/15 border border-emerald-100 dark:border-emerald-900/40 flex items-start gap-3">
+                                <i class="fa-solid fa-circle-info text-emerald-600 dark:text-emerald-400 text-sm mt-0.5 shrink-0"></i>
+                                <div class="space-y-1">
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                        Are you sure you want to re-activate this user?
+                                    </p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                        This account will immediately regain access to log in and use the system with their existing data.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Footer Actions Strip -->
+                            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700 mt-6">
+                                <button
+                                    type="button"
+                                    x-on:click="$dispatch('close-modal', 'users-reactivated')"
+                                    class="inline-flex items-center justify-center px-5 h-[42px] bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 text-slate-700 dark:text-gray-200 font-semibold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                >
+                                    Cancel
                                 </button>
 
+                                <button
+                                    type="submit"
+                                    class="inline-flex items-center justify-center gap-2 px-5 h-[42px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition duration-150 ease-in-out cursor-pointer shadow-sm focus:outline-none"
+                                >
+                                    <i class="fa-solid fa-user-check text-[11px]"></i>
+                                    <span>Confirm Re-activate</span>
+                                </button>
                             </div>
                         </form>
                     </div>

@@ -9,6 +9,7 @@ use App\Models\UserPreferences;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class UserSettingsController extends Controller
 {
@@ -81,16 +82,20 @@ class UserSettingsController extends Controller
 
         // Normal validation & Update
         $validated = $request->validate([
-            'theme' => 'required|string|in:light,dark',
-            'weight_unit' => 'required|string|in:kg,lbs',
-            'date_format' => 'required|string|in:M d, Y,Y-m-d,d/m/Y',
-            'dashboard_landing' => 'required|string|in:dashboard,analytics',
-            'notifications_enabled' => 'nullable|boolean',
-            'email_notifications' => 'nullable|boolean',
+            'theme' => ['required', 'string', Rule::in(['light', 'dark'])],
+            'weight_unit' => ['sometimes', 'required', 'string', Rule::in(['kg', 'lbs'])],
+            'date_format' => ['sometimes', 'required', 'string', Rule::in(['M d, Y', 'Y-m-d', 'd/m/Y'])],
+            'dashboard_landing' => ['sometimes', 'required', 'string', Rule::in(['dashboard', 'analytics'])],
+            'notifications_enabled' => ['nullable', 'boolean'],
+            'email_notifications' => ['nullable', 'boolean'],
         ]);
 
-        $validated['notifications_enabled'] = $request->has('notifications_enabled');
-        $validated['email_notifications'] = $request->has('email_notifications');
+
+        if ($request->has('notifications_tab_submitted') || $request->has('notifications_enabled') || $request->has('email_notifications')) {
+            $validated['notifications_enabled'] = $request->boolean('notifications_enabled');
+            $validated['email_notifications'] = $request->boolean('email_notifications');
+        }
+
 
         $user->preferences()->updateOrCreate([], $validated);
 

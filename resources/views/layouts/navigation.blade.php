@@ -8,7 +8,6 @@
 
             <!-- OPTION 1: FLOATING MINIMALIST CARD PROFILE SECTION -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 relative">
-                <!-- TRIGGER BUTTON: Tinanggal ang puting box at border para natural na lumutang sa dark bar -->
                 <button
                     @click="dropdownOpen = !dropdownOpen"
                     class="inline-flex items-center gap-2 px-3 py-2 text-sm font-semibold text-gray-200 hover:text-white focus:outline-none transition ease-in-out duration-150 cursor-pointer"
@@ -35,16 +34,16 @@
                     x-transition:leave="transition ease-in duration-100"
                     x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                     x-transition:leave-end="opacity-0 scale-95 translate-y-1"
-                    class="absolute right-0 top-full mt-1.5 w-56 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1.5 shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
+                    class="absolute right-0 top-full mt-1.5 w-56 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden"
                 >
                     <!-- Profile User Profile Information Panel Header -->
-                    <div class="px-3.5 py-3 border-b border-gray-50 dark:border-gray-700 mb-1.5 bg-gray-50/50 dark:bg-gray-800 dark:hover:bg-gray-600/50 rounded-t-xl">
-                        <p class="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide truncate">{{ Auth::user()->name }}</p>
-                        <p class="text-[11px] font-semibold text-gray-400 truncate mt-0.5">{{ Auth::user()->email }}</p>
+                    <div class="px-3.5 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                        <p class="text-sm font-bold text-gray-800 dark:text-white tracking-wide">{{ Auth::user()->name }}</p>
+                        <p class="text-[11px] font-semibold text-gray-400 dark:text-gray-400 mt-0.5">{{ Auth::user()->email }}</p>
                     </div>
 
                     <!-- Action Links Container Area -->
-                    <div class="space-y-0.5">
+                    <div class="space-y-0.5 p-1.5">
                         @if (auth()->user()->hasPermission('profile'))
                             <a href="{{ route('profile.edit') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-gray-600/50 hover:text-slate-900 dark:hover:text-white transition duration-150">
                                 <i class="fa-regular fa-user text-gray-400 dark:group-hover:text-white group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
@@ -52,7 +51,7 @@
                             </a>
                         @endif
 
-                        <a href="{{ route('settings.index') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-gray-600/50 hover:text-slate-900 dark:hover:text-white transition duration-150">
+                        <a href="{{ auth()->user()->isAdmin() ? route('admin.preferences.index') : route('settings.index') }}" class="group flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:hover:bg-gray-600/50 hover:text-slate-900 dark:hover:text-white transition duration-150">
                             <i class="fa-solid fa-gear text-gray-400 dark:group-hover:text-white group-hover:text-slate-500 w-4 text-center text-sm transition"></i>
                             <span>Settings</span>
                         </a>
@@ -67,7 +66,7 @@
                     </div>
 
                     <!-- System Log Out Action Container Node -->
-                    <div class="mt-1.5 pt-1.5 border-t border-gray-100 dark:border-gray-700">
+                    <div class="mt-1.5 p-1.5 border-t border-gray-100 dark:border-gray-700">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button
@@ -85,7 +84,10 @@
 
             <!-- Hamburger Button for Mobile Layout Controls -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
+                <button
+                    @click="open = ! open"
+                    class="inline-flex items-center justify-center p-2 rounded-md bg-transparent text-gray-300 hover:text-white hover:bg-transparent focus:outline-none focus:bg-transparent focus:text-white transition duration-150 ease-in-out"
+                >
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -124,7 +126,7 @@
                 </x-responsive-nav-link>
             @endif
 
-            <x-responsive-nav-link :href="route('settings.index')" @click="open = false" class="rounded-xl dark:hover:bg-gray-700/70">
+            <x-responsive-nav-link :href="auth()->user()->isAdmin() ? route('admin.preferences.index') : route('settings.index')" @click="open = false" class="rounded-xl dark:hover:bg-gray-700/70">
                 <span class="inline-flex items-center gap-3 text-xs font-bold text-slate-600 dark:text-gray-200">
                     <i class="fa-solid fa-gear text-gray-400 dark:text-gray-400 group-hover:text-slate-500 dark:group-hover:text-gray-200 w-4 text-center text-sm transition"></i>
                     <span>{{ __('Settings') }}</span>

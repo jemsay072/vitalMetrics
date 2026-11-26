@@ -156,7 +156,7 @@
                                 <div>
                                     <x-input-label for="user_role" :value="__('Role')" class="dark:text-gray-300" />
                                     <p x-show="!isEditing" class="mt-1 text-sm font-medium text-gray-800 dark:text-gray-200">
-                                        {{ $user->role_id ?: '—' }}
+                                        {{ $user->role?->name ?: '—' }}
                                     </p>
                                     {{-- Edit Mode --}}
                                     <div x-show="isEditing" x-cloak>

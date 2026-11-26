@@ -17,8 +17,13 @@
     // Optional visibility conditions
     'editShowWhen' => null,
     'deleteShowWhen' => null,
+    'deactivatedShowWhen' => null,
     'restoreShowWhen' => null,
     'forceDeleteShowWhen' => null,
+
+    'reactivateEvent' => null,
+    'reactivateModal' => null,
+    'reactivateShowWhen' => null,
 
     'asCell' => true,
     'editUrl' => null,
@@ -74,6 +79,42 @@
                 title="Move to Trash"
             >
                 <i class="fa-regular fa-trash-can"></i>
+            </button>
+        @endif
+
+        {{-- Deactivate Modal --}}
+        @if ($deactivatedEvent && $deactivatedModal)
+            <button
+                @if ($deactivatedShowWhen)
+                    x-show="{{ $deactivatedShowWhen }}"
+                    x-cloak
+                @endif
+                x-on:click.stop="
+                    $dispatch('{{ $deactivatedEvent }}', item.id);
+                    $dispatch('open-modal', '{{ $deactivatedModal }}');
+                "
+                class="p-2 text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-150"
+                title="Deactivate User"
+            >
+                <i class="fa-solid fa-eye-slash"></i>
+            </button>
+        @endif
+
+        {{-- Re-activate Modal --}}
+        @if ($reactivateEvent && $reactivateModal)
+            <button
+                @if ($reactivateShowWhen)
+                    x-show="{{ $reactivateShowWhen }}"
+                    x-cloak
+                @endif
+                x-on:click.stop="
+                    $dispatch('{{ $reactivateEvent }}', item.id);
+                    $dispatch('open-modal', '{{ $reactivateModal }}');
+                "
+                class="p-2 text-emerald-600 hover:bg-emerald-100 dark:text-emerald-400 dark:hover:bg-emerald-900/30 rounded-lg transition-colors duration-150"
+                title="Re-activate User"
+            >
+                <i class="fa-solid fa-user-check"></i>
             </button>
         @endif
 

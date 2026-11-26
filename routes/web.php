@@ -33,6 +33,10 @@ Route::middleware(['auth', 'admin'])
 
         Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
 
+        // Personal Preferences for Admin (reuses settings/index.blade.php)
+        Route::get('/preferences', [UserSettingsController::class, 'index'])->name('preferences.index');
+        Route::put('/preferences/update', [UserSettingsController::class, 'update'])->name('preferences.update');
+
         // User Management
         Route::middleware('hasPermission:users')->group(function(){
             Route::get('/users', [UserController::class, 'index'])->name('users');
@@ -42,6 +46,7 @@ Route::middleware(['auth', 'admin'])
             Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
             Route::post('/users/{user}/avatar', [UserController::class, 'updateAvatar'])->name('users.avatar.update');
             Route::put('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
+            Route::put('/users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');
             Route::get('/api/users', [UserController::class, 'search'])->name('api.users');
         });
 
@@ -67,6 +72,15 @@ Route::middleware(['auth', 'admin'])
         });
 });
 
+// Shared Profile (Accessible by both Admin and User)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware('hasPermission:profile')->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+});
+
 Route::middleware(['auth', 'verified', 'user'])->group(function () {
 
     // Dashboard
@@ -78,13 +92,6 @@ Route::middleware(['auth', 'verified', 'user'])->group(function () {
     Route::middleware('hasPermission:settings')->group(function () {
         Route::get('/settings', [UserSettingsController::class, 'index'])->name('settings.index');
         Route::put('/settings/update', [UserSettingsController::class, 'update'])->name('settings.update');
-    });
-
-    // Profile
-    Route::middleware('hasPermission:profile')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
     //Trackers

@@ -267,7 +267,7 @@ class RoleController extends Controller
     public function trash(Role $role){
 
         // Prevent from deleting the admin.
-        if($role->name === 'Admin'){
+        if($role->name === 'Admin' || strtolower($role->name) === 'admin' || strtoupper($role->name) === 'ADMIN'){
             return response()->json([
                 'message' => 'The Admin role cannot be deleted.'
             ], 403);
@@ -360,7 +360,7 @@ class RoleController extends Controller
     public function forceDelete($id) {
         $role = Role::onlyTrashed()->findOrFail($id);
 
-        if ($role->name === 'Admin') {
+        if($role->name === 'Admin' || strtolower($role->name) === 'admin' || strtoupper($role->name) === 'ADMIN') {
             return response()->json([
                 'message' => 'The Admin role cannot be permanently deleted.'
             ], 403);
@@ -388,7 +388,7 @@ class RoleController extends Controller
         ]);
 
         // Prevent deactivation of the built-in Admin role
-        if($role->name === 'Admin' && $validated['status'] === 'inactive'){
+        if(($role->name === 'Admin' || strtolower($role->name) === 'admin' || strtoupper($role->name) === 'ADMIN') && $validated['status'] === 'inactive'){
            return response()->json([
             'message' => 'The Admin role cannot be deactivated.'
            ], 403);
@@ -397,7 +397,7 @@ class RoleController extends Controller
         // Prevent unnecessary update
         if($role->status === $validated['status']){
             return response()->json([
-                'message' => 'Role is already' . $role->status . '.'
+                'message' => 'Role is already ' . $role->status . '.'
             ]);
         }
 

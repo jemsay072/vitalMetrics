@@ -58,14 +58,15 @@ class UserController extends Controller
      */
 
     public function search(Request $request){
-        $query = User::with('role');
+        $query = User::with(['role', 'profile']);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                   ->orWhere('status', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhereHas('role', fn($r) => $r->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -189,6 +190,12 @@ class UserController extends Controller
             'zip_code' => 'nullable|string|max:10',
         ]);
 
+        if($user->role && strtolower($user->role->name) === 'admin'){
+            if (($validated['status'] ?? $user->status) === 'inactive') {
+                return back()->with('error', 'Admin accounts cannot be set to inactive.');
+            }
+        }
+
         //User
         $user->update([
             'name' => $validated['name'],
@@ -233,9 +240,10 @@ class UserController extends Controller
         if($request->input('delete_avatar') == 1){
 
             // Remove Avatar
-            Storage::disk('public')->delete($profile->avatar);
-
-            $profile->update(['avatar' => '']);
+            if ($profile && $profile->avatar) {
+                Storage::disk('public')->delete($profile->avatar);
+                $profile->update(['avatar' => '']);
+            }
 
             return redirect()
              -> route('admin.users.show', $user)
@@ -271,15 +279,38 @@ class UserController extends Controller
          -> with('warning', 'No action performed.');
     }
 
+    /**
+     * Re-activate the specified user.
+     */
+    public function reactivate($user)
+    {
+        $user = User::findOrFail($user);
+
+        $user->update(['status' => 'active']);
+
+        return back()->with('success', 'User successfully re-activated.');
+    }
+
+
      /**
      * Deactivate the specified resource from storage.
      */
     public function deactivate($user){
         $user = User::findOrFail($user);
 
+        // Prevent deactivating your own currently logged-in account.
+        if($user->id === auth()->id()){
+            return back()->with('error', 'You cannot deactivate your own account.');
+        }
+
+        // Prevent deactivating any accounts with the Admin role.
+        if ($user->role && strtolower($user->role->name) === 'admin') {
+            return back()->with('error', 'Admin accounts cannot be deactivated.');
+        }
+
         $user->update(['status' => 'inactive']);
 
-        return back()->with('Success', 'User successfully Deactivated');
+        return back()->with('success', 'User successfully Deactivated');
     }
 
     /**

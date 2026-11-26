@@ -3,20 +3,22 @@
 
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <!-- Page Header -->
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between">
                 <x-page-header
                     title="Settings"
                     description="Manage your application preferences and localization setups."
                     :breadcrumbs="[
-                        ['label' => 'Home', 'url' => '/dashboard'],
-                        ['label' => 'Settings', 'url' => '#']
+                        ['label' => 'Home', 'url' => auth()->user()->isAdmin() ? route('admin.dashboard') : route('dashboard')],
+                        ['label' => 'Settings',]
                     ]"
+
                 />
             </div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <form action="{{ route('settings.update') }}" method="POST" class="space-y-6">
+            <form action="{{ auth()->user()->isAdmin() ? route('admin.preferences.update') : route('settings.update') }}" method="POST" class="space-y-6">
+
                 @csrf
                 @method('PUT')
 
